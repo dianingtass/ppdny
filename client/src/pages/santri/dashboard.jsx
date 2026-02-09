@@ -458,12 +458,6 @@ export default function SantriDashboard() {
               </h3>
               
               <div className="space-y-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-gray-600 mb-1">Bulan</p>
-                  <p className="text-2xl font-bold text-gray-800 truncate">
-                    {keuangan.tagihan_terakhir.bulan}
-                  </p>
-                </div>
                 
                 <div className={`p-4 rounded-xl ${keuangan.tagihan_terakhir.status === 'Lunas' ? 'bg-green-50' : 'bg-red-50'}`}>
                   <div className="flex items-center justify-between">
