@@ -15,11 +15,6 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/santri', require('./routes/santri/dashboardRoutes'));
-<<<<<<< Updated upstream
-=======
-app.use('/api/santri/profile', require('./routes/santri/pendataanRoutes'));
-app.use('/api/santri/keuangan', require('./routes/santri/keuanganRoutes'));
->>>>>>> Stashed changes
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
