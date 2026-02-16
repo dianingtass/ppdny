@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2 } from "lucide-react";
+import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown } from "lucide-react";
 
 export default function SantriDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboardData, setDashboardData] = useState(null);
   const [activeMenu, setActiveMenu] = useState("home");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const navigate = useNavigate();
   const API_URL = "http://localhost:3000/api/santri";
@@ -192,19 +193,19 @@ export default function SantriDashboard() {
     santri, 
     keuangan, 
     kegiatan_hari_ini = [], 
-    pengumuman = [], 
     aktivitas_terakhir = {},
     statistik = {},
     menu_cepat = []
   } = dashboardData;
 
   // Format aktivitas terakhir menjadi array
+  // 1. Ambil list pengaduan (Pastikan array)
+  const pengaduanList = Array.isArray(aktivitas_terakhir.pengaduan) 
+    ? aktivitas_terakhir.pengaduan 
+    : [];
+
+  // 2. Definisikan aktivitasArray (Gabungan Observasi + Screening)
   const aktivitasArray = [
-    ...(aktivitas_terakhir.pengaduan ? [{
-      ...aktivitas_terakhir.pengaduan,
-      jenis: "pengaduan",
-      tanggal: formatDate(aktivitas_terakhir.pengaduan.waktu)
-    }] : []),
     ...(aktivitas_terakhir.observasi ? [{
       ...aktivitas_terakhir.observasi,
       jenis: "observasi",
@@ -215,7 +216,7 @@ export default function SantriDashboard() {
       jenis: "screening",
       tanggal: formatDate(aktivitas_terakhir.screening.tanggal)
     }] : [])
-  ];
+  ].sort((a, b) => new Date(b.waktu || b.tanggal) - new Date(a.waktu || a.tanggal));
 
   // Default menu jika tidak ada dari backend
   const defaultMenu = [
@@ -234,7 +235,7 @@ export default function SantriDashboard() {
   })) : defaultMenu;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
       <div className="bg-gradient-to-br from-blue-600 to-blue-500 text-white p-6">
         <div className="max-w-6xl mx-auto">
@@ -248,12 +249,59 @@ export default function SantriDashboard() {
                 <Bell size={24} />
               </button>
               <div className="hidden md:flex items-center space-x-2">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                  <User size={24} />
-                </div>
-                <div>
-                  <p className="font-medium">{santri.nama}</p>
-                  <p className="text-sm text-blue-100">NIS: {santri.nip}</p>
+                <div className="relative hidden md:block">
+                  <button 
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 hover:bg-white/30 transition">
+                     <img src={`http://localhost:3000/uploads/${santri.foto_profil}`} alt={santri.nama} className="w-full h-full object-cover"/>
+                    </div>
+                    <div>
+                      <p className="font-medium leading-tight">{santri.nama}</p>
+                      <p className="text-sm text-white/75">NIS: {santri.nip}</p>
+                    </div>
+                    <ChevronDown 
+                      size={16} 
+                      className={`text-blue-200 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} 
+                    />
+                  </button>
+
+                  {/* Dropdown Menu Absolute */}
+                  {isProfileOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-md py-2 z-50 border border-gray-100 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+
+                      {/* Item 1: Edit Profil */}
+                      <button 
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/santri/profil");
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center transition"
+                      >
+                        <Settings size={16} className="mr-3" />
+                        Edit Profil
+                      </button>
+
+                      {/* Item 2: Keluar */}
+                      <button 
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-md text-red-600 hover:bg-red-50 flex items-center transition"
+                      >
+                        <LogOut size={16} className="mr-3" />
+                        Keluar
+                      </button>
+
+                    </div>
+                  )}
+
+                  {/* Backdrop transparan untuk menutup dropdown saat klik di luar */}
+                  {isProfileOpen && (
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setIsProfileOpen(false)}
+                    ></div>
+                  )}
                 </div>
               </div>
             </div>
@@ -262,9 +310,6 @@ export default function SantriDashboard() {
           {/* Welcome Card */}
           <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-2xl">
             <div className="flex items-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-white/30 flex items-center justify-center mr-4">
-                <User size={32} />
-              </div>
               <div>
                 <p className="text-blue-100 mb-1">Selamat datang kembali</p>
                 <h2 className="text-2xl font-bold">{santri.nama}</h2>
@@ -351,60 +396,53 @@ export default function SantriDashboard() {
                 </button>
               </div>
 
-              {/* Announcements */}
+              {/* Riwayat Pengaduan */}
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gray-800 flex items-center">
-                    <Bell className="mr-2" size={24} />
-                    Pengumuman Terbaru
+                    <AlertCircle className="mr-2" size={24} />
+                    Riwayat Pengaduan
                   </h3>
-                  {pengumuman.length > 0 && (
-                    <span className="text-sm text-blue-600 font-medium">{pengumuman.length} baru</span>
+                  {pengaduanList.length > 0 && (
+                    <span className="text-sm text-blue-600 font-medium">{pengaduanList.length} total</span>
                   )}
                 </div>
                 
-                {pengumuman.length > 0 ? (
+                {/* LOGIC BARU: Cek panjang array pengaduanList */}
+                {pengaduanList.length > 0 ? (
                   <div className="space-y-4">
-                    {pengumuman.map((item) => (
-                      <div key={item.id} className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg">
-                        <p className="font-medium text-gray-800 mb-1">{item.judul}</p>
-                        <p className="text-gray-600 text-sm mb-2">{item.isi}</p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(item.waktu || item.tanggal)}
-                        </p>
+                    {pengaduanList.slice(0, 3).map((item) => (
+                      <div key={item.id} className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                        <div className="flex justify-between items-start mb-2">
+                           <h4 className="font-bold text-gray-800 text-sm line-clamp-1">{item.deskripsi}</h4>
+                           <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${getStatusColor(item.status)}`}>
+                              {item.status}
+                           </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                           <span className="text-xs text-gray-500">{formatDate(item.waktu)}</span>
+                           <button 
+                              onClick={() => navigate("/santri/pengaduan")} 
+                              className="text-xs font-semibold text-blue-600 hover:underline"
+                           >
+                              Lihat Detail
+                           </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Bell className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">Tidak ada pengumuman</p>
+                    <AlertCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">Tidak ada pengaduan</p>
                   </div>
                 )}
                 
-                {/* Latest Complaint Status */}
-                {aktivitas_terakhir.length && (
-                  <div className="mt-6">
-                    <h4 className="font-bold text-gray-800 mb-3">Status Pengaduan Terakhir</h4>
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-blue-800 truncate max-w-xs">
-                            {aktivitas_terakhir.pengaduan.deskripsi}
-                          </p>
-                          <div className="flex items-center mt-1">
-                            <span className="text-sm text-blue-600 mr-2">Status:</span>
-                            <span className={`px-2 py-1 rounded text-xs ${getStatusColor(aktivitas_terakhir.pengaduan.status)}`}>
-                              {aktivitas_terakhir.pengaduan.status}
-                            </span>
-                          </div>
-                        </div>
-                        <button onClick={() => navigate("/santri/pengaduan")} className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 whitespace-nowrap">
-                          Lihat
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                {/* Tombol Lihat Semua hanya muncul jika ada data */}
+                {pengaduanList.length > 0 && (
+                    <button onClick={() => navigate("/santri/pengaduan")} className="w-full mt-4 py-2 text-blue-600 text-sm font-medium hover:bg-blue-50 rounded-lg transition">
+                      Lihat Semua Pengaduan
+                    </button>
                 )}
               </div>
 
@@ -457,14 +495,7 @@ export default function SantriDashboard() {
                 Status Tagihan
               </h3>
               
-              <div className="space-y-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-gray-600 mb-1">Bulan</p>
-                  <p className="text-2xl font-bold text-gray-800 truncate">
-                    {keuangan.tagihan_terakhir.bulan}
-                  </p>
-                </div>
-                
+              <div className="space-y-4">                
                 <div className={`p-4 rounded-xl ${keuangan.tagihan_terakhir.status === 'Lunas' ? 'bg-green-50' : 'bg-red-50'}`}>
                   <div className="flex items-center justify-between">
                     <div>
@@ -543,15 +574,15 @@ export default function SantriDashboard() {
             </div>
 
             {/* Bottom Navigation */}
-            <div className="bg-white rounded-2xl shadow-md p-4">
+            <div className="fixed bottom-4 left-4 right-4 bg-white rounded-2xl shadow-2xl p-4 z-50 border border-gray-100 md:hidden">
               <div className="flex justify-around">
                 <button onClick={() => setActiveMenu('home')} className={`flex flex-col items-center p-2 ${activeMenu === 'home' ? 'text-blue-600' : 'text-gray-600'}`}>
                   <Home size={24} />
                   <span className="text-xs mt-1">Beranda</span>
                 </button>
                 <button onClick={() => navigate("/santri/profil")} className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600">
-                  <Settings size={24} />
-                  <span className="text-xs mt-1">Edit Profil</span>
+                  <User size={24} />
+                  <span className="text-xs mt-1">Profil</span>
                 </button>
                 <button onClick={handleLogout} className="flex flex-col items-center p-2 text-gray-600 hover:text-red-600">
                   <LogOut size={24} />
