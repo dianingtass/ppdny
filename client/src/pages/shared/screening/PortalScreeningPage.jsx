@@ -157,7 +157,7 @@ export default function PortalScreeningPage({
             className={isScabiesShell ? "min-h-screen bg-gray-50 pb-10" : "space-y-6"}
         >
             {isScabiesShell ? (
-                <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-20">
+                <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20">
                     <div className="max-w-6xl mx-auto flex items-center">
                         <button
                             onClick={() => navigate(targetBackPath)}

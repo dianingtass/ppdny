@@ -20,10 +20,10 @@ export default function LandingPage() {
   const [loadingStats, setLoadingStats] = useState(true);
 
   const images = [
-    "../src/assets/ppdny/ppdny-1.jpg",
-    "../src/assets/ppdny/ppdny-2.jpg",
-    "../src/assets/ppdny/ppdny-3.jpg",
-    "../src/assets/ppdny/ppdny-4.jpg",
+    "/ppdny/ppdny-1.jpg",
+    "/ppdny/ppdny-2.jpg",
+    "/ppdny/ppdny-3.jpg",
+    "/ppdny/ppdny-4.jpg",
   ];
 
   // Efek untuk Carousel
@@ -59,7 +59,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14">
-              <img src="../src/assets/logo.png" alt="PPDNY" />
+              <img src="/logo.png" alt="PPDNY" />
             </div>
             <div>
               <h1 className="font-bold text-gray-800 leading-tight">
@@ -223,7 +223,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1">
                 {/* Pastikan path logo sesuai di sistem Anda saat build */}
-                <img src="../src/assets/logo.png" alt="PPDNY" className="w-full h-full object-contain" />
+                <img src="/logo.png" alt="PPDNY" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h2 className="font-bold text-white leading-tight">

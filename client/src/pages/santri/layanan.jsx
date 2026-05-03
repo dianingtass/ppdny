@@ -60,7 +60,7 @@ export default function LayananList() {
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* Header */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg relative">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg relative">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-4">

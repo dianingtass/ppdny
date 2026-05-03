@@ -105,7 +105,7 @@ export default function OrangTuaProfile() {
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* Header */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <button onClick={() => navigate("/orangtua")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
           <div className="min-w-0">

@@ -144,7 +144,7 @@ export default function Kegiatan() {
     <div className="min-h-screen bg-gray-50 pb-10 w-full overflow-x-hidden">
       <AlertToast message={message} onClose={clearAlert} />
 
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg md:pb-24">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg md:pb-24">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => navigate("/ustadz")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>

@@ -185,7 +185,7 @@ export default function SantriScabiesKonsultasiRoom() {
 
   return (
     <div className='min-h-screen bg-gray-50 pb-8'>
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-20 shadow-lg">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20 shadow-lg">
         <div className='max-w-5xl mx-auto flex items-center gap-4'>
           <button onClick={() => navigate('/santri/scabies')} className='flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition'>
             <ArrowLeft size={24} />

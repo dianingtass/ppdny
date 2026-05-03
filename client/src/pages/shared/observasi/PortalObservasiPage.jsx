@@ -126,7 +126,7 @@ export default function PortalObservasiPage({
   return (
     <div ref={topRef} className={isScabiesShell ? "min-h-screen bg-gray-50 pb-10" : "space-y-6"}>
       {isScabiesShell ? (
-        <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-20">
+        <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20">
           <div className="max-w-6xl mx-auto flex items-center">
             <button onClick={() => navigate(targetBackPath)} className="flex-shrink-0 rounded-full p-2 hover:bg-white/10 transition">
               <ArrowLeft size={24} />

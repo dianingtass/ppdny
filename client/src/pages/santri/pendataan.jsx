@@ -207,7 +207,7 @@ export default function SantriProfile() {
     <div className="min-h-screen bg-gray-50 pb-10 w-full overflow-x-hidden">
       <AlertToast message={message} onClose={clearAlert} />
 
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <button onClick={() => navigate("/santri")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
           <div className="min-w-0">

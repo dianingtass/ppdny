@@ -8,7 +8,7 @@ export default function DetailSantriModal({ isOpen, onClose, data }) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
-        <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center p-6 relative text-center">
+        <div className="bg-[url('/header.png')] bg-cover bg-center p-6 relative text-center">
           <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white bg-black/10 p-2 rounded-full transition"><X size={20} /></button>
           <div className="w-24 h-24 mx-auto bg-white rounded-full p-1 mb-3 shadow-lg">
             <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">

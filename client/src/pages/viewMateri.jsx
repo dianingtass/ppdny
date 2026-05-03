@@ -105,7 +105,7 @@ export default function MateriView() {
       )}
 
       {/* HEADER */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center gap-4">
           <button
             onClick={() => navigate(backPath)}

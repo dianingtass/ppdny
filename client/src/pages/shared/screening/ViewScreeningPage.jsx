@@ -89,7 +89,7 @@ export default function ViewScreeningPage({ rolePrefix, backPath, shellVariant =
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {isScabiesShell ? (
-        <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-20 mb-10">
+        <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20 mb-10">
           <div className="max-w-6xl mx-auto flex items-center">
             <button
               onClick={() => navigate(targetBackPath)}

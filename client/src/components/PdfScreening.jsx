@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 // Sesuaikan path logo dengan struktur folder Anda
-import logoPesantren from "../assets/logo.png"; 
+const logoPesantren = "/logo.png"; 
 
 const AREA_LABEL = {
   kepala: "Kepala", leher: "Leher", dada: "Dada", perut: "Perut",

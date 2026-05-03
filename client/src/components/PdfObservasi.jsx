@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import logoPesantren from "../assets/logo.png";
+const logoPesantren = "/logo.png";
 import { formatObservasiTindakLanjut, formatObservasiWaktu, getObservasiCategory, getObservasiPdfColor } from "./UtilsObservasi";
 
 const getBase64ImageFromUrl = async (imageUrl) => {

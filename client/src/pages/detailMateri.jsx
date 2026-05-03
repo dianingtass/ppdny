@@ -185,7 +185,7 @@ function DetailMateri() {
     <div className="min-h-screen bg-gray-50">
 
     {/* HEADER */}
-    <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white px-4 sm:px-6 py-6 pb-20 sm:pb-24 shadow-md">
+    <div className="bg-[url('/header.png')] bg-cover bg-center text-white px-4 sm:px-6 py-6 pb-20 sm:pb-24 shadow-md">
       <div className="max-w-6xl mx-auto flex items-center gap-4">
         <button
           onClick={handleBack}

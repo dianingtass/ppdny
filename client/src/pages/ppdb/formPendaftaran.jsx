@@ -126,7 +126,7 @@ export default function FormPendaftaran() {
         <div className="mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="w-12 h-12">
-              <img src="../../src/assets/logo.png" alt="PPDNY" />
+              <img src="/logo.png" alt="PPDNY" />
              </div>
              <div>
                <h1 className="text-lg font-bold text-gray-800 leading-tight">Form Pendaftaran</h1>

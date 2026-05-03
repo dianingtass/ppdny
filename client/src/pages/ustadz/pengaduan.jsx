@@ -88,7 +88,7 @@ export default function UstadzPengaduan() {
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* Header */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg relative md:pb-32">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg relative md:pb-32">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <button onClick={() => navigate("/ustadz")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition">

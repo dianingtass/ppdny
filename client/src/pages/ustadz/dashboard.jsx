@@ -115,7 +115,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <div>

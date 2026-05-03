@@ -40,7 +40,7 @@ export default function PengaduanList() {
     <div className="min-h-screen bg-gray-50 pb-20">
       
       {/* 1. Header Gradient */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg relative">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-24 shadow-lg relative">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <button 
             onClick={() => navigate("/santri")} 

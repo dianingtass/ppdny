@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import logoPesantren from "../assets/logo-border.png";
+const logoPesantren = "/logo-border.png";
 
 const getBase64ImageFromUrl = async (imageUrl) => {
   const res = await fetch(imageUrl);

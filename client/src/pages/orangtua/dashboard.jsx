@@ -80,7 +80,7 @@ export default function OrangTuaDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header Blue Section */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-20">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20">
         <div className="max-w-6xl mx-auto flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold">SIM-Tren</h1>

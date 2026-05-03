@@ -100,7 +100,7 @@ export default function KegiatanSantri() {
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* Header */}
-      <div className="bg-[url('../src/assets/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg md:pb-24">
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-40 shadow-lg md:pb-24">
         <div className="max-w-6xl mx-auto flex items-center gap-4">
           <button onClick={() => navigate("/santri")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
           <div className="min-w-0"><h1 className="text-2xl font-bold truncate">Daftar Kegiatan</h1><p className="text-green-100 text-sm truncate">Informasi agenda dan kegiatan santri</p></div>

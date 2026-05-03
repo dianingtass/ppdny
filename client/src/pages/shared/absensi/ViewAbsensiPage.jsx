@@ -4,7 +4,7 @@ import api from "../../../config/api"
 import {ArrowLeft,Loader2} from "lucide-react"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas-pro"
-import logoPesantren from "../../../assets/logo.png"
+const logoPesantren = "/logo.png"
 
 export default function ViewAbsensi({ rolePrefix }){
   const {id}=useParams()

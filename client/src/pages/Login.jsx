@@ -143,15 +143,15 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-green-600 to-green-500">
-      <div className="min-h-screen absolute inset-0 bg-[url('../src/assets/header.png')] bg-cover bg-left md:hidden"></div>
+      <div className="min-h-screen absolute inset-0 bg-[url('/header.png')] bg-cover bg-left md:hidden"></div>
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* --- KOLOM KIRI (DESKTOP) --- */}
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-green-600 to-green-500 to-green-600 text-white flex-col justify-center items-center px-12 relative overflow-hidden bg-login">
-        <div className="absolute inset-0 bg-[url('../src/assets/header.png')] opacity-80 bg-cover bg-left "></div>
+        <div className="absolute inset-0 bg-[url('/header.png')] opacity-80 bg-cover bg-left "></div>
         <div className="flex flex-col items-center text-center max-w-md relative z-10 -mt-16">
           <div className="p-30 w-144 h-144 rounded-full flex items-center justify-center bg-[radial-gradient(circle,rgba(255,255,255,0.3)_0%,rgba(0,0,0,0)_60%)]">
-            <img src="../src/assets/logo.png" alt="" />
+            <img src="/logo.png" alt="" />
           </div>
           <span className="text-5xl -mt-28 z-5 mb-3 tracking-tight simtren flex">
             <h1 className="font-black pr-4">S I M</h1>
@@ -175,7 +175,7 @@ export default function Login() {
           </button>
           <div className="lg:hidden text-center mb-8">
             <div className="w-24 h-24 mx-auto flex items-center justify-center mb-4">
-              <img src="../src/assets/logo.png" alt="" />
+              <img src="/logo.png" alt="" />
             </div>
             <span>
               <h2 className="text-2xl font-black text-white inline">SIM</h2>

@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas-pro";
 
-import logoPesantren from "../assets/logo.png";
+const logoPesantren = "/logo.png";
 
 const PAGE_WIDTH = 210;
 const PAGE_HEIGHT = 297;

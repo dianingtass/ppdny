@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import logoPesantren from "../../assets/logo-border.png"; 
+const logoPesantren = "/logo-border.png"; 
 
 // Helper: Convert Image URL/Path ke Base64
 const getBase64ImageFromUrl = async (imageUrl) => {
