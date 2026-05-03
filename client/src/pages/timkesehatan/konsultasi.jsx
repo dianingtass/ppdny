@@ -2,6 +2,7 @@ import { MessageCircle, History, Send, CheckCheck, Check, X, User, ArrowLeft } f
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../config/api';
+import { getImageUrl } from '../../utils/imageUrl';
 
 const AVATAR_COLORS = [
   'bg-emerald-500',
@@ -15,7 +16,7 @@ const AVATAR_COLORS = [
 const getProfileSrc = (fotoProfil) => {
   if (!fotoProfil || fotoProfil === '-') return null;
   if (fotoProfil.startsWith('http')) return fotoProfil;
-  return `/foto-profil/${fotoProfil}`;
+  return getImageUrl(fotoProfil);
 };
 
 const getAvatarColor = (name = '') => {

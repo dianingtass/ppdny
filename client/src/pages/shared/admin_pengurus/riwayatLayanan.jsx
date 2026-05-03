@@ -7,6 +7,7 @@ import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -138,7 +139,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
                         <div className="flex items-center gap-2">
                           <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
                             {item.users.foto_profil ? (
-                              <img src={`/foto-profil/${item.users.foto_profil}`} alt={item.users.nama} className="w-full h-full object-cover" />
+                              <img src={getImageUrl(item.users.foto_profil)} alt={item.users.nama} className="w-full h-full object-cover" />
                             ) : (
                               <span className="text-green-600 font-bold text-sm bg-green-100 w-full h-full flex items-center justify-center">{item.users.nama.charAt(0).toUpperCase()}</span>
                             )}
@@ -177,7 +178,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
                       {item.users.foto_profil ? (
-                        <img src={`/foto-profil/${item.users.foto_profil}`} alt={item.users.nama} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(item.users.foto_profil)} alt={item.users.nama} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.users.nama.charAt(0)}</div>
                       )}

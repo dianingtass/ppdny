@@ -5,6 +5,7 @@ import DOMPurify from "dompurify";
 import LinkMateri from "../../components/LinkMateri";
 import api from "../../config/api";
 import CommentSection from "../../components/CommentSection";
+import { getImageUrl } from '../../utils/imageUrl';
 
 // PATCH: sanitasi HTML dari rich-text editor sebelum dirender (Stored XSS fix)
 const sanitize = (html) => DOMPurify.sanitize(html || "", {
@@ -80,7 +81,7 @@ function DetailMateri() {
       <div className="space-y-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {materi.gambar ? (
-            <img src={`/uploads/${materi.gambar}`} alt={materi.judul_materi} className="w-full h-72 object-cover" />
+            <img src={getImageUrl(materi.gambar)} alt={materi.judul_materi} className="w-full h-72 object-cover" />
           ) : (
             <div className="w-full h-72 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
               <Microscope className="text-emerald-600" size={48} />
@@ -115,7 +116,7 @@ function DetailMateri() {
       <div className="max-w-6xl mx-auto px-4 mb-6 pt-6">
         <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
           {materi.gambar ? (
-            <img src={`/uploads/${materi.gambar}`} alt={materi.judul_materi} className="w-full h-48 sm:h-64 md:h-72 object-cover" />
+            <img src={getImageUrl(materi.gambar)} alt={materi.judul_materi} className="w-full h-48 sm:h-64 md:h-72 object-cover" />
           ) : (
             <div className="w-full h-48 sm:h-64 md:h-72 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
               <Microscope className="text-emerald-600" size={52} />

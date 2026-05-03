@@ -3,6 +3,7 @@ import api from "../config/api";
 import { X, Plus, Loader2, Search, Trash2, AlertTriangle } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignClick, refreshTrigger }) {
   const [santriList, setSantriList] = useState([]);
@@ -80,7 +81,7 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="min-w-10 h-10 rounded-full bg-green-100 border border-gray-200 flex items-center justify-center overflow-hidden">
                       {/* Clean Code: Menggunakan route relatif untuk proxy dan safe navigation */}
-                      {item?.foto_profil ? <img src={`/foto-profil/${item.foto_profil}`} alt="" className="w-full h-full object-cover" /> : <span className="text-green-600 font-bold text-xs">{item?.nama?.charAt(0)}</span>}
+                      {item?.foto_profil ? <img src={getImageUrl(item.foto_profil)} alt="" className="w-full h-full object-cover" /> : <span className="text-green-600 font-bold text-xs">{item?.nama?.charAt(0)}</span>}
                     </div>
                     <div className="min-w-0"><p className="font-bold text-gray-800 text-sm truncate">{item?.nama}</p><p className="text-[10px] text-gray-400 truncate">NIS: {item?.nip}</p></div>
                   </div>

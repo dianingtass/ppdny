@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function OrangTuaProfile() {
   const [loading, setLoading] = useState(true);
@@ -120,7 +121,7 @@ export default function OrangTuaProfile() {
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center">
           <div className="relative inline-block group mb-2">
             <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-green-100 flex items-center justify-center border-4 border-white shadow-lg mx-auto overflow-hidden">
-              {fotoProfil ? <img src={`/foto-profil/${fotoProfil}`} alt="Profil" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = ""; setFotoProfil(null); }} /> : dataDiri.foto_profil ? <img src={`/foto-profil/${dataDiri.foto_profil}`} className="w-full h-full object-cover" alt="Profile" /> : <User size={64} className="text-green-400" />}
+              {fotoProfil ? <img src={getImageUrl(fotoProfil)} alt="Profil" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = ""; setFotoProfil(null); }} /> : dataDiri.foto_profil ? <img src={getImageUrl(dataDiri.foto_profil)} className="w-full h-full object-cover" alt="Profile" /> : <User size={64} className="text-green-400" />}
             </div>
             <input type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg, image/jpg" onChange={handlePhotoUpload} />
             <button onClick={() => fileInputRef.current.click()} disabled={saving} className="absolute bottom-0 right-0 bg-green-600 text-white p-2.5 rounded-full hover:bg-green-700 shadow-md transition border-2 border-white cursor-pointer">
@@ -188,7 +189,7 @@ export default function OrangTuaProfile() {
             {anakList.map((anak, idx) => (
               <div key={idx} className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center gap-4">
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600 font-bold text-xl border-2 border-white shadow-sm">
-                   {anak.foto ? <img src={`/foto-profil/${anak.foto}`} className="w-full h-full object-cover" alt={anak.nama}/> : anak.nama.charAt(0)}
+                   {anak.foto ? <img src={getImageUrl(anak.foto)} className="w-full h-full object-cover" alt={anak.nama}/> : anak.nama.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="font-bold text-gray-800 text-md truncate">{anak.nama}</h4>

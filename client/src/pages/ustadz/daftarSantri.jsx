@@ -8,6 +8,7 @@ import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailSantriModal from "../../components/DetailSantriModal";
 import PengaduanSantriModal from "../../components/PengaduanSantriModal";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function DaftarSantri() {
   const [loading, setLoading] = useState(true);
@@ -169,7 +170,7 @@ export default function DaftarSantri() {
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-14 h-14 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-200">
                     {santri.foto_profil && santri.foto_profil !== '-' ? (
-                      <img src={`/foto-profil/${santri.foto_profil}`} className="w-full h-full object-cover" alt={santri.nama}/>
+                      <img src={getImageUrl(santri.foto_profil)} className="w-full h-full object-cover" alt={santri.nama}/>
                     ) : (
                       <User size={24} className="text-gray-400" />
                     )}

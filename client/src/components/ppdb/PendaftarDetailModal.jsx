@@ -85,7 +85,7 @@ export default function PendaftarDetailModal({ isOpen, data, onClose, onRefresh 
                                 <span className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${doc.status_verif === "Terverifikasi" ? "bg-green-100 text-green-700" : doc.status_verif === "Ditolak" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                                 {doc.status_verif.replace(/_/g, " ")}
                                 </span>
-                                <a href={`${api.defaults.baseURL.replace('/api', '')}/uploads/ppdb/dokumen/${doc.path_file}`} target="_blank" rel="noreferrer" className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition"><ExternalLink size={16} /></a>
+                                <a href={doc.path_file} target="_blank" rel="noreferrer" className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition"><ExternalLink size={16} /></a>
                                 {doc.status_verif !== "Terverifikasi" && <button onClick={() => handleVerifDokumen(doc.id, "Terverifikasi")} className="p-1.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition"><Check size={16} /></button>}
                                 {doc.status_verif !== "Ditolak" && <button onClick={() => setRejectingDocId(doc.id)} className="p-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition"><XCircle size={16} /></button>}
                             </div>

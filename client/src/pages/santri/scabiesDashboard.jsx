@@ -19,6 +19,7 @@ import api from "../../config/api";
 import { exportScreeningPdf } from "../../components/PdfScreening";
 import { exportObservasiPdf } from "../../components/PdfObservasi";
 import { getObservasiBadgeClass, getObservasiScoreLabel } from "../../components/UtilsObservasi";
+import { getImageUrl } from '../../utils/imageUrl';
 
 const LEGACY_RECENT_STORAGE_KEY = "santri_recent_materi";
 
@@ -258,7 +259,7 @@ export default function SantriScabiesDashboard() {
                 {materiPreview.map((item) => (
                   <article key={item.id} className="rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition">
                     {item.gambar ? (
-                      <img src={`/uploads/${item.gambar}`} alt={item.judul} className="w-full h-40 object-cover" />
+                      <img src={getImageUrl(item.gambar)} alt={item.judul} className="w-full h-40 object-cover" />
                     ) : (
                       <div className="w-full h-40 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
                         <Microscope className="text-emerald-600" size={32} />

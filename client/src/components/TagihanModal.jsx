@@ -1,4 +1,5 @@
 import { X, Plus, FileText } from "lucide-react";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function TagihanModal({ isOpen, onClose, data, onPayClick, userRole }) {
   if (!isOpen || !data) return null;
@@ -116,7 +117,7 @@ export default function TagihanModal({ isOpen, onClose, data, onPayClick, userRo
                             onClick={() =>
                               // Menggunakan path relatif agar diforward dengan baik oleh Vite Proxy
                               window.open(
-                                `/payments/${bayar.bukti}`,
+                                getImageUrl(bayar.bukti),
                                 "_blank",
                               )
                             }

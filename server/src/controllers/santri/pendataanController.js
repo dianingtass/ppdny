@@ -159,31 +159,13 @@ exports.updatePhoto = async (req, res) => {
         .json({ success: false, message: "Tidak ada file yang diunggah" });
     }
 
-    // Hapus foto lama jika ada
-    const oldUser = await prisma.users.findUnique({ where: { id: userId } });
-    if (oldUser.foto_profil) {
-      // Path disesuaikan: Controller -> src/controllers/santri -> ../../../public/uploads
-      const oldPath = path.join(
-        __dirname,
-        "../../../public/uploads",
-        oldUser.foto_profil,
-      );
-      if (fs.existsSync(oldPath)) {
-        try {
-          fs.unlinkSync(oldPath);
-        } catch (e) {
-          console.error("Gagal hapus foto lama:", e);
-        }
-      }
-    }
-
-    // Simpan nama file baru ke database
+    // Simpan URL Cloudinary ke database
     await prisma.users.update({
       where: { id: userId },
-      data: { foto_profil: req.file.filename },
+      data: { foto_profil: req.file.path },
     });
 
-    const newPhotoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const newPhotoUrl = req.file.path;
 
     res.json({
       success: true,

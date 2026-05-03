@@ -19,6 +19,7 @@ import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import InputStafModal from "../../components/InputStafModal";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function ManajemenStaf() {
   const [dataList, setDataList] = useState([]);
@@ -228,7 +229,7 @@ export default function ManajemenStaf() {
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center overflow-hidden border border-green-200 flex-shrink-0 text-green-600 font-bold">
                               {item.foto_profil ? (
-                                <img src={`/foto-profil/${item.foto_profil}`} alt={item.nama} className="w-full h-full object-cover" />
+                                <img src={getImageUrl(item.foto_profil)} alt={item.nama} className="w-full h-full object-cover" />
                               ) : item.nama.charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0">
@@ -275,7 +276,7 @@ export default function ManajemenStaf() {
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-green-200 text-green-600 font-bold text-lg">
                       {item.foto_profil ? (
-                        <img src={`/foto-profil/${item.foto_profil}`} alt={item.nama} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(item.foto_profil)} alt={item.nama} className="w-full h-full object-cover" />
                       ) : item.nama.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">

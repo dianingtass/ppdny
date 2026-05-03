@@ -49,7 +49,7 @@ exports.postManageMateri = async (req, res) => {
     const ringkasan    = req.body?.ringkasan;
     const penulis      = req.body?.penulis;
     const isi_materi   = req.body?.isi_materi;
-    const gambar       = req.file ? req.file.filename : null;
+    const gambar       = req.file ? req.file.path : null;
 
     const newMateri = await prisma.materi.create({
       data: {
@@ -105,7 +105,7 @@ exports.putManageMateri = async (req, res) => {
         judul_materi,
         ringkasan,
         penulis,
-        gambar: req.file ? req.file.filename : existingMateri.gambar
+        gambar: req.file ? req.file.path : existingMateri.gambar
       }
     });
 

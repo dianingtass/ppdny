@@ -3,6 +3,7 @@ import api from "../config/api"; // MENGGUNAKAN API GLOBAL
 import { X, User, Plus, Loader2, Search, Trash2, AlertTriangle } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignClick, refreshTrigger }) {
   const [santriList, setSantriList] = useState([]);
@@ -75,7 +76,7 @@ export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignC
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
                       {/* Clean Code: rute gambar proxy relatif */}
-                      {item.foto_profil ? <img src={`/foto-profil/${item.foto_profil}`} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold text-xs">{item.nama?.charAt(0)}</div>}
+                      {item.foto_profil ? <img src={getImageUrl(item.foto_profil)} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold text-xs">{item.nama?.charAt(0)}</div>}
                     </div>
                     <div className="min-w-0"><p className="font-bold text-gray-800 text-sm truncate">{item.nama}</p><p className="text-[10px] text-gray-400 truncate">NIS: {item.nip}</p></div>
                   </div>

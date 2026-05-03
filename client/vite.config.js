@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': {target: 'http://localhost:3000', changeOrigin: true},
+      '/api': {target: 'https://api-ppdny.vercel.app/', changeOrigin: true},
       '/foto-profil': {target: 'http://localhost:3000', changeOrigin: true},
       '/uploads': {target: 'http://localhost:3000', changeOrigin: true},
       '/payments': {target: 'http://localhost:3000', changeOrigin: true}

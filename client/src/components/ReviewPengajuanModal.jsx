@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, CheckCircle, XCircle, Edit2, Loader2 } from "lucide-react";
 import api from "../config/api";
 import RichTextEditor from "./RichTextEditor";
+import { getImageUrl } from '../utils/imageUrl';
 
 const ReviewPengajuanModal = ({ isOpen, pengajuan, onClose, onUpdate }) => {
   const [judul_materi, setJudul]       = useState("");
@@ -197,7 +198,7 @@ const ReviewPengajuanModal = ({ isOpen, pengajuan, onClose, onUpdate }) => {
               <div>
                 <label className="text-sm font-semibold text-gray-700">Gambar</label>
                 <img
-                  src={`/uploads/${pengajuan.gambar}`}
+                  src={getImageUrl(pengajuan.gambar)}
                   alt="gambar materi"
                   className="mt-1 w-full h-40 object-cover rounded-xl border border-gray-100"
                 />

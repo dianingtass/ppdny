@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Search, Mail, Phone, FileText, MapPin } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import api from "../../../config/api";
+import { getImageUrl } from '../../../utils/imageUrl';
 
 export default function DaftarSantriScreeningPage({ rolePrefix }) {
   const [santriList, setSantriList] = useState([]);
@@ -125,7 +126,7 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
                             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
                               {item.foto_profil ? (
                                 <img
-                                  src={`/foto-profil/${item.foto_profil}`}
+                                  src={getImageUrl(item.foto_profil)}
                                   alt={item.nama}
                                   className="w-full h-full object-cover"
                                 />

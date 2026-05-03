@@ -183,7 +183,7 @@ exports.postScreening = async (req, res) => {
 
     if (diagnosaManual) diagnosa = diagnosaManual;
 
-    if (req.file) uploadedFile = req.file.filename;
+    if (req.file) uploadedFile = req.file.path;
 
     await prisma.$transaction(async (tx) => {
 
@@ -227,18 +227,6 @@ exports.postScreening = async (req, res) => {
     });
 
   } catch (error) {
-
-    // cleanup file jika gagal
-    if (uploadedFile) {
-      const filePath = path.join(
-        __dirname,
-        "../../../public/uploads/screening",
-        uploadedFile
-      );
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
 
     res.status(500).json({
       success: false,
@@ -306,7 +294,7 @@ exports.updateFotoPredileksi = async (req, res) => {
     await prisma.screening.update({
       where: { id_screening: Number(id) },
       data: {
-        foto_predileksi: req.file.filename
+        foto_predileksi: req.file.path
       }
     });
 

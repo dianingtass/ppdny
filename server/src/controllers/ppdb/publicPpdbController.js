@@ -171,18 +171,12 @@ exports.uploadDokumen = async (req, res) => {
     });
 
     if (existingDoc) {
-      // Hapus file lama (Path disesuaikan dengan struktur folder public/uploads/ppdb/dokumen)
-      const oldPath = path.join(process.cwd(), "public/uploads/ppdb/dokumen", existingDoc.path_file);
-      if (fs.existsSync(oldPath)) {
-          try { fs.unlinkSync(oldPath); } catch (e) { console.error("Gagal hapus file lama:", e); }
-      }
-      
-      // Update data dokumen di DB
+      // Update data dokumen di DB dengan URL Cloudinary
       await prisma.ppdb_dokumen.update({
         where: { id: existingDoc.id },
         data: {
           nama_file: req.file.originalname,
-          path_file: req.file.filename, // Nama file dari Multer Middleware
+          path_file: req.file.path,
           status_verif: "Belum_Diverifikasi",
           catatan: null,
         },
@@ -191,10 +185,10 @@ exports.uploadDokumen = async (req, res) => {
       // Buat baru (Menggunakan connect)
       await prisma.ppdb_dokumen.create({
         data: {
-          ppdb_pendaftar: { connect: { id: pendaftar.id } }, // PERBAIKAN 3
+          ppdb_pendaftar: { connect: { id: pendaftar.id } },
           jenis_dokumen,
           nama_file: req.file.originalname,
-          path_file: req.file.filename,
+          path_file: req.file.path,
           status_verif: "Belum_Diverifikasi",
         },
       });

@@ -17,6 +17,7 @@ import {
   Wallet,
 } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function OrangTuaDashboard() {
   const [loading, setLoading] = useState(true);
@@ -93,7 +94,7 @@ export default function OrangTuaDashboard() {
                   className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
                 >
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 hover:bg-white/30 transition">
-                  <img src={`/foto-profil/${data.ortu.foto_profil}`} alt={data.ortu.nama} className="w-full h-full object-cover" onError={(e) => e.target.src = "https://ui-avatars.com/api/?name=" + data.ortu.nama}/>
+                  <img src={getImageUrl(data.ortu.foto_profil)} alt={data.ortu.nama} className="w-full h-full object-cover" onError={(e) => e.target.src = "https://ui-avatars.com/api/?name=" + data.ortu.nama}/>
                   </div>
                   <div>
                     <p className="font-medium leading-tight">{data.ortu.nama}</p>
@@ -124,7 +125,7 @@ export default function OrangTuaDashboard() {
         <div className="bg-white rounded-3xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
           <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
             <img 
-              src={`/foto-profil/${data.anak.foto_profil}`} 
+              src={getImageUrl(data.anak.foto_profil)} 
               className="w-full h-full object-cover" 
               alt="Foto Anak"
               onError={(e) => e.target.src = "https://ui-avatars.com/api/?name=" + data.anak.nama}

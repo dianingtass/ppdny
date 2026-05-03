@@ -3,6 +3,7 @@ import api from '../config/api';
 import { X, Save, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function DetailPembayaranModal({ isOpen, onClose, data, userRole }) {
   const [statusVerifikasi, setStatusVerifikasi] = useState("");
@@ -50,10 +51,10 @@ export default function DetailPembayaranModal({ isOpen, onClose, data, userRole 
           <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden border border-gray-200 shadow-inner relative group">
             {data.bukti_bayar ? (
               <img 
-                src={`/payments/${data.bukti_bayar}`} 
+                src={getImageUrl(data.bukti_bayar)} 
                 alt="Bukti" 
                 className="w-full h-full object-contain cursor-zoom-in" 
-                onClick={() => window.open(`/payments/${data.bukti_bayar}`, '_blank')}
+                onClick={() => window.open(getImageUrl(data.bukti_bayar), '_blank')}
               />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400 text-sm">Tidak ada bukti gambar</div>

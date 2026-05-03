@@ -4,6 +4,7 @@ import api from "../../../config/api";
 import { Loader2, ArrowLeft } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
+import { getImageUrl } from '../../../utils/imageUrl';
 
 export default function ViewScreening() {
     const { screeningId } = useParams();
@@ -111,7 +112,7 @@ export default function ViewScreening() {
                         <div className="mb-8">
                             {data.foto_predileksi ? (
                                 <img
-                                    src={`/uploads/screening/${data.foto_predileksi}`}
+                                    src={getImageUrl(data.foto_predileksi)}
                                     alt="Foto Predileksi"
                                     className="w-56 border border-gray-200 rounded-md shadow-sm"
                                 />

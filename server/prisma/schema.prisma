@@ -568,7 +568,7 @@ model users {
   email                                            String?                  @db.VarChar(100)
   no_hp                                            String?                  @db.VarChar(100)
   alamat                                           String?                  @db.VarChar(255)
-  foto_profil                                      String?                  @db.VarChar(100)
+  foto_profil                                      String?                  @db.VarChar(500)
   password                                         String?                  @db.VarChar(100)
   is_active                                        Boolean                  @default(true)
   last_opened_notif                                DateTime?                @db.DateTime(0)

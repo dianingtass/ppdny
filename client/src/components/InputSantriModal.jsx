@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Loader2, User, Mail, Phone, MapPin, Calendar, School, Home } from "lucide-react";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function InputSantriModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, userRole }) {
   const initialForm = { 
@@ -48,7 +49,7 @@ export default function InputSantriModal({ isOpen, onClose, isEditing, editData,
           <form id="santriForm" onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2 flex justify-center mb-2">
               <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                {formData.foto_profil ? <img src={`/foto-profil/${formData.foto_profil}`} className="w-full h-full object-cover" alt="Profil" /> : <User size={40} className="text-gray-300" />}
+                {formData.foto_profil ? <img src={getImageUrl(formData.foto_profil)} className="w-full h-full object-cover" alt="Profil" /> : <User size={40} className="text-gray-300" />}
               </div>
             </div>
             

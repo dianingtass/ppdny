@@ -8,6 +8,7 @@ import { useAlert } from "../../hooks/useAlert";
 
 // Import Modals
 import DetailPengaduanModal from '../../components/DetailPengaduanModal';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function UstadzPengaduan() {
   const [data, setData] = useState([]);
@@ -127,7 +128,7 @@ export default function UstadzPengaduan() {
                   <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 overflow-hidden">
                       {item.santri.foto_profil ? (
                           <img 
-                              src={`http://localhost:3000/foto-profil/${item.santri.foto_profil}`} 
+                              src={getImageUrl(item.santri.foto_profil)} 
                               alt={item.santri.nama}
                               className="w-full h-full object-cover" 
                           />

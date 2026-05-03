@@ -15,6 +15,7 @@ import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import ConfirmActionModal from "../components/ConfirmActionModal";
+import { getImageUrl } from '../utils/imageUrl';
 
 const formatTime = (dateString) => {
   if (!dateString) return "";
@@ -194,7 +195,7 @@ export default function DetailPengaduanModal({
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                       {detail.users_pengaduan_id_pelaporTousers?.foto_profil ? (
                         <img
-                          src={`/foto-profil/${detail.users_pengaduan_id_pelaporTousers.foto_profil}`}
+                          src={getImageUrl(detail.users_pengaduan_id_pelaporTousers.foto_profil)}
                           className="w-full h-full object-cover"
                           alt="Pelapor"
                         />
@@ -245,7 +246,7 @@ export default function DetailPengaduanModal({
                   <div key={chat.id} className={`flex gap-2 ${isMe ? "flex-row-reverse" : "flex-row"} items-center`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold shadow-sm overflow-hidden ${isMe && !isDeleted ? "bg-green-600 text-white" : "bg-white text-gray-600 border border-gray-200"}`}>
                       {chat.users?.foto_profil ? (
-                        <img src={`/foto-profil/${chat.users.foto_profil}`} className="w-full h-full object-cover" alt="User" />
+                        <img src={getImageUrl(chat.users.foto_profil)} className="w-full h-full object-cover" alt="User" />
                       ) : (
                         chat.users?.nama?.charAt(0)
                       )}

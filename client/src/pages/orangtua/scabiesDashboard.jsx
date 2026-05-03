@@ -25,6 +25,7 @@ import {
   YAxis,
 } from "recharts";
 import NotificationDropdown from "../../components/NotificationDropdown";
+import { getImageUrl } from '../../utils/imageUrl';
 
 const formatNumber = (value) => Number(value || 0).toLocaleString("id-ID");
 
@@ -113,7 +114,7 @@ export default function OrangTuaScabiesDashboard() {
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 hover:bg-white/30 transition">
                   <img
-                    src={`/foto-profil/${data.ortu.foto_profil}`}
+                    src={getImageUrl(data.ortu.foto_profil)}
                     alt={data.ortu.nama}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -160,7 +161,7 @@ export default function OrangTuaScabiesDashboard() {
         <div className="bg-white rounded-3xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
           <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
             <img
-              src={`/foto-profil/${data.anak.foto_profil}`}
+              src={getImageUrl(data.anak.foto_profil)}
               className="w-full h-full object-cover"
               alt="Foto Anak"
               onError={(e) => {

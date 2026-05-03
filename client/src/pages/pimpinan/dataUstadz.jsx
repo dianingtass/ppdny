@@ -21,6 +21,7 @@ import { useAlert } from "../../hooks/useAlert";
 import InputUstadzModal from "../../components/InputUstadzModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function DataUstadz() {
   const [ustadzList, setUstadzList] = useState([]);
@@ -142,7 +143,7 @@ export default function DataUstadz() {
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
                               {item.foto_profil ? (
-                                <img src={`/foto-profil/${item.foto_profil}`} className="w-full h-full object-cover"/>
+                                <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover"/>
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.nama.charAt(0)}</div>
                               )}
@@ -212,7 +213,7 @@ export default function DataUstadz() {
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
                       {item.foto_profil ? (
-                        <img src={`/foto-profil/${item.foto_profil}`} className="w-full h-full object-cover"/>
+                        <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover"/>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.nama.charAt(0)}</div>
                       )}

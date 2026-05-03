@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { User, Users, BookOpen, Calendar, AlertCircle, Clock, Bell, CheckCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
+import { getImageUrl } from '../../utils/imageUrl';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -131,7 +132,7 @@ export default function Dashboard() {
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
                       {ustadz.foto_profil !== '-' ? (
-                         <img src={`/foto-profil/${ustadz.foto_profil}`} alt={ustadz.nama} className="w-full h-full object-cover"/>
+                         <img src={getImageUrl(ustadz.foto_profil)} alt={ustadz.nama} className="w-full h-full object-cover"/>
                       ) : (
                          <User size={20} />
                       )}

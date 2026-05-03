@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
 import { ArrowLeft, User, Loader2 } from 'lucide-react';
 import DetailPengaduanModal from '../../components/DetailPengaduanModal'; 
+import { getImageUrl } from '../../utils/imageUrl';
 
 // --- HELPER: FORMAT JAM MENIT ---
 const formatTime = (dateString) => {
@@ -80,7 +81,7 @@ export default function PengaduanList() {
                   <div className="flex-shrink-0 pt-1">
                     <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100 overflow-hidden">
                       {item.pelapor.foto ? (
-                          <img src={`/foto-profil/${item.pelapor.foto}`} alt="ava" className="w-full h-full object-cover"/>
+                          <img src={getImageUrl(item.pelapor.foto)} alt="ava" className="w-full h-full object-cover"/>
                       ) : (
                           <User size={20} className="text-green-500" />
                       )}

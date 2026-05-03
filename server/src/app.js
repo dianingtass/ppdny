@@ -10,8 +10,6 @@ const activityLog = require('./middleware/activityLog');
 
 dotenv.config();
 
-const konsultasiService = require('./controllers/shared/konsultasiService');
-
 const app = express();
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'same-site' } }));
@@ -54,12 +52,27 @@ app.use('/api/ppdb/public',   require('./routes/ppdb/publicPpdbRoutes'));
 app.use('/api/auth',          require('./routes/authRoutes'));
 app.use('/api/public/pengajuanMateri', pengajuanPublicRouter);
 
-app.use('/foto-profil', express.static(path.join(__dirname, '../public/uploads/profil')));
-app.use('/uploads',     express.static(path.join(__dirname, '../public/uploads')));
+// ── CRON ENDPOINT (dipanggil Vercel Cron) ────────────────────
+app.post('/api/cron/auto-close-konsultasi', async (req, res) => {
+  // Validasi secret agar tidak bisa dipanggil sembarangan
+  const secret = req.headers['x-cron-secret'];
+  if (secret !== process.env.CRON_SECRET) {
+    return res.status(401).json({ success: false, message: 'Unauthorized.' });
+  }
+  try {
+    const konsultasiService = require('./controllers/shared/konsultasiService');
+    await konsultasiService.autoCloseExpiredActiveRooms();
+    await konsultasiService.autoCloseInactiveRooms();
+    return res.json({ success: true, message: 'Auto-close konsultasi selesai.' });
+  } catch (err) {
+    console.error('Cron auto-close konsultasi error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 // ── PROTECTED ROUTES (butuh token) ───────────────────────────
 app.use(verifyToken);
-app.use('/payments', express.static(path.join(__dirname, '../public/uploads/payments')));
+
 app.use(activityLog);
 
 app.use('/api/santri/notifications',   require('./routes/santri/notificationRoutes'));
@@ -166,18 +179,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ── START SERVER ──────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-
-setInterval(async () => {
-  try {
-    await konsultasiService.autoCloseExpiredActiveRooms();
-    await konsultasiService.autoCloseInactiveRooms();
-  } catch (error) {
-    console.error('Auto close konsultasi gagal:', error.message);
-  }
-}, 5 * 60 * 1000);
-
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// ── LOCAL DEV: jalankan server hanya jika bukan di Vercel ─────
+if (process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
 
 module.exports = app;

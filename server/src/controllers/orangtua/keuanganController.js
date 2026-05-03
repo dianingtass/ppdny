@@ -87,21 +87,19 @@ exports.uploadPembayaran = async (req, res) => {
 
     // Cek apakah tagihan ada & miliki salah satu anak dari orangtua ini
     if (!tagihan || !validSantriIds.includes(tagihan.id_santri)) {
-      fs.unlinkSync(req.file.path);
       return res.status(404).json({ success: false, message: "Tagihan tidak valid atau bukan milik anak Anda." });
     }
 
     await prisma.pembayaran.create({
       data: {
         id_tagihan: parseInt(id_tagihan), tanggal_bayar: new Date(), nominal: tagihan.nominal,
-        bukti_bayar: req.file.filename, metode_bayar: "Transfer", status: "Pending", 
+        bukti_bayar: req.file.path, metode_bayar: "Transfer", status: "Pending", 
       },
     });
 
     res.json({ success: true, message: "Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin." });
   } catch (err) {
     console.error("Error uploadPembayaran:", err);
-    if (req.file) fs.unlinkSync(req.file.path); 
     res.status(500).json({ success: false, message: "Gagal memproses pembayaran" });
   }
 };

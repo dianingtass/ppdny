@@ -15,7 +15,7 @@ function safeDeleteFile(filename) {
 exports.ajukanMateri = async (req, res) => {
   try {
     const { judul_materi, penulis, ringkasan, isi_materi } = req.body;
-    const gambar = req.file ? req.file.filename : null;
+    const gambar = req.file ? req.file.path : null;
     const authenticatedUserId = Number(req.user?.id);
     const id_pengaju = Number.isInteger(authenticatedUserId) ? authenticatedUserId : null;
     let finalPenulis = penulis?.trim() || '';
@@ -27,15 +27,13 @@ exports.ajukanMateri = async (req, res) => {
       });
 
       if (!pengaju?.nama?.trim()) {
-        if (gambar) safeDeleteFile(gambar);
-        return res.status(400).json({ success: false, message: 'Nama user pengaju tidak ditemukan.' });
+          return res.status(400).json({ success: false, message: 'Nama user pengaju tidak ditemukan.' });
       }
 
       finalPenulis = pengaju.nama.trim();
     }
 
     if (!judul_materi?.trim() || !finalPenulis || !ringkasan?.trim() || !isi_materi?.trim()) {
-      if (gambar) safeDeleteFile(gambar);
       return res.status(400).json({ success: false, message: 'Semua field wajib diisi.' });
     }
     const nama_pengaju = finalPenulis;
@@ -161,14 +159,13 @@ exports.editPengajuan = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { judul_materi, penulis, ringkasan, isi_materi, catatan_timkes } = req.body;
-    const gambar = req.file ? req.file.filename : undefined;
+    const gambar = req.file ? req.file.path : undefined;
 
     const existing = await prisma.pengajuan_materi.findUnique({
       where: { id_pengajuan: id }
     });
 
     if (!existing) {
-      if (gambar) safeDeleteFile(gambar);
       return res.status(404).json({ success: false, message: 'Pengajuan tidak ditemukan.' });
     }
 
@@ -201,19 +198,17 @@ exports.setujuiPengajuan = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { catatan_timkes } = req.body;
-    const gambar = req.file ? req.file.filename : undefined;
+    const gambar = req.file ? req.file.path : undefined;
 
     const pengajuan = await prisma.pengajuan_materi.findUnique({
       where: { id_pengajuan: id }
     });
 
     if (!pengajuan) {
-      if (gambar) safeDeleteFile(gambar);
       return res.status(404).json({ success: false, message: 'Pengajuan tidak ditemukan.' });
     }
 
     if (pengajuan.status !== 'ditinjau') {
-      if (gambar) safeDeleteFile(gambar);
       return res.status(400).json({ success: false, message: 'Pengajuan sudah diproses sebelumnya.' });
     }
 

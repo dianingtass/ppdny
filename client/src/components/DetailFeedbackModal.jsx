@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { X, Loader2, Star, MessageSquare, Trash2 } from 'lucide-react';
 import ConfirmActionModal from './ConfirmActionModal';
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function DetailFeedbackModal({ isOpen, onClose, targetItem, role, onFeedbackHidden }) {
   const [data, setData] = useState(null);
@@ -78,7 +79,7 @@ export default function DetailFeedbackModal({ isOpen, onClose, targetItem, role,
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 overflow-hidden">
                             {f.foto_user ? (
-                                <img src={`/uploads/profil/${f.foto_user}`} alt="" className="w-full h-full object-cover" />
+                                <img src={getImageUrl(f.foto_user)} alt="" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="text-xs font-bold">{f.nama_user?.charAt(0)}</span>
                             )}

@@ -131,8 +131,6 @@ exports.uploadPembayaran = async (req, res) => {
     });
 
     if (!tagihan || tagihan.id_santri !== userId) {
-      // Hapus file jika tagihan tidak valid/bukan miliknya
-      fs.unlinkSync(req.file.path);
       return res
         .status(404)
         .json({ success: false, message: "Tagihan tidak ditemukan." });
@@ -143,10 +141,10 @@ exports.uploadPembayaran = async (req, res) => {
       data: {
         id_tagihan: parseInt(id_tagihan),
         tanggal_bayar: new Date(),
-        nominal: tagihan.nominal, // Asumsi bayar full sesuai nominal tagihan
-        bukti_bayar: req.file.filename,
+        nominal: tagihan.nominal,
+        bukti_bayar: req.file.path,
         metode_bayar: "Transfer",
-        status: "Pending", // Default status
+        status: "Pending",
       },
     });
 

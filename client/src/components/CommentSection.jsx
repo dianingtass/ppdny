@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../config/api";
 import { MessageCircle, Send, ChevronDown } from "lucide-react";
+import { getImageUrl } from '../utils/imageUrl';
 
 const formatDateTime = (dateString) => {
   if (!dateString) return "";
@@ -29,7 +30,7 @@ const Avatar = ({ user }) => {
   if (user?.foto_profil) {
     return (
       <img
-        src={`/foto-profil/${user.foto_profil}`}
+        src={getImageUrl(user.foto_profil)}
         alt={user.nama}
         className="w-9 h-9 rounded-full object-cover border border-gray-200"
       />

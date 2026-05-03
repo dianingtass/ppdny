@@ -5,6 +5,7 @@ import DOMPurify from "dompurify";
 import LinkMateri from "../components/LinkMateri";
 import CommentSection from "../components/CommentSection";
 import api from "../config/api";
+import { getImageUrl } from '../utils/imageUrl';
 
 // ── PATCH: sanitasi HTML dari rich-text editor sebelum dirender.
 // Tanpa ini, konten materi yang mengandung <script> akan dieksekusi
@@ -130,7 +131,7 @@ function DetailMateri() {
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
           {materi.gambar ? (
             <img
-              src={`/uploads/${materi.gambar}`}
+              src={getImageUrl(materi.gambar)}
               alt={materi.judul_materi}
               className="w-full h-72 object-cover"
             />
@@ -204,7 +205,7 @@ function DetailMateri() {
         <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-md">
           {materi.gambar ? (
             <img
-              src={`/uploads/${materi.gambar}`}
+              src={getImageUrl(materi.gambar)}
               alt={materi.judul_materi}
               className="w-full h-48 sm:h-64 md:h-72 object-cover"
             />

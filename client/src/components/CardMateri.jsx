@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Edit2, Trash2, Microscope } from "lucide-react";
+import { getImageUrl } from '../utils/imageUrl';
 
 function CardMateri({ materi, isManage, onDelete, onEdit, detailBasePath, fromPath, rootFrom }) {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function CardMateri({ materi, isManage, onDelete, onEdit, detailBasePath, fromPa
     <div className="bg-white rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
       <div className="relative w-full h-52">
         {materi.gambar ? (
-          <img src={`/uploads/${materi.gambar}`} alt={materi.judul} className="w-full h-full object-cover" />
+          <img src={getImageUrl(materi.gambar)} alt={materi.judul} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
             <Microscope className="text-emerald-600" size={34} />

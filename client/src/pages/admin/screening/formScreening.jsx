@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../../../config/api";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { getImageUrl } from '../../../utils/imageUrl';
 
 export default function FormScreening() {
   const { id, screeningId } = useParams();
@@ -90,7 +91,7 @@ export default function FormScreening() {
         }
 
         if (screening.foto_predileksi) {
-          setPreview(`/uploads/screening/${screening.foto_predileksi}`);
+          setPreview(getImageUrl(screening.foto_predileksi));
         }
       }
     } catch (err) {

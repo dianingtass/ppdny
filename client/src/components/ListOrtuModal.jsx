@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import api from "../config/api";
 import { X, User, Plus, Loader2, Trash2, AlertTriangle } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import { getImageUrl } from '../utils/imageUrl';
 
 export default function ListOrtuModal({ isOpen, onClose, santriData, onAssignClick, refreshTrigger }) {
   const [ortuList, setOrtuList] = useState([]);
@@ -113,7 +114,7 @@ export default function ListOrtuModal({ isOpen, onClose, santriData, onAssignCli
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                       {item.foto_profil
-                        ? <img src={`/foto-profil/${item.foto_profil}`} className="w-full h-full object-cover" alt={item.nama} />
+                        ? <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover" alt={item.nama} />
                         : <User className="text-green-400" size={20} />}
                     </div>
                     <div className="min-w-0 flex-1">

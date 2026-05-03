@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Microscope } from "lucide-react";
+import { getImageUrl } from '../utils/imageUrl';
 
 function LinkMateri({ materiList = [], detailBasePath, fromPath, rootFrom }) {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function LinkMateri({ materiList = [], detailBasePath, fromPath, rootFrom }) {
             {materi.gambar ? (
               <img
                 // Menggunakan path relatif agar didukung oleh proxy Vite
-                src={`/uploads/${materi.gambar}`}
+                src={getImageUrl(materi.gambar)}
                 alt={materi.judul_materi}
                 className="w-full h-full object-cover"
               />
