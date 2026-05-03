@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 
 // 1. GET: Ambil Semua Kelas
 exports.getKelas = async (req, res) => {

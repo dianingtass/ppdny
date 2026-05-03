@@ -1,7 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../config/prisma");
 const { createScreeningController } = require("../shared/sharedScreeningController");
 
-const prisma = new PrismaClient();
 const sharedController = createScreeningController({ writableRoles: [] });
 
 const ensureParentHasAccess = async (parentUserId, santriId) => {

@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 
 // Helper: Format Tanggal Indonesia (Senin, 14 Agustus 2024)
 const formatFullDate = (date) => {

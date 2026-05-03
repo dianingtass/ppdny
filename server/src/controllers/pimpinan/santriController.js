@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 const bcrypt = require('bcryptjs');
 
 // 1. GET: Ambil Semua Data Santri (Role ID = 1)

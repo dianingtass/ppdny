@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 
 // GET: Ambil Semua Riwayat Layanan
 exports.getRiwayatLayanan = async (req, res) => {

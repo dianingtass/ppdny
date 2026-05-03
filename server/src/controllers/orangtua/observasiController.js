@@ -1,7 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../config/prisma");
 const { createObservasiController } = require("../shared/sharedObservasiController");
 
-const prisma = new PrismaClient();
 const sharedController = createObservasiController({ writableRoles: [] });
 
 const ensureParentHasAccess = async (parentUserId, santriId) => {

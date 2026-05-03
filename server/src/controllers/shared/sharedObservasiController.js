@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 
 const DEFAULT_TINDAK_LANJUT = [
   { id: 1, value: "Edukasi_Ulang_Cuci_Tangan_6_Langkah_WHO", label: "Edukasi ulang cuci tangan 6 langkah WHO", isCustom: false },

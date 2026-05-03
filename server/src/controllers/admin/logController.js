@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma");
 
 // Get All Logs with Server-Side Search & Pagination
 exports.getAllLogs = async (req, res) => {
