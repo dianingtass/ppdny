@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { clearAuthSession, getAuthToken } from '../utils/authStorage';
 
-export const baseURL = '/api';
+export const baseURL = import.meta.env.VITE_API_URL || '/api';
 
 const api = axios.create({
   baseURL: baseURL,
