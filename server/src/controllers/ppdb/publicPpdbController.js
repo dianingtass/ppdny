@@ -176,7 +176,7 @@ exports.uploadDokumen = async (req, res) => {
         where: { id: existingDoc.id },
         data: {
           nama_file: req.file.originalname,
-          path_file: req.file.path,
+          path_file: req.file.secure_url || req.file.path,
           status_verif: "Belum_Diverifikasi",
           catatan: null,
         },
@@ -188,7 +188,7 @@ exports.uploadDokumen = async (req, res) => {
           ppdb_pendaftar: { connect: { id: pendaftar.id } },
           jenis_dokumen,
           nama_file: req.file.originalname,
-          path_file: req.file.path,
+          path_file: req.file.secure_url || req.file.path,
           status_verif: "Belum_Diverifikasi",
         },
       });

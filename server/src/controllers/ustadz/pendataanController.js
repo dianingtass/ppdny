@@ -104,10 +104,10 @@ exports.updatePhoto = async (req, res) => {
 
     await prisma.users.update({
       where: { id: userId },
-      data: { foto_profil: req.file.path },
+      data: { foto_profil: req.file.secure_url || req.file.path },
     });
 
-    const newPhotoUrl = req.file.path;
+    const newPhotoUrl = req.file.secure_url || req.file.path;
 
     res.json({ 
         success: true, 

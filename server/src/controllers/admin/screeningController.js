@@ -182,7 +182,7 @@ exports.postScreening = async (req, res) => {
 
     if (diagnosaManual) diagnosa = diagnosaManual;
 
-    if (req.file) uploadedFile = req.file.path;
+    if (req.file) uploadedFile = req.file.secure_url || req.file.path;
 
     await prisma.$transaction(async (tx) => {
 
@@ -293,7 +293,7 @@ exports.updateFotoPredileksi = async (req, res) => {
     await prisma.screening.update({
       where: { id_screening: Number(id) },
       data: {
-        foto_predileksi: req.file.path
+        foto_predileksi: req.file.secure_url || req.file.path
       }
     });
 

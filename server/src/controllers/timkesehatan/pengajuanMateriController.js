@@ -14,7 +14,7 @@ function safeDeleteFile(filename) {
 exports.ajukanMateri = async (req, res) => {
   try {
     const { judul_materi, penulis, ringkasan, isi_materi } = req.body;
-    const gambar = req.file ? req.file.path : null;
+    const gambar = req.file ? req.file.secure_url || req.file.path : null;
     const authenticatedUserId = Number(req.user?.id);
     const id_pengaju = Number.isInteger(authenticatedUserId) ? authenticatedUserId : null;
     let finalPenulis = penulis?.trim() || '';
@@ -158,7 +158,7 @@ exports.editPengajuan = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { judul_materi, penulis, ringkasan, isi_materi, catatan_timkes } = req.body;
-    const gambar = req.file ? req.file.path : undefined;
+    const gambar = req.file ? req.file.secure_url || req.file.path : undefined;
 
     const existing = await prisma.pengajuan_materi.findUnique({
       where: { id_pengajuan: id }
@@ -197,7 +197,7 @@ exports.setujuiPengajuan = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { catatan_timkes } = req.body;
-    const gambar = req.file ? req.file.path : undefined;
+    const gambar = req.file ? req.file.secure_url || req.file.path : undefined;
 
     const pengajuan = await prisma.pengajuan_materi.findUnique({
       where: { id_pengajuan: id }
