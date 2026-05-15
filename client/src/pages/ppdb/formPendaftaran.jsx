@@ -244,7 +244,8 @@ export default function FormPendaftaran() {
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Lengkap <span className="text-red-500">*</span></label>
                 <input name="nama_lengkap" value={dataDiri.nama_lengkap} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 transition" />
               </div>
-              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Jenis Kelamin</label>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Jenis Kelamin</label>
                 <select name="jenis_kelamin" value={dataDiri.jenis_kelamin} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
                   <option value="Laki_laki">Laki-laki</option>
                   <option value="Perempuan">Perempuan</option>
@@ -252,11 +253,29 @@ export default function FormPendaftaran() {
               </div>
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Tempat Lahir *</label><input name="tempat_lahir" value={dataDiri.tempat_lahir} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Tanggal Lahir *</label><input type="date" name="tanggal_lahir" value={dataDiri.tanggal_lahir} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Anak Ke</label><input type="number" name="anak_ke" value={dataDiri.anak_ke} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Dari (Jumlah Saudara)</label><input type="number" name="jumlah_saudara" value={dataDiri.jumlah_saudara} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Alamat Lengkap *</label><textarea name="alamat" value={dataDiri.alamat} onChange={handleDataDiriChange} rows={2} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"/></div>
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">No. HP / WA</label><input name="no_hp" value={dataDiri.no_hp} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               
               <div className="sm:col-span-2 border-t border-gray-100 pt-5 mt-2"><p className="text-sm font-bold text-green-700 bg-green-50 inline-block px-4 py-2 rounded-lg">Riwayat Pendidikan</p></div>
-              <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Asal Sekolah</label><input name="asal_sekolah" value={dataDiri.asal_sekolah} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Asal Sekolah</label><input name="asal_sekolah" value={dataDiri.asal_sekolah} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Jurusan Asal</label><input name="jurusan_asal" value={dataDiri.jurusan_asal} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Tahun Lulus</label><input name="tahun_lulus" value={dataDiri.tahun_lulus} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nilai Rata-rata Rapor</label><input type="number" step="0.01" name="nilai_rata_rapor" value={dataDiri.nilai_rata_rapor} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div className="sm:col-span-2 border-t border-gray-100 pt-5 mt-2"><p className="text-sm font-bold text-green-700 bg-green-50 inline-block px-4 py-2 rounded-lg">Kemampuan Agama</p></div>
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Kemampuan Al-Quran</label>
+                <select name="kemampuan_quran" value={dataDiri.kemampuan_quran} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                  <option value="">Pilih</option>
+                  <option value="Belum_Bisa">Belum Bisa</option>
+                  <option value="Iqro">Iqro</option>
+                  <option value="Juz_Amma">Juz Amma</option>
+                  <option value="Al_Quran">Al Quran</option>
+                  <option value="Hafidz">Hafidz</option>
+                </select>
+              </div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Juz Hafalan</label><input type="number" name="juz_hafalan" value={dataDiri.juz_hafalan} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
             </div>
             
             <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between">

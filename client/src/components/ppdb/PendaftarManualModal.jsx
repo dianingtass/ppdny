@@ -29,7 +29,7 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
     }
   };
 
-  const inputCls = "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-green-500 transition";
+  const inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition";
   const labelCls = "block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5";
 
   return (
@@ -61,7 +61,27 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
               <div className="col-span-2"><label className={labelCls}>Nama Lengkap *</label><input value={dataDiri.nama_lengkap} onChange={e => setDataDiri({...dataDiri, nama_lengkap: e.target.value})} className={inputCls} /></div>
               <div><label className={labelCls}>L/P</label><select value={dataDiri.jenis_kelamin} onChange={e => setDataDiri({...dataDiri, jenis_kelamin: e.target.value})} className={inputCls}><option>Laki-laki</option><option>Perempuan</option></select></div>
               <div><label className={labelCls}>Tanggal Lahir *</label><input type="date" value={dataDiri.tanggal_lahir} onChange={e => setDataDiri({...dataDiri, tanggal_lahir: e.target.value})} className={inputCls} /></div>
+              <div className="col-span-2"><label className={labelCls}>Tempat Lahir</label><input value={dataDiri.tempat_lahir} onChange={e => setDataDiri({...dataDiri, tempat_lahir: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>Anak Ke</label><input type="number" value={dataDiri.anak_ke} onChange={e => setDataDiri({...dataDiri, anak_ke: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>Dari (Jumlah Saudara)</label><input type="number" value={dataDiri.jumlah_saudara} onChange={e => setDataDiri({...dataDiri, jumlah_saudara: e.target.value})} className={inputCls} /></div>
               <div className="col-span-2"><label className={labelCls}>Alamat</label><textarea value={dataDiri.alamat} onChange={e => setDataDiri({...dataDiri, alamat: e.target.value})} rows={2} className={`${inputCls} resize-none`} /></div>
+              <div><label className={labelCls}>No. HP / WA</label><input value={dataDiri.no_hp} onChange={e => setDataDiri({...dataDiri, no_hp: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>Asal Sekolah</label><input value={dataDiri.asal_sekolah} onChange={e => setDataDiri({...dataDiri, asal_sekolah: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>Jurusan Asal</label><input value={dataDiri.jurusan_asal} onChange={e => setDataDiri({...dataDiri, jurusan_asal: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>Tahun Lulus</label><input value={dataDiri.tahun_lulus} onChange={e => setDataDiri({...dataDiri, tahun_lulus: e.target.value})} className={inputCls} /></div>
+              <div className="col-span-2"><label className={labelCls}>Nilai Rata-rata Rapor</label><input type="number" step="0.01" value={dataDiri.nilai_rata_rapor} onChange={e => setDataDiri({...dataDiri, nilai_rata_rapor: e.target.value})} className={inputCls} /></div>
+              <div>
+                <label className={labelCls}>Kemampuan Al-Quran</label>
+                <select value={dataDiri.kemampuan_quran} onChange={e => setDataDiri({...dataDiri, kemampuan_quran: e.target.value})} className={inputCls}>
+                  <option value="">Pilih</option>
+                  <option value="Belum_Bisa">Belum Bisa</option>
+                  <option value="Iqro">Iqro</option>
+                  <option value="Juz_Amma">Juz Amma</option>
+                  <option value="Al_Quran">Al Quran</option>
+                  <option value="Hafidz">Hafidz</option>
+                </select>
+              </div>
+              <div><label className={labelCls}>Juz Hafalan</label><input type="number" value={dataDiri.juz_hafalan} onChange={e => setDataDiri({...dataDiri, juz_hafalan: e.target.value})} className={inputCls} /></div>
             </div>
           )}
 
@@ -85,7 +105,7 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 sticky bottom-0">
           <button onClick={onClose} className="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-100 transition">Batal</button>
           {step === 0 ? (
-            <button disabled={!dataDiri.nama_lengkap || !dataDiri.tanggal_lahir} onClick={() => setStep(1)} className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition disabled:opacity-50">Lanjut →</button>
+            <button disabled={!dataDiri.nama_lengkap || !dataDiri.tanggal_lahir} onClick={() => setStep(1)} className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition disabled:opacity-50">Lanjut</button>
           ) : (
             <button onClick={handleSubmit} disabled={loading} className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition flex items-center gap-2">
               {loading && <Loader2 size={16} className="animate-spin"/>} Simpan Data
