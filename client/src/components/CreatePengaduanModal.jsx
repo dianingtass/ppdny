@@ -13,7 +13,7 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
             
             if (res.data.success) {
                 setSantris(res.data.data);
-                // Jika orangtua, otomatis set santri id karena hanya punya 1 anak
+                // Jika orangtua punya anak (baik 1 atau lebih), otomatis pilih anak pertama sebagai default
                 if (role === "orangtua" && res.data.data.length > 0) {
                     setFormData(prev => ({ ...prev, id_santri: res.data.data[0].id }));
                 }
@@ -32,6 +32,10 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
     
     if (!isOpen) return null;
 
+    // Cek apakah dropdown harus dikunci (disabled)
+    // Untuk orangtua, kunci jika hanya punya 1 anak. Jika > 1, biarkan bisa dipilih.
+    const isSantriDisabled = role === "orangtua" && santris.length <= 1;
+
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -49,12 +53,12 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
                             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Santri</label>
                             <select 
                                 required 
-                                disabled={role === "orangtua"} // DISABLED UNTUK ORANGTUA
+                                disabled={isSantriDisabled}
                                 value={formData.id_santri} 
                                 onChange={(e) => setFormData({...formData, id_santri: e.target.value})} 
-                                className={`w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-700 ${role === "orangtua" ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                                className={`w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-700 ${isSantriDisabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
                             >
-                                <option value="" disabled>-- Pilih Santri --</option>
+                                <option value="" disabled>Pilih Santri</option>
                                 {santris.map(s => <option key={s.id} value={s.id}>{s.nama} ({s.nip})</option>)}
                             </select>
                         </div>

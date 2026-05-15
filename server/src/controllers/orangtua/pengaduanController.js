@@ -41,21 +41,21 @@ exports.getDaftarPengaduan = async (req, res) => {
 exports.getSantriOptions = async (req, res) => {
     try {
         const parentId = req.user.id;
-        const { id_santri } = req.query;
 
-        let relasiAnak;
-        if (id_santri) {
-            relasiAnak = await prisma.orangtua.findFirst({ where: { id_orangtua: parentId, id_santri: parseInt(id_santri), is_active: true }, include: { users_orangtua_id_santriTousers: true } });
-        } else {
-            relasiAnak = await prisma.orangtua.findFirst({ where: { id_orangtua: parentId, is_active: true }, include: { users_orangtua_id_santriTousers: true } });
-        }
+        const relasiAnakSemua = await prisma.orangtua.findMany({ 
+            where: { id_orangtua: parentId, is_active: true }, 
+            include: { users_orangtua_id_santriTousers: true } 
+        });
 
-        if (!relasiAnak || !relasiAnak.users_orangtua_id_santriTousers) {
-            return res.json({ success: true, data: [] });
-        }
+        const dataSantri = relasiAnakSemua
+            .filter(r => r.users_orangtua_id_santriTousers)
+            .map(r => ({
+                id: r.users_orangtua_id_santriTousers.id,
+                nama: r.users_orangtua_id_santriTousers.nama,
+                nip: r.users_orangtua_id_santriTousers.nip
+            }));
 
-        const santri = relasiAnak.users_orangtua_id_santriTousers;
-        res.json({ success: true, data: [{ id: santri.id, nama: santri.nama, nip: santri.nip }] });
+        res.json({ success: true, data: dataSantri });
     } catch (error) {
         res.status(500).json({ success: false, message: "Gagal memuat opsi santri" });
     }
