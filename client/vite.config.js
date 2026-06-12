@@ -12,13 +12,13 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       devOptions: {
-        enabled: true,          // aktifkan SW saat dev mode biar bisa dicek
+        enabled: true,
         type: 'module',
       },
       workbox: {
-        // Cache semua aset statik
+        // Naikkan batas dari 2 MB → 4 MB untuk menangani chunk besar
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
-        // Runtime caching: API request (network-first agar selalu terbaru)
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*\/api\/.*/i,
@@ -27,7 +27,7 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24,     // 1 hari
+                maxAgeSeconds: 60 * 60 * 24,
               },
               networkTimeoutSeconds: 10,
             },
@@ -39,7 +39,7 @@ export default defineConfig({
               cacheName: 'cloudinary-images',
               expiration: {
                 maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 hari
+                maxAgeSeconds: 60 * 60 * 24 * 30,
               },
             },
           },
@@ -97,4 +97,28 @@ export default defineConfig({
       },
     }),
   ],
+
+  build: {
+    // Naikkan warning limit agar tidak spam pesan chunk besar
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        // Code splitting manual: pisahkan vendor besar ke chunk tersendiri
+        manualChunks: {
+          // React core
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // Chart library
+          'vendor-recharts': ['recharts'],
+          // PDF & canvas (paling besar)
+          'vendor-pdf': ['jspdf', 'jspdf-autotable', 'html2canvas-pro'],
+          // Rich text editor
+          'vendor-quill': ['quill', 'react-quill', 'react-quilljs'],
+          // Icons
+          'vendor-lucide': ['lucide-react'],
+          // HTTP client
+          'vendor-axios': ['axios'],
+        },
+      },
+    },
+  },
 })
