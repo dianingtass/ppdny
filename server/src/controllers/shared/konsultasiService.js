@@ -35,7 +35,7 @@ const normalizeMessage = (message, senderMap = new Map()) => ({
   id_room: message.id_room,
   id_sender: message.id_sender,
   sender_role: message.sender_role,
-  message_text: message.messgae_text,
+  message_text: message.message_text,
   sent_at: message.sent_at,
   read_at: message.read_at,
   is_active: message.is_active,
@@ -147,6 +147,29 @@ const getSantriList = async () => {
 
 const autoCloseExpiredActiveRooms = async () => {
   const { start } = getTodayRange();
+  
+  // Clean up waiting rooms from previous days first
+  const expiredWaitingRooms = await prisma.konsultasi_room.findMany({
+    where: {
+      status: 'waiting',
+      created_at: { lt: start }
+    },
+    select: { id_room: true }
+  });
+
+  for (const room of expiredWaitingRooms) {
+    await prisma.konsultasi_room.update({
+      where: { id_room: room.id_room },
+      data: {
+        status: 'closed',
+        closed_at: new Date(),
+        close_reason_type: 'auto_inactive',
+        closed_reason_text: 'Ditutup otomatis karena antrian kedaluwarsa hari sebelumnya',
+        updated_at: new Date(),
+      }
+    });
+  }
+
   const rooms = await prisma.konsultasi_room.findMany({
     where: {
       status: 'active',
@@ -178,7 +201,7 @@ const autoCloseExpiredActiveRooms = async () => {
     });
   }
 
-  return rooms.length;
+  return rooms.length + expiredWaitingRooms.length;
 };
 
 const getCurrentRoomBySantri = async (santriId) => {
@@ -339,7 +362,7 @@ const sendMessage = async ({ roomId, senderId, senderRole, messageText }) => {
         id_room: Number(roomId),
         id_sender: senderId,
         sender_role: senderRole,
-        messgae_text: messageText.trim(),
+        message_text: messageText.trim(),
         sent_at: now,
         is_active: true,
       },

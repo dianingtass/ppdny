@@ -149,6 +149,7 @@ app.use('/api/admin/feedback',           require('./routes/admin/feedbackRoutes'
 app.use('/api/admin/log',                require('./routes/admin/logRoutes'));
 app.use('/api/admin/screening',          require('./routes/admin/screeningRoutes'));
 app.use('/api/admin/observasi',          require('./routes/admin/observasiRoutes'));
+app.use('/api/admin/absensi',            require('./routes/admin/absensiRoutes'));
 
 app.use('/api/timkesehatan/dashboard',       require('./routes/timkesehatan/dashboardRoutes'));
 app.use('/api/timkesehatan/screening',       require('./routes/timkesehatan/screeningRoutes'));

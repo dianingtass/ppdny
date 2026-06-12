@@ -35,7 +35,14 @@ exports.getKegiatan = async (req, res) => {
         }
         
         // Filter Waktu (Mendatang vs Selesai) - Contoh logic sederhana
-        const today = new Date();
+        const dayjs = require("dayjs");
+        const utc = require("dayjs/plugin/utc");
+        const timezone = require("dayjs/plugin/timezone");
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const todayStr = dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD");
+        const today = new Date(`${todayStr}T00:00:00.000Z`);
+
         if (type === 'Mendatang') {
             whereCondition.tanggal = { gte: today };
         } else if (type === 'Selesai') {

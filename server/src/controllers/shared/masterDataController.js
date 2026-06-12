@@ -270,9 +270,28 @@ exports.verifyPembayaran = async (req, res) => {
     try {
         const updateData = { status };
         if (nominal_baru) updateData.nominal = parseFloat(nominal_baru);
-        await prisma.pembayaran.update({ where: { id: parseInt(id) }, data: updateData });
+
+        await prisma.$transaction(async (tx) => {
+            const updatedPay = await tx.pembayaran.update({ where: { id: parseInt(id) }, data: updateData });
+
+            if (status === 'Berhasil') {
+                const tagihanId = updatedPay.id_tagihan;
+                const sumResult = await tx.pembayaran.aggregate({
+                    where: { id_tagihan: tagihanId, status: 'Berhasil', is_active: true },
+                    _sum: { nominal: true }
+                });
+                const totalPaid = sumResult._sum.nominal || 0;
+
+                const tagihan = await tx.tagihan.findUnique({ where: { id: tagihanId } });
+                if (tagihan && totalPaid >= tagihan.nominal) {
+                    await tx.tagihan.update({ where: { id: tagihanId }, data: { status: 'Lunas' } });
+                }
+            }
+        });
+
         return res.json({ success: true, message: 'Pembayaran berhasil diverifikasi.' });
     } catch (error) {
+        console.error("verifyPembayaran error:", error);
         return res.status(500).json({ message: 'Gagal verifikasi pembayaran.' });
     }
 };

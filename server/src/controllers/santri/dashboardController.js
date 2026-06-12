@@ -40,6 +40,15 @@ exports.getDashboardData = async (req, res) => {
 
         const santriId = pengguna.id; 
 
+        const dayjs = require("dayjs");
+        const utc = require("dayjs/plugin/utc");
+        const timezone = require("dayjs/plugin/timezone");
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const todayJakarta = dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD");
+        const startDate = new Date(`${todayJakarta}T00:00:00.000Z`);
+        const endDate = new Date(`${todayJakarta}T23:59:59.999Z`);
+
         const [
             tagihan, 
             kegiatanHariIni, 
@@ -56,7 +65,7 @@ exports.getDashboardData = async (req, res) => {
                 }
             }),
             prisma.kegiatan.findMany({
-                where: { tanggal: new Date(), is_active: true },
+                where: { tanggal: { gte: startDate, lte: endDate }, is_active: true },
                 orderBy: { waktu_mulai: 'asc' }
             }),
             prisma.pengaduan.findMany({

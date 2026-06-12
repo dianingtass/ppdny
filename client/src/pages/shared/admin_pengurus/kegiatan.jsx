@@ -206,7 +206,7 @@ export default function KegiatanPage({ rolePrefix }) {
                   <div className="flex items-start gap-2"><MapPin size={14} className="text-gray-400 mt-0.5 flex-shrink-0" /> <span className="line-clamp-2">{item.lokasi}</span></div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-1">
-                  <button onClick={() => handleOpenDetail(item)} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Eye size={16} /> View</button>
+                  <button onClick={() => handleOpenDetail(item)} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Eye size={16} /> Lihat</button>
                   <button onClick={() => handleOpenEditForm(item)} className="py-2.5 bg-amber-50 text-amber-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Edit2 size={16} /> Edit</button>
                   <button onClick={() => handleDelete(item)} className="py-2.5 bg-red-50 text-red-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Trash2 size={16} /> Hapus</button>
                 </div>

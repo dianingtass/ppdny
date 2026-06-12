@@ -21,7 +21,7 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
   }, [search]);
 
   const navigate = useNavigate();
-  const limit = 5;
+  const limit = 10;
 
   const fetchSantri = async () => {
     setLoading(true);

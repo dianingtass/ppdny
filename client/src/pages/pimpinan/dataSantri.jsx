@@ -226,7 +226,7 @@ export default function DataSantri() {
 
                         <div className="grid grid-cols-1 gap-3 mt-1">
                             <button onClick={() => handleEdit(item)} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition">
-                                <Eye size={16}/> View
+                                <Eye size={16}/> Lihat
                             </button>
                         </div>
                     </div>

@@ -211,6 +211,15 @@ exports.getDashboardData = async (req, res) => {
             kelas: r.users_orangtua_id_santriTousers.kelas_santri[0]?.kelas?.kelas || '-'
         }));
 
+        const dayjs = require("dayjs");
+        const utc = require("dayjs/plugin/utc");
+        const timezone = require("dayjs/plugin/timezone");
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const todayJakarta = dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD");
+        const startDate = new Date(`${todayJakarta}T00:00:00.000Z`);
+        const endDate = new Date(`${todayJakarta}T23:59:59.999Z`);
+
         // 2. Jalankan Query Paralel (Berdasarkan santriId yang aktif)
         const [
             tagihan, kegiatanHariIni, pengaduanTerakhir,
@@ -222,7 +231,7 @@ exports.getDashboardData = async (req, res) => {
                 orderBy: { tanggal_tagihan: 'desc' }
             }),
             prisma.kegiatan.findMany({
-                where: { tanggal: new Date(), is_active: true },
+                where: { tanggal: { gte: startDate, lte: endDate }, is_active: true },
                 orderBy: { waktu_mulai: 'asc' }
             }),
             prisma.pengaduan.findMany({

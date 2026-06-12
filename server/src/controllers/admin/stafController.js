@@ -4,29 +4,38 @@ const bcrypt = require('bcryptjs');
 // Helper untuk mengambil list staf
 exports.getStaffList = async (req, res) => {
   try {
-    const targetRoles = ['Admin', 'Pimpinan', 'Tim Kesehatan', 'Pengurus'];
+    const targetRoles = ['admin', 'pimpinan', 'timkesehatan', 'pengurus'];
     const staff = await prisma.users.findMany({
       where: {
-        is_active: true,
-        user_role: { some: { is_active: true, role: { role: { in: targetRoles } } } }
+        user_role: { some: { role: { role: { in: targetRoles } } } }
       },
-      include: { user_role: { where: { is_active: true }, include: { role: true } } },
+      include: { user_role: { include: { role: true } } },
       orderBy: { nama: 'asc' }
     });
 
-    const formattedData = staff.map(user => ({
-      id: user.id,
-      nip: user.nip || "-",
-      nama: user.nama || "Tanpa Nama",
-      email: user.email || "-",
-      no_hp: user.no_hp || "-",
-      jenis_kelamin: user.jenis_kelamin,
-      roles: user.user_role.map(ur => ur.role.role), 
-      foto_profil: user.foto_profil || null
-    }));
+    const formattedData = staff.map(user => {
+      const activeRoles = user.user_role.filter(ur => ur.is_active);
+      const rolesToMap = activeRoles.length > 0 ? activeRoles : user.user_role;
+      return {
+        id: user.id,
+        nip: user.nip || "-",
+        nama: user.nama || "Tanpa Nama",
+        email: user.email || "-",
+        no_hp: user.no_hp || "-",
+        jenis_kelamin: user.jenis_kelamin,
+        is_active: user.is_active,
+        roles: rolesToMap.map(ur => {
+          const r = ur.role.role;
+          if (r === 'timkesehatan') return 'Tim Kesehatan';
+          return r.charAt(0).toUpperCase() + r.slice(1);
+        }), 
+        foto_profil: user.foto_profil || null
+      };
+    });
 
     res.json({ success: true, data: formattedData });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Gagal memuat data staf" });
   }
 };
@@ -50,7 +59,11 @@ exports.createStaff = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash("12345678", 10);
 
-    const roleRecords = await prisma.role.findMany({ where: { role: { in: roles } } });
+    const dbRoles = roles.map(r => {
+      if (r.toLowerCase() === 'tim kesehatan') return 'timkesehatan';
+      return r.toLowerCase();
+    });
+    const roleRecords = await prisma.role.findMany({ where: { role: { in: dbRoles } } });
     
     if (roleRecords.length === 0) return res.status(400).json({ success: false, message: "Role tidak valid" });
 
@@ -97,7 +110,11 @@ exports.updateStaff = async (req, res) => {
         }
     }
 
-    const roleRecords = await prisma.role.findMany({ where: { role: { in: roles } } });
+    const dbRoles = roles.map(r => {
+      if (r.toLowerCase() === 'tim kesehatan') return 'timkesehatan';
+      return r.toLowerCase();
+    });
+    const roleRecords = await prisma.role.findMany({ where: { role: { in: dbRoles } } });
 
     await prisma.$transaction(async (tx) => {
       // 1. Update profil dasar
@@ -133,7 +150,7 @@ exports.updateStaff = async (req, res) => {
   }
 };
 
-// SOFT DELETE STAF
+// SOFT DELETE STAF (Deactivate)
 exports.deleteStaff = async (req, res) => {
   try {
     const { id } = req.params;
@@ -144,6 +161,45 @@ exports.deleteStaff = async (req, res) => {
     res.json({ success: true, message: "Akun staf berhasil dinonaktifkan" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Gagal menonaktifkan staf" });
+  }
+};
+
+// TOGGLE ACTIVATION STATUS
+exports.toggleStaffStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const targetId = parseInt(id);
+    
+    const user = await prisma.users.findUnique({
+      where: { id: targetId },
+      include: { user_role: true }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Staf tidak ditemukan" });
+    }
+    
+    const newStatus = !user.is_active;
+    
+    await prisma.$transaction(async (tx) => {
+      await tx.users.update({
+        where: { id: targetId },
+        data: { is_active: newStatus }
+      });
+      
+      await tx.user_role.updateMany({
+        where: { id_user: targetId },
+        data: { is_active: newStatus }
+      });
+    });
+    
+    res.json({ 
+      success: true, 
+      message: `Akun staf berhasil ${newStatus ? "diaktifkan kembali" : "dinonaktifkan"}` 
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Gagal mengubah status aktif staf" });
   }
 };
 

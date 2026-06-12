@@ -296,7 +296,7 @@ exports.getDashboardStats = async (req, res) => {
               nama: room.users_konsultasi_room_id_santriTousers?.nama || "-",
               nip: room.users_konsultasi_room_id_santriTousers?.nip || "-",
             },
-            last_message: room.konsultasi_message?.[0]?.messgae_text || "Belum ada pesan.",
+            last_message: room.konsultasi_message?.[0]?.message_text || "Belum ada pesan.",
           })),
         },
       },

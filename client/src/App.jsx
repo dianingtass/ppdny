@@ -104,6 +104,11 @@ import AdminDetailObservasi from "./pages/admin/observasi/portalObservasi"
 import AdminCreateObservasi from "./pages/admin/observasi/formObservasi"
 import AdminViewObservasi from "./pages/admin/observasi/viewObservasi"
 
+import AdminAbsensiKebersihan from "./pages/admin/absensi/daftarKamarAbsensi"
+import AdminDetailAbsensi from "./pages/admin/absensi/portalAbsensi"
+import AdminCreateAbsensi from "./pages/admin/absensi/formAbsensi"
+import AdminLaporanAbsensi from "./pages/admin/absensi/viewAbsensi"
+
 import PpdbDashboard from "./pages/ppdb/adminDashboard";
 import Pendaftar     from "./pages/ppdb/adminPendaftar";
 import Seleksi     from "./pages/ppdb/panitiaSeleksi";
@@ -293,6 +298,16 @@ function App() {
               <Route path="daftarSantriObservasi/:id" element={<AdminDetailObservasi />} />
               <Route path="daftarSantriObservasi/:id/create" element={<AdminCreateObservasi />} />
               <Route path="daftarSantriObservasi/:id/view/:observasiId" element={<AdminViewObservasi />} />
+              
+              {/* ABSENSI KEBERSIHAN */}
+              <Route path="daftarAbsensiKamar" element={<AdminAbsensiKebersihan />}/>
+              <Route path="daftarAbsensiKamar/:id" element={<AdminDetailAbsensi />} />
+              <Route path="daftarAbsensiKamar/:id/create" element={<AdminCreateAbsensi />} />
+              <Route
+                path="/admin/daftarAbsensiKamar/:id/edit/:id_heading"
+                element={<AdminCreateAbsensi/>}
+              />
+              <Route path="daftarAbsensiKamar/:id/laporan" element={<AdminLaporanAbsensi />} />
               <Route path="ppdb/rekapitulasi" element={<PpdbDashboard />} />
               <Route path="ppdb/pendaftar" element={<Pendaftar />} />
               <Route path="ppdb/seleksi" element={<Seleksi />} />

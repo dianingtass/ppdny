@@ -31,8 +31,13 @@ exports.getKegiatan = async (req, res) => {
             whereCondition.nama_kegiatan = { contains: search };
         }
         
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const dayjs = require("dayjs");
+        const utc = require("dayjs/plugin/utc");
+        const timezone = require("dayjs/plugin/timezone");
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const todayStr = dayjs().tz("Asia/Jakarta").format("YYYY-MM-DD");
+        const today = new Date(`${todayStr}T00:00:00.000Z`);
 
         if (type === 'Mendatang') {
             whereCondition.tanggal = { gte: today };

@@ -15,7 +15,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
   const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
-  const limit = 5;
+  const limit = 10;
 
   const fetchKamar = async () => {
     setLoading(true);

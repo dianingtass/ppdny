@@ -59,7 +59,7 @@ exports.getKeuanganDashboard = async (req, res) => {
       riwayat_pembayaran: t.pembayaran.map((p) => ({
         id: p.id,
         tanggal: formatDateIndo(p.tanggal_bayar),
-        jumlah: formatRupiah(p.jumlah_bayar),
+        jumlah: formatRupiah(p.nominal),
         bukti: p.bukti_bayar, // File path jika ada
         status: p.status,
       })),

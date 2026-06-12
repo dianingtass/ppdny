@@ -27,7 +27,7 @@ export default function PortalScreeningPage({
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const limit = 5;
+    const limit = 10;
 
     const fetchDetail = async () => {
         try {
@@ -140,7 +140,7 @@ export default function PortalScreeningPage({
                             }
                             className="mt-4 w-full px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
                         >
-                            View
+                            Lihat
                         </button>
                     </div>
                 ))}
@@ -284,7 +284,7 @@ export default function PortalScreeningPage({
                                         }
                                         className="px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
                                     >
-                                        View
+                                        Lihat
                                     </button>
                                 </td>
                                 </tr>
@@ -346,7 +346,7 @@ export default function PortalScreeningPage({
                                             }
                                             className="px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
                                         >
-                                            View
+                                            Lihat
                                         </button>
                                     </td>
                                 </tr>

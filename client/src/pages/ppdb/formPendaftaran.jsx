@@ -331,8 +331,26 @@ export default function FormPendaftaran() {
               <p className="text-2xl font-black font-mono text-green-700 tracking-widest mt-1">{noPendaftaran}</p>
             </div>
 
+            <h2 className="text-xl font-bold text-gray-800 mb-1">Pembayaran</h2>
+            <p className="text-sm text-gray-500 mb-4">Silakan upload bukti transfer biaya pendaftaran.</p>
+            <div className="space-y-4 mb-8">
+              {[{ key: "Bukti_Transfer_Pendaftaran", label: `Bukti Transfer (Rp ${selectedGelombang?.biaya_pendaftaran?.toLocaleString('id-ID') || 0})` }].map((doc) => (
+                <div key={doc.key} className="border border-green-200 bg-green-50/50 rounded-xl p-4 flex items-center justify-between">
+                  <p className="font-bold text-sm text-gray-800">{doc.label}</p>
+                  {uploadStatus[doc.key] === "success" ? (
+                      <span className="text-green-600 bg-green-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1"><Check size={14}/> Sukses</span>
+                  ) : (
+                    <label className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-2 shadow-sm">
+                        <input type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
+                        <UploadCloud size={14}/> Upload Bukti
+                    </label>
+                  )}
+                </div>
+              ))}
+            </div>
+
             <h2 className="text-xl font-bold text-gray-800 mb-1">Upload Dokumen (Opsional)</h2>
-            <p className="text-sm text-gray-500 mb-6">Maks. 2MB. Bisa dilewati dan dilengkapi nanti.</p>
+            <p className="text-sm text-gray-500 mb-4">Maks. 2MB. Bisa dilewati dan dilengkapi nanti.</p>
             <div className="space-y-4">
               {[{ key: "Foto_3x4", label: "Foto 3×4" }, { key: "Akta_Kelahiran", label: "KK / Akta" }, { key: "Ijazah", label: "Ijazah / SKL" }].map((doc) => (
                 <div key={doc.key} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">

@@ -193,7 +193,7 @@ export default function SantriScabiesDashboard() {
                   <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center mb-3">
                     <BookOpen size={22} />
                   </div>
-                  <h4 className="font-bold text-gray-800 text-lg">View Materi</h4>
+                  <h4 className="font-bold text-gray-800 text-lg">Lihat Materi</h4>
                   <p className="text-sm text-gray-500 mt-1">Akses seluruh materi edukasi scabies dan pencegahannya.</p>
                 </button>
 

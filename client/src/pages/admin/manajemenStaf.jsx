@@ -36,6 +36,7 @@ export default function ManajemenStaf() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [resetModal, setResetModal] = useState({ isOpen: false, id: null, loading: false });
+  const [toggleStatusModal, setToggleStatusModal] = useState({ isOpen: false, id: null, name: "", is_active: false, loading: false });
 
   const fetchData = async () => {
     setLoading(true);
@@ -116,13 +117,36 @@ export default function ManajemenStaf() {
     setIsDeleting(true);
     try {
       await api.delete(`/admin/staf/${deleteModal.id}`);
-      showAlert("success", "Staf dihapus");
+      showAlert("success", "Staf dinonaktifkan");
       setDeleteModal({ isOpen: false, id: null, name: "" });
       fetchData();
     } catch {
-      showAlert("error", "Gagal menghapus");
+      showAlert("error", "Gagal menonaktifkan");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleToggleStatus = (item) => {
+    setToggleStatusModal({
+      isOpen: true,
+      id: item.id,
+      name: item.nama,
+      is_active: item.is_active,
+      loading: false
+    });
+  };
+
+  const confirmToggleStatus = async () => {
+    setToggleStatusModal(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await api.put(`/admin/staf/${toggleStatusModal.id}/toggle-status`, {});
+      showAlert("success", res.data.message);
+      setToggleStatusModal({ isOpen: false, id: null, name: "", is_active: false, loading: false });
+      fetchData();
+    } catch (err) {
+      showAlert("error", err.response?.data?.message || "Gagal mengubah status aktif staf");
+      setToggleStatusModal(prev => ({ ...prev, loading: false }));
     }
   };
 
@@ -145,7 +169,7 @@ export default function ManajemenStaf() {
     const r = role.toLowerCase();
     if (r === "admin") return "bg-gray-800 text-white";
     if (r === "pimpinan") return "bg-purple-100 text-purple-700 border-purple-200";
-    if (r === "timkesehatan") return "bg-red-100 text-red-700 border-red-200";
+    if (r === "timkesehatan" || r === "tim kesehatan") return "bg-red-100 text-red-700 border-red-200";
     if (r === "pengurus") return "bg-green-100 text-green-700 border-green-200";
     return "hidden";
   };
@@ -233,7 +257,12 @@ export default function ManajemenStaf() {
                               ) : item.nama.charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-gray-800 truncate">{item.nama}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-gray-800 truncate">{item.nama}</p>
+                                <span className={`px-2 py-0.5 text-[9px] font-semibold rounded-full flex-shrink-0 ${item.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                  {item.is_active ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                              </div>
                               <p className="text-xs text-gray-500 truncate">NIP: {item.nip}</p>
                             </div>
                           </div>
@@ -256,7 +285,11 @@ export default function ManajemenStaf() {
                         <td className="p-4 text-center">
                           <div className="flex items-center justify-center gap-2">
                             <button onClick={() => handleEdit(item)} className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition" title="Edit Data & Reset Password"><Edit2 size={18} /></button>
-                            <button onClick={() => handleDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Nonaktifkan Akun"><Trash2 size={18} /></button>
+                            {item.is_active ? (
+                              <button onClick={() => handleDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Nonaktifkan Akun"><Trash2 size={18} /></button>
+                            ) : (
+                              <button onClick={() => handleToggleStatus(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Aktifkan Akun kembali"><CheckCircle size={18} /></button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -280,7 +313,12 @@ export default function ManajemenStaf() {
                       ) : item.nama.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-800 text-base leading-tight mb-0.5">{item.nama}</h3>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h3 className="font-bold text-gray-800 text-base leading-tight">{item.nama}</h3>
+                        <span className={`px-2 py-0.5 text-[9px] font-semibold rounded-full ${item.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {item.is_active ? 'Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
                       <p className="text-xs text-gray-500 font-medium mb-2">NIP: {item.nip}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {item.roles.map((r, idx) => (
@@ -296,7 +334,11 @@ export default function ManajemenStaf() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 mt-1">
                     <button onClick={() => handleEdit(item)} className="py-2 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Edit2 size={16} /> Edit Akun</button>
-                    <button onClick={() => handleDelete(item)} className="py-2 bg-red-50 text-red-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Trash2 size={16} /> Disable</button>
+                    {item.is_active ? (
+                      <button onClick={() => handleDelete(item)} className="py-2 bg-red-50 text-red-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><Trash2 size={16} /> Nonaktifkan</button>
+                    ) : (
+                      <button onClick={() => handleToggleStatus(item)} className="py-2 bg-blue-50 text-blue-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"><CheckCircle size={16} /> Aktifkan</button>
+                    )}
                   </div>
                 </div>
               ))
@@ -327,6 +369,16 @@ export default function ManajemenStaf() {
         onSubmit={handleSubmit}
         onResetPassword={handleResetPassword}
         saving={isSaving}
+      />
+      <ConfirmActionModal
+        isOpen={toggleStatusModal.isOpen}
+        onClose={() => setToggleStatusModal({ isOpen: false, id: null, name: "", is_active: false, loading: false })}
+        onConfirm={confirmToggleStatus}
+        loading={toggleStatusModal.loading}
+        title={toggleStatusModal.is_active ? "Nonaktifkan Staf" : "Aktifkan Staf"}
+        message={`Apakah Anda yakin ingin ${toggleStatusModal.is_active ? "menonaktifkan" : "mengaktifkan kembali"} akun staf "${toggleStatusModal.name}"?`}
+        confirmText={toggleStatusModal.is_active ? "Ya, Nonaktifkan" : "Ya, Aktifkan"}
+        confirmClass={toggleStatusModal.is_active ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
       />
       <ConfirmDeleteModal 
         isOpen={deleteModal.isOpen} 

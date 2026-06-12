@@ -165,6 +165,57 @@ exports.uploadDokumen = async (req, res) => {
     if (!pendaftar) return res.status(404).json({ success: false, message: "Nomor pendaftaran tidak ditemukan" });
     if (!req.file) return res.status(400).json({ success: false, message: "File tidak ditemukan" });
 
+    if (jenis_dokumen === "Bukti_Transfer_Pendaftaran") {
+      const tahun = await prisma.ppdb_tahun.findFirst({ where: { id: pendaftar.id_tahun } });
+      const biaya = tahun?.biaya_pendaftaran || 0;
+
+      let ref = await prisma.ppdb_pembayaran_ref.findFirst({
+        where: { id_pendaftar: pendaftar.id, is_active: true }
+      });
+      let id_tagihan;
+
+      if (!ref) {
+        const jenisTagihan = await prisma.jenis_tagihan.findFirst({
+          where: { jenis_tagihan: "PPDB", is_active: true }
+        });
+
+        const newTagihan = await prisma.tagihan.create({
+          data: {
+            id_jenis_tagihan: jenisTagihan ? jenisTagihan.id : null,
+            nama_tagihan: "Biaya Pendaftaran PPDB",
+            nominal: biaya,
+            tanggal_tagihan: new Date(),
+            batas_pembayaran: new Date(new Date().setDate(new Date().getDate() + 3)),
+            status: "Aktif",
+            is_active: true
+          }
+        });
+        id_tagihan = newTagihan.id;
+
+        await prisma.ppdb_pembayaran_ref.create({
+          data: {
+            id_pendaftar: pendaftar.id,
+            id_tagihan: id_tagihan,
+          }
+        });
+      } else {
+        id_tagihan = ref.id_tagihan;
+      }
+
+      await prisma.pembayaran.create({
+        data: {
+          id_tagihan: id_tagihan,
+          tanggal_bayar: new Date(),
+          nominal: biaya,
+          metode_bayar: "Transfer",
+          bukti_bayar: req.file.secure_url || req.file.path,
+          status: "Pending"
+        }
+      });
+
+      return res.json({ success: true, message: "Bukti transfer pendaftaran berhasil diupload" });
+    }
+
     // Cek apakah sudah pernah upload jenis dokumen yang sama
     const existingDoc = await prisma.ppdb_dokumen.findFirst({
       where: { id_pendaftar: pendaftar.id, jenis_dokumen, is_active: true },

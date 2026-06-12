@@ -93,7 +93,7 @@ export default function Dashboard() {
                     
                     {/* Hover Card Detail Piutang */}
                     {showPiutangList && stats.keuangan.userPiutang.length > 0 && (
-                        <div className="absolute left-0 right-0 top-full -mt-2 mx-6 z-10 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 animate-in fade-in slide-in-from-top-2 max-h-60 overflow-y-auto">
+                        <div className="absolute left-0 right-0 top-full -mt-6 mx-6 z-10 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 animate-in fade-in slide-in-from-top-2 max-h-60 overflow-y-auto">
                             <p className="text-[10px] font-bold text-green-600 mb-3 uppercase tracking-widest">Daftar Tunggakan Tagihan</p>
                             <div className="space-y-3">
                                 {stats.keuangan.userPiutang.map((up, i) => (

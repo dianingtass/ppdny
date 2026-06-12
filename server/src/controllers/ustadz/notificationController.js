@@ -42,6 +42,27 @@ exports.getUstadzNotifs = async (req, res) => {
             });
         });
 
+        // C. Pengajuan Materi status update (Disetujui / Ditolak)
+        const pengajuan = await prisma.pengajuan_materi.findMany({
+            where: { id_pengaju: userId, status: { in: ['disetujui', 'ditolak'] } },
+            orderBy: { updated_at: 'desc' },
+            take: 5
+        });
+        
+        pengajuan.forEach(p => {
+            const statusLabel = p.status === 'disetujui' ? 'DISETUJUI' : 'DITOLAK';
+            const statusKeterangan = p.status === 'disetujui' 
+                ? `Materi Anda "${p.judul_materi.substring(0,30)}" telah disetujui oleh Tim Kesehatan.`
+                : `Materi Anda "${p.judul_materi.substring(0,30)}" ditolak. Catatan: ${p.catatan_timkes || '-'}`;
+                
+            notifs.push({
+                tipe: 'materi', judul: `Pengajuan Materi ${statusLabel}`,
+                pesan: statusKeterangan,
+                waktu: p.updated_at, url: '/materi',
+                is_new: user.last_opened_notif ? new Date(p.updated_at) > new Date(user.last_opened_notif) : true
+            });
+        });
+
         notifs.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
         res.json({ success: true, data: notifs.slice(0, 10) });
     } catch (error) { res.status(500).json({ success: false }); }

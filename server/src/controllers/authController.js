@@ -106,7 +106,7 @@ exports.login = async (req, res) => {
 
         // Gunakan pesan yang sama untuk "tidak ditemukan" dan "password salah"
         // agar tidak bisa dipakai untuk user enumeration.
-        if (!user) {
+        if (!user || !user.password) {
             return res.status(401).json({ message: 'Kredensial tidak valid.' });
         }
 

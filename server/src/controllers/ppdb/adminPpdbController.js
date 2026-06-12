@@ -1,4 +1,23 @@
 const prisma = require("../../config/prisma");
+const bcrypt = require("bcrypt");
+
+const logActivity = async (userId, userRole, action, entitas, idEntitas, keterangan, data = null) => {
+  try {
+    await prisma.activity_log.create({
+      data: {
+        id_user: userId,
+        role_user: userRole,
+        aksi: action,
+        entitas: entitas,
+        id_entitas: idEntitas,
+        keterangan: keterangan,
+        data: data
+      }
+    });
+  } catch (error) {
+    console.error("Gagal mencatat activity log:", error);
+  }
+};
 
 // ─── PPDB TAHUN / GELOMBANG ───────────────────────────────────────────
 
@@ -177,7 +196,15 @@ exports.getPendaftarById = async (req, res) => {
         ppdb_orangtua: { where: { is_active: true } },
         ppdb_dokumen: { where: { is_active: true } },
         ppdb_seleksi: true,
-        ppdb_pembayaran_ref: true,
+        ppdb_pembayaran_ref: {
+          include: {
+            tagihan: {
+              include: {
+                pembayaran: true
+              }
+            }
+          }
+        },
         users: { select: { id: true, nama: true, email: true } },
       },
     });
@@ -230,10 +257,32 @@ exports.aktivasiSantri = async (req, res) => {
     const roleSantri = await prisma.role.findFirst({ where: { role: "santri" } });
     if (!roleSantri) return res.status(500).json({ success: false, message: "Role santri tidak ditemukan di database" });
 
-    // Generate NIS
+    // Generate NIS collision-free
     const year = new Date().getFullYear().toString().slice(-2);
-    const count = await prisma.users.count();
-    const nis = `S${year}${String(count + 1).padStart(4, "0")}`;
+    const existingUsers = await prisma.users.findMany({
+      where: {
+        nip: {
+          startsWith: `S${year}`
+        }
+      },
+      select: {
+        nip: true
+      }
+    });
+
+    let maxNum = 0;
+    for (const u of existingUsers) {
+      if (u.nip && u.nip.length > 3) {
+        const numPart = parseInt(u.nip.slice(3));
+        if (!isNaN(numPart) && numPart > maxNum) {
+          maxNum = numPart;
+        }
+      }
+    }
+    const nis = `S${year}${String(maxNum + 1).padStart(4, "0")}`;
+
+    // Hash default password for santri (using their NIS)
+    const hashedSantriPassword = await bcrypt.hash(nis, 12);
 
     // Buat user baru
     const newUser = await prisma.users.create({
@@ -246,6 +295,7 @@ exports.aktivasiSantri = async (req, res) => {
         email: pendaftar.email,
         no_hp: pendaftar.no_hp,
         alamat: pendaftar.alamat,
+        password: hashedSantriPassword,
         is_active: true,
       },
     });
@@ -257,15 +307,23 @@ exports.aktivasiSantri = async (req, res) => {
 
     // Buat relasi orangtua jika ada
     for (const ortu of pendaftar.ppdb_orangtua) {
-      if (ortu.no_hp || ortu.nama) {
-        let userOrtu = await prisma.users.findFirst({ where: { no_hp: ortu.no_hp, is_active: true } });
+      if (ortu.nama) {
+        let userOrtu = null;
+        if (ortu.no_hp && ortu.no_hp.trim() !== "") {
+          userOrtu = await prisma.users.findFirst({
+            where: { no_hp: ortu.no_hp.trim(), is_active: true }
+          });
+        }
+
         if (!userOrtu) {
           const roleOrtu = await prisma.role.findFirst({ where: { role: "orangtua" } });
+          const hashedParentPassword = await bcrypt.hash("Pesantren123!", 12);
           userOrtu = await prisma.users.create({
             data: {
               nama: ortu.nama,
-              no_hp: ortu.no_hp,
+              no_hp: (ortu.no_hp && ortu.no_hp.trim() !== "") ? ortu.no_hp.trim() : null,
               alamat: ortu.alamat,
+              password: hashedParentPassword,
               is_active: true,
             },
           });
@@ -381,7 +439,7 @@ exports.createPendaftarManual = async (req, res) => {
     // Generate nomor pendaftaran
     const year = new Date().getFullYear().toString().slice(-2);
     const count = await prisma.ppdb_pendaftar.count({ where: { id_tahun: parseInt(id_tahun) } });
-    const no_pendaftaran = `PPDB-${tahun.tahun_ajaran.replace("/", "")}-${String(count + 1).padStart(4, "0")}`;
+    const no_pendaftaran = `PPDB-${tahun.tahun_ajaran.replace("/", "")}-G${tahun.gelombang}-${String(count + 1).padStart(4, "0")}`;
 
     const newPendaftar = await prisma.ppdb_pendaftar.create({
       data: {

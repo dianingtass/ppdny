@@ -182,7 +182,7 @@ export default function DataUstadz() {
                             <button
                               onClick={() => handleEdit(item)}
                               className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                              title="View"
+                              title="Lihat"
                             >
                               <Eye size={18} />
                             </button>
@@ -253,7 +253,7 @@ export default function DataUstadz() {
                       onClick={() => handleEdit(item)}
                       className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition"
                     >
-                      <Eye size={16} /> View
+                      <Eye size={16} /> Lihat
                     </button>
                   </div>
                 </div>

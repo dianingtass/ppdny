@@ -132,7 +132,7 @@ export default function PortalScreening() {
                                             <td className="p-4">{latest.users_screening_id_timkesTousers?.nama || "-"}</td>
                                             <td className="text-center space-x-2">
                                                 <ActionButton label="Edit" color="blue" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/edit/${latest.id_screening}`)} />
-                                                <ActionButton label="View" color="green" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/view/${latest.id_screening}`)} />
+                                                <ActionButton label="Lihat" color="green" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/view/${latest.id_screening}`)} />
                                             </td>
                                         </tr>
                                     ) : (
@@ -168,7 +168,7 @@ export default function PortalScreening() {
                                             <td className="p-4">{item.users_screening_id_timkesTousers?.nama || "-"}</td>
                                             <td className="text-center space-x-2">
                                                 <ActionButton label="Edit" color="blue" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/edit/${item.id_screening}`)} />
-                                                <ActionButton label="View" color="green" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/view/${item.id_screening}`)} />
+                                                <ActionButton label="Lihat" color="green" onClick={() => navigate(`/${routePrefix}/daftarSantriScreening/${id}/view/${item.id_screening}`)} />
                                             </td>
                                         </tr>
                                     )) : (

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function usePagination(data) {
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
 

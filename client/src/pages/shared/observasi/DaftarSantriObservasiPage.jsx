@@ -14,7 +14,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-  const limit = 5;
+  const limit = 10;
 
   const formatLatestObservasiDateTime = (latestObservasi) => {
     if (!latestObservasi?.tanggal) return "-";

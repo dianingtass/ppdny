@@ -4,7 +4,7 @@ const path = require("path");
 
 exports.getSantriList = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 5 } = req.query;
+    const { search = "", page = 1, limit = 10 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 
@@ -105,7 +105,7 @@ exports.getSantriDetail = async (req, res) => {
 exports.getScreeningBySantri = async (req, res) => {
   try {
     const { id } = req.params;
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 

@@ -10,7 +10,7 @@ dayjs.extend(timezone)
 
 const getKamarList = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 5 } = req.query;
+    const { search = "", page = 1, limit = 10 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 
@@ -130,7 +130,7 @@ const getKamarDetail = async (req, res) => {
 const getAbsensiByKamar = async (req, res) => {
   try {
     const { id } = req.params;
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 

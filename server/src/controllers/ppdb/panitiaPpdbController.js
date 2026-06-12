@@ -171,22 +171,10 @@ exports.simpanHasilSeleksi = async (req, res) => {
       });
     }
 
-    // Update status pendaftar berdasarkan rekomendasi (Lulus/Ditolak tetap terhitung di query awal)
-    let newStatus = pendaftar.status;
-    if (rekomendasi === "Diterima") newStatus = "Lulus";
-    else if (rekomendasi === "Ditolak") newStatus = "Ditolak";
-
-    if (newStatus !== pendaftar.status) {
-      await prisma.ppdb_pendaftar.update({
-        where: { id: parseInt(id_pendaftar) },
-        data: { status: newStatus },
-      });
-    }
-
     return res.json({
       success: true,
       message: "Hasil seleksi berhasil disimpan",
-      data: { ...seleksi, status_pendaftar: newStatus },
+      data: seleksi,
     });
   } catch (error) {
     console.error(error);

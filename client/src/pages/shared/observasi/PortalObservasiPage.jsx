@@ -21,7 +21,7 @@ export default function PortalObservasiPage({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalObservasi, setTotalObservasi] = useState(0);
-  const limit = 5;
+  const limit = 10;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,7 +112,7 @@ export default function PortalObservasiPage({
               onClick={() => navigate(`/${rolePrefix}/daftarSantriObservasi/${id}/view/${item.id_observasi}`)}
               className="mt-4 w-full px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
             >
-              View
+              Lihat
             </button>
           </div>
         ))}
@@ -209,7 +209,7 @@ export default function PortalObservasiPage({
                           onClick={() => navigate(`/${rolePrefix}/daftarSantriObservasi/${id}/view/${latest.id_observasi}`)}
                           className="px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
                         >
-                          View
+                          Lihat
                         </button>
                       </td>
                     </tr>
@@ -257,7 +257,7 @@ export default function PortalObservasiPage({
                           onClick={() => navigate(`/${rolePrefix}/daftarSantriObservasi/${id}/view/${item.id_observasi}`)}
                           className="px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
                         >
-                          View
+                          Lihat
                         </button>
                       </td>
                     </tr>
