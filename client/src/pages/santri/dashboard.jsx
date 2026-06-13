@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, Cross } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function SantriDashboard() {
   const [loading, setLoading] = useState(true);
@@ -226,13 +226,7 @@ export default function SantriDashboard() {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
                   >
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 hover:bg-white/30 transition">
-                      {santri.foto_profil ? (
-                        <img src={getImageUrl(santri.foto_profil)} alt={santri.nama} className="w-full h-full object-cover"/>
-                      ) : (
-                        <span className="text-green-600 font-bold text-sm bg-green-100 w-full h-full flex items-center justify-center">{santri.nama.charAt(0).toUpperCase()}</span>
-                      )}
-                    </div>
+                    <ProfileAvatar fotoProfil={santri.foto_profil} nama={santri.nama} className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-transparent transition" />
                     <div>
                       <p className="font-medium leading-tight">{santri.nama}</p>
                       <p className="text-sm text-white/75">NIS: {santri.nip}</p>

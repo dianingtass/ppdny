@@ -7,7 +7,7 @@ import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailPengaduanModal from '../../components/DetailPengaduanModal';
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function Pengaduan() {
   const [data, setData] = useState([]);
@@ -128,13 +128,7 @@ export default function Pengaduan() {
 
               <div className="flex gap-4 items-start pl-2">
                 <div className="flex-shrink-0 pt-1">
-                  <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 overflow-hidden">
-                      {item.santri.foto_profil ? (
-                          <img src={getImageUrl(item.santri.foto_profil)} alt={item.santri.nama} className="w-full h-full object-cover" />
-                      ) : (
-                          <User size={20} className="text-orange-500" />
-                      )}
-                  </div>
+                  <ProfileAvatar fotoProfil={item.santri.foto_profil} nama={item.santri.nama} className="w-10 h-10 border border-orange-100 flex-shrink-0" iconSize={20} />
                 </div>
 
                 <div className="flex-1 min-w-0">

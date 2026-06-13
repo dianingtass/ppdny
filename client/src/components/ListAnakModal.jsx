@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import api from "../config/api";
 import { X, User, Plus, Loader2, Trash2, AlertTriangle } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
-import { getImageUrl } from '../utils/imageUrl';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick, refreshTrigger }) {
   const [anakList, setAnakList] = useState([]);
@@ -111,11 +111,7 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
                   className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 flex items-center justify-between group hover:border-green-200 hover:bg-green-50/30 transition"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {item.foto_profil
-                        ? <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover" alt={item.nama} />
-                        : <User className="text-green-400" size={20} />}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 border border-gray-200 flex-shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-gray-800 text-sm truncate">{item.nama}</p>
                       <p className="text-[10px] text-gray-500 truncate">

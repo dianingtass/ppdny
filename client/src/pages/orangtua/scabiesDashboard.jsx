@@ -25,7 +25,7 @@ import {
   YAxis,
 } from "recharts";
 import NotificationDropdown from "../../components/NotificationDropdown";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 const formatNumber = (value) => Number(value || 0).toLocaleString("id-ID");
 
@@ -112,16 +112,7 @@ export default function OrangTuaScabiesDashboard() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
               >
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 hover:bg-white/30 transition">
-                  <img
-                    src={getImageUrl(data.ortu.foto_profil)}
-                    alt={data.ortu.nama}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = `https://ui-avatars.com/api/?name=${data.ortu.nama}`;
-                    }}
-                  />
-                </div>
+                <ProfileAvatar fotoProfil={data.ortu.foto_profil} nama={data.ortu.nama} className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-transparent transition" />
                 <div>
                   <p className="font-medium leading-tight">{data.ortu.nama}</p>
                   <p className="text-sm text-white/75">
@@ -159,16 +150,13 @@ export default function OrangTuaScabiesDashboard() {
 
       <div className="max-w-6xl mx-auto px-4 -mt-12">
         <div className="bg-white rounded-3xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
-          <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
-            <img
-              src={getImageUrl(data.anak.foto_profil)}
-              className="w-full h-full object-cover"
-              alt="Foto Anak"
-              onError={(e) => {
-                e.target.src = `https://ui-avatars.com/api/?name=${data.anak.nama}`;
-              }}
-            />
-          </div>
+          <ProfileAvatar
+            fotoProfil={data.anak.foto_profil}
+            nama={data.anak.nama}
+            className="w-24 h-24 border-4 border-white shadow-lg flex-shrink-0"
+            rounded={false}
+            iconSize={40}
+          />
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1 justify-center md:justify-start">
               <p className="text-teal-600 text-xs font-bold uppercase tracking-widest">Dashboard Scabies Anak</p>

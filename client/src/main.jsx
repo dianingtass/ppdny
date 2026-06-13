@@ -24,8 +24,15 @@ const updateSW = registerSW({
   },
 })
 
-createRoot(document.getElementById('root')).render(
+const root = createRoot(document.getElementById('root'))
+
+root.render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
+
+// Sembunyikan splash screen setelah React selesai mount
+if (typeof window.__hideSplash === 'function') {
+  window.__hideSplash()
+}

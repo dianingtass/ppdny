@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { User, Users, BookOpen, Calendar, AlertCircle, Clock, Bell, CheckCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -130,13 +130,7 @@ export default function Dashboard() {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
                   >
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
-                      {ustadz.foto_profil !== '-' ? (
-                         <img src={getImageUrl(ustadz.foto_profil)} alt={ustadz.nama} className="w-full h-full object-cover"/>
-                      ) : (
-                         <User size={20} />
-                      )}
-                    </div>
+                    <ProfileAvatar fotoProfil={ustadz.foto_profil} nama={ustadz.nama} className="w-10 h-10 bg-white/20 border border-transparent" iconSize={20} />
                     <div>
                       <p className="font-medium leading-tight">{ustadz.nama}</p>
                       <p className="text-sm text-white/75">NIP: {ustadz.nip}</p>

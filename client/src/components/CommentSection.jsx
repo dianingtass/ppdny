@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../config/api";
 import { MessageCircle, Send, ChevronDown } from "lucide-react";
-import { getImageUrl } from '../utils/imageUrl';
+import ProfileAvatar from './ProfileAvatar';
 
 const formatDateTime = (dateString) => {
   if (!dateString) return "";
@@ -26,23 +26,13 @@ const formatRole = (role) => {
   return map[role?.toLowerCase()] || "Pengguna";
 };
 
-const Avatar = ({ user }) => {
-  if (user?.foto_profil) {
-    return (
-      <img
-        src={getImageUrl(user.foto_profil)}
-        alt={user.nama}
-        className="w-9 h-9 rounded-full object-cover border border-gray-200"
-      />
-    );
-  }
-
-  return (
-    <div className="w-9 h-9 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold text-sm border border-green-200">
-      {(user?.nama || "U").charAt(0).toUpperCase()}
-    </div>
-  );
-};
+const Avatar = ({ user }) => (
+  <ProfileAvatar
+    fotoProfil={user?.foto_profil}
+    nama={user?.nama}
+    className="w-9 h-9 border border-gray-200 flex-shrink-0"
+  />
+);
 
 function ReplyItem({ reply }) {
   return (

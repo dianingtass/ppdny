@@ -3,7 +3,7 @@ import api from "../config/api";
 import { X, Plus, Loader2, Search, Trash2, AlertTriangle } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
-import { getImageUrl } from '../utils/imageUrl';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignClick, refreshTrigger }) {
   const [santriList, setSantriList] = useState([]);
@@ -79,10 +79,7 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
               {filteredSantri.map((item) => (
                 <div key={item.id} className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 flex items-center justify-between group hover:border-green-200 hover:bg-green-50/30 transition">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="min-w-10 h-10 rounded-full bg-green-100 border border-gray-200 flex items-center justify-center overflow-hidden">
-                      {/* Clean Code: Menggunakan route relatif untuk proxy dan safe navigation */}
-                      {item?.foto_profil ? <img src={getImageUrl(item.foto_profil)} alt="" className="w-full h-full object-cover" /> : <span className="text-green-600 font-bold text-xs">{item?.nama?.charAt(0)}</span>}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 border border-gray-200 flex-shrink-0" />
                     <div className="min-w-0"><p className="font-bold text-gray-800 text-sm truncate">{item?.nama}</p><p className="text-[10px] text-gray-400 truncate">NIS: {item?.nip}</p></div>
                   </div>
                   <button onClick={() => handleRemoveClick(item.id, item?.nama)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>

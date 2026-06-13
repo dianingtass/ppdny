@@ -19,7 +19,7 @@ import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import InputStafModal from "../../components/InputStafModal";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function ManajemenStaf() {
   const [dataList, setDataList] = useState([]);
@@ -251,11 +251,7 @@ export default function ManajemenStaf() {
                       <tr key={item.id} className="hover:bg-green-50/50 transition">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center overflow-hidden border border-green-200 flex-shrink-0 text-green-600 font-bold">
-                              {item.foto_profil ? (
-                                <img src={getImageUrl(item.foto_profil)} alt={item.nama} className="w-full h-full object-cover" />
-                              ) : item.nama.charAt(0).toUpperCase()}
-                            </div>
+                            <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 border border-green-200 flex-shrink-0" />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="font-semibold text-gray-800 truncate">{item.nama}</p>
@@ -307,11 +303,7 @@ export default function ManajemenStaf() {
               currentData.map((item) => (
                 <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-green-200 text-green-600 font-bold text-lg">
-                      {item.foto_profil ? (
-                        <img src={getImageUrl(item.foto_profil)} alt={item.nama} className="w-full h-full object-cover" />
-                      ) : item.nama.charAt(0).toUpperCase()}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 border border-green-200 flex-shrink-0" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
                         <h3 className="font-bold text-gray-800 text-base leading-tight">{item.nama}</h3>

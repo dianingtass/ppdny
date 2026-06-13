@@ -8,7 +8,7 @@ import {
 import AlertToast from "../../components/AlertToast";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import { useAlert } from "../../hooks/useAlert";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 // Field wajib data diri yang harus semua terisi agar tidak bisa diedit
 const REQUIRED_FIELDS = ['nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'email', 'no_hp', 'alamat'];
@@ -223,9 +223,12 @@ export default function SantriProfile() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 text-center">
           <h2 className="text-lg font-bold text-gray-800 mb-6 text-left">Foto Profil</h2>
           <div className="relative inline-block group">
-            <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-green-100 flex items-center justify-center border-4 border-white shadow-md mx-auto overflow-hidden">
-              {dataDiri.foto_profil ? <img src={getImageUrl(dataDiri.foto_profil)} alt="Profil" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; }} /> : <User size={64} className="text-green-400" />}
-            </div>
+            <ProfileAvatar
+              fotoProfil={dataDiri.foto_profil}
+              nama={dataDiri.nama_lengkap}
+              className="w-28 h-28 md:w-32 md:h-32 border-4 border-white shadow-md mx-auto"
+              iconSize={64}
+            />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg, image/jpg" onChange={handlePhotoUpload} />
             <button onClick={() => fileInputRef.current.click()} disabled={saving} className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-700 shadow-sm transition border-2 border-white cursor-pointer">{saving ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}</button>
           </div>

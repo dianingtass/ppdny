@@ -2,6 +2,7 @@ const prisma = require('../../config/prisma');
 
 const MAX_ACTIVE_PER_TIMKES = 10;
 const AUTO_CLOSE_HOURS = 24;
+let lastExpiredRoomsCheck = 0;
 
 const getTodayRange = () => {
   const start = new Date();
@@ -146,31 +147,32 @@ const getSantriList = async () => {
 };
 
 const autoCloseExpiredActiveRooms = async () => {
+  const now = Date.now();
+  // Only run this check at most once every 5 minutes (300,000 ms)
+  if (now - lastExpiredRoomsCheck < 300000) {
+    return 0;
+  }
+  lastExpiredRoomsCheck = now;
+
   const { start } = getTodayRange();
   
-  // Clean up waiting rooms from previous days first
-  const expiredWaitingRooms = await prisma.konsultasi_room.findMany({
+  // Clean up waiting rooms from previous days first using updateMany
+  const updateWaiting = await prisma.konsultasi_room.updateMany({
     where: {
       status: 'waiting',
       created_at: { lt: start }
     },
-    select: { id_room: true }
+    data: {
+      status: 'closed',
+      closed_at: new Date(),
+      close_reason_type: 'auto_inactive',
+      closed_reason_text: 'Ditutup otomatis karena antrian kedaluwarsa hari sebelumnya',
+      updated_at: new Date(),
+    }
   });
 
-  for (const room of expiredWaitingRooms) {
-    await prisma.konsultasi_room.update({
-      where: { id_room: room.id_room },
-      data: {
-        status: 'closed',
-        closed_at: new Date(),
-        close_reason_type: 'auto_inactive',
-        closed_reason_text: 'Ditutup otomatis karena antrian kedaluwarsa hari sebelumnya',
-        updated_at: new Date(),
-      }
-    });
-  }
-
-  const rooms = await prisma.konsultasi_room.findMany({
+  // Find all active rooms from previous days
+  const expiredActiveRooms = await prisma.konsultasi_room.findMany({
     where: {
       status: 'active',
       OR: [
@@ -181,27 +183,29 @@ const autoCloseExpiredActiveRooms = async () => {
     select: { id_room: true, id_timkes: true },
   });
 
-  for (const room of rooms) {
-    await prisma.$transaction(async (tx) => {
-      const current = await tx.konsultasi_room.findUnique({ where: { id_room: room.id_room } });
-      if (!current || current.status !== 'active') return;
-
-      await tx.konsultasi_room.update({
-        where: { id_room: room.id_room },
-        data: {
-          status: 'closed',
-          closed_at: new Date(),
-          close_reason_type: 'auto_inactive',
-          closed_reason_text: 'Ditutup otomatis karena reset slot harian',
-          updated_at: new Date(),
-        },
-      });
-
-      await promoteWaitingRoom(tx, room.id_timkes);
+  if (expiredActiveRooms.length > 0) {
+    const expiredActiveIds = expiredActiveRooms.map(r => r.id_room);
+    
+    // Close all expired active rooms in one batch query
+    await prisma.konsultasi_room.updateMany({
+      where: { id_room: { in: expiredActiveIds } },
+      data: {
+        status: 'closed',
+        closed_at: new Date(),
+        close_reason_type: 'auto_inactive',
+        closed_reason_text: 'Ditutup otomatis karena reset slot harian',
+        updated_at: new Date(),
+      }
     });
+
+    // Promote waiting rooms for each affected timkes
+    const affectedTimkesIds = [...new Set(expiredActiveRooms.map(r => r.id_timkes))];
+    for (const timkesId of affectedTimkesIds) {
+      await promoteWaitingRoom(prisma, timkesId);
+    }
   }
 
-  return rooms.length + expiredWaitingRooms.length;
+  return expiredActiveRooms.length + (updateWaiting.count || 0);
 };
 
 const getCurrentRoomBySantri = async (santriId) => {
@@ -244,7 +248,7 @@ const promoteWaitingRoom = async (tx, timkesId) => {
 const createRoom = async ({ santriId, timkesId }) => {
   const { start, end } = getTodayRange();
 
-  return prisma.$transaction(async (tx) => {
+  const room = await prisma.$transaction(async (tx) => {
     const hasCurrent = await tx.konsultasi_room.findFirst({
       where: { id_santri: santriId, status: { in: ['active', 'waiting'] } },
       select: { id_room: true },
@@ -279,7 +283,8 @@ const createRoom = async ({ santriId, timkesId }) => {
 
     const status = activeCount < MAX_ACTIVE_PER_TIMKES ? 'active' : 'waiting';
     const now = new Date();
-    const room = await tx.konsultasi_room.create({
+    
+    return tx.konsultasi_room.create({
       data: {
         id_santri: santriId,
         id_timkes: timkesId,
@@ -291,10 +296,10 @@ const createRoom = async ({ santriId, timkesId }) => {
         updated_at: now,
       },
     });
+  }, { timeout: 15000 });
 
-    const [hydrated] = await attachRoomRelations([room], santriId);
-    return normalizeRoom(hydrated);
-  });
+  const [hydrated] = await attachRoomRelations([room], santriId);
+  return normalizeRoom(hydrated);
 };
 
 const getRoomById = async (roomId, userId) => {
@@ -375,7 +380,7 @@ const sendMessage = async ({ roomId, senderId, senderRole, messageText }) => {
 
     const sender = await tx.users.findUnique({ where: { id: senderId }, select: { id: true, nama: true, foto_profil: true } });
     return normalizeMessage({ ...message, sender });
-  });
+  }, { timeout: 15000 });
 };
 
 const closeRoom = async ({ roomId, userId, userRole, reasonText }) => prisma.$transaction(async (tx) => {
@@ -413,7 +418,7 @@ const closeRoom = async ({ roomId, userId, userRole, reasonText }) => prisma.$tr
   await promoteWaitingRoom(tx, room.id_timkes);
 
   return normalizeRoom(closedRoom);
-});
+}, { timeout: 15000 });
 
 const listActiveRoomsByTimkes = async (timkesId) => {
   await autoCloseExpiredActiveRooms();
@@ -520,7 +525,7 @@ const autoCloseInactiveRooms = async () => {
       });
 
       await promoteWaitingRoom(tx, room.id_timkes);
-    });
+    }, { timeout: 15000 });
   }
 
   return rooms.length;

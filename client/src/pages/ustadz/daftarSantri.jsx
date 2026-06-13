@@ -8,7 +8,7 @@ import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailSantriModal from "../../components/DetailSantriModal";
 import PengaduanSantriModal from "../../components/PengaduanSantriModal";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function DaftarSantri() {
   const [loading, setLoading] = useState(true);
@@ -168,13 +168,7 @@ export default function DaftarSantri() {
             {santris.map((santri) => (
               <div key={santri.id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-14 h-14 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-200">
-                    {santri.foto_profil && santri.foto_profil !== '-' ? (
-                      <img src={getImageUrl(santri.foto_profil)} className="w-full h-full object-cover" alt={santri.nama}/>
-                    ) : (
-                      <User size={24} className="text-gray-400" />
-                    )}
-                  </div>
+                  <ProfileAvatar fotoProfil={santri.foto_profil} nama={santri.nama} className="w-14 h-14 border border-gray-200 flex-shrink-0" iconSize={24} />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-gray-800 truncate">{santri.nama}</h3>
                     <p className="text-xs text-gray-500 truncate">NIS: {santri.nip}</p>

@@ -19,9 +19,36 @@
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/pwa-192x192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/pwa-512x512.png" />
+
+    <!-- Geist font (preload agar tersedia di splash screen) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Splash Screen CSS (dari public/ agar langsung tersedia tanpa bundling) -->
+    <link rel="stylesheet" href="/splash.css" />
   </head>
   <body>
+    <!-- Custom Splash Screen (tersembunyi saat React selesai mount) -->
+    <div id="splash-screen" role="status" aria-label="Memuat aplikasi...">
+      <img src="/pwa-192x192.png" alt="SIM-Tren Logo" class="splash-logo" />
+      <h1 class="splash-title">SIM-Tren</h1>
+      <p class="splash-subtitle">Sistem Informasi Pesantren</p>
+      <div class="splash-spinner"></div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Sembunyikan splash screen setelah React selesai render -->
+    <script>
+      window.__hideSplash = function () {
+        var el = document.getElementById('splash-screen');
+        if (el) {
+          el.classList.add('hidden');
+          setTimeout(function () { el.remove(); }, 450);
+        }
+      };
+    </script>
   </body>
 </html>

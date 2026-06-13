@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Search, FileText } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import api from "../../../config/api";
-import { getImageUrl } from '../../../utils/imageUrl';
+import ProfileAvatar from '../../../components/ProfileAvatar';
 
 export default function DaftarSantriScreening() {
   const [santriList, setSantriList] = useState([]);
@@ -92,19 +92,7 @@ export default function DaftarSantriScreening() {
                       <tr key={item.id} className="hover:bg-gray-50 transition">
                         <td className="p-4 align-top">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
-                              {item.foto_profil ? (
-                                <img
-                                  src={getImageUrl(item.foto_profil)}
-                                  alt={item.nama}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <span className="text-green-600 font-bold text-sm bg-green-100 w-full h-full flex items-center justify-center">
-                                  {item.nama.charAt(0).toUpperCase()}
-                                </span>
-                              )}
-                            </div>
+                            <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 border border-gray-100 flex-shrink-0" />
                             <div>
                               <p className="font-semibold text-gray-800">{item.nama}</p>
                               <p className="text-xs text-gray-500">NIS: {item.nip}</p>

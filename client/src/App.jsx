@@ -4,6 +4,7 @@ import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Layout from "./components/Layout"
 import { AuthProvider } from "./context/AuthContext";
+import InstallPrompt from "./components/InstallPrompt";
 
 import LandingPage from "./pages/LandingPage"
 
@@ -118,6 +119,7 @@ import CekStatus          from "./pages/ppdb/cekStatus";
 function App() {
   return (
     <AuthProvider>
+      <InstallPrompt />
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}

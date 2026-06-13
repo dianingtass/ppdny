@@ -2,41 +2,7 @@ import { MessageCircle, History, Send, CheckCheck, Check, X, User, ArrowLeft } f
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../config/api';
-import { getImageUrl } from '../../utils/imageUrl';
-
-const AVATAR_COLORS = [
-  'bg-emerald-500',
-  'bg-blue-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-500',
-];
-
-const getProfileSrc = (fotoProfil) => {
-  if (!fotoProfil || fotoProfil === '-') return null;
-  if (fotoProfil.startsWith('http')) return fotoProfil;
-  return getImageUrl(fotoProfil);
-};
-
-const getAvatarColor = (name = '') => {
-  const hash = [...String(name)].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-};
-
-
-const ProfileAvatar = ({ fotoProfil, nama, className = '' }) => {
-  const profileSrc = getProfileSrc(fotoProfil);
-  if (profileSrc) {
-    return <img src={profileSrc} alt={nama || 'Santri'} className={`${className} rounded-full object-cover`} />;
-  }
-
-  return (
-    <div className={`${className} rounded-full flex items-center justify-center text-white ${getAvatarColor(nama)}`} aria-label={nama || 'Santri'}>
-      <User size={18} />
-    </div>
-  );
-};
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 const normalizeMessage = (item) => ({
   ...item,

@@ -7,7 +7,7 @@ import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
-import { getImageUrl } from '../../../utils/imageUrl';
+import ProfileAvatar from '../../../components/ProfileAvatar';
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -137,13 +137,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
                       </td>
                       <td className="py-4 pl-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
-                            {item.users.foto_profil ? (
-                              <img src={getImageUrl(item.users.foto_profil)} alt={item.users.nama} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-green-600 font-bold text-sm bg-green-100 w-full h-full flex items-center justify-center">{item.users.nama.charAt(0).toUpperCase()}</span>
-                            )}
-                          </div>
+                          <ProfileAvatar fotoProfil={item.users.foto_profil} nama={item.users.nama} className="w-10 h-10 border border-gray-100 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-800">{item.users.nama}</p>
                             <p className="text-xs text-gray-500">{item.users.nip}</p>
@@ -176,13 +170,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
               <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
-                      {item.users.foto_profil ? (
-                        <img src={getImageUrl(item.users.foto_profil)} alt={item.users.nama} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.users.nama.charAt(0)}</div>
-                      )}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.users.foto_profil} nama={item.users.nama} className="w-10 h-10 border border-gray-100 flex-shrink-0" />
                     <div>
                       <h3 className="font-bold text-gray-800 text-sm">{item.jenis_layanan.nama_layanan}</h3>
                       <p className="text-xs text-gray-500">{item.users.nama}</p>

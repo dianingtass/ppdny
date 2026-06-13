@@ -21,7 +21,7 @@ import { useAlert } from "../../hooks/useAlert";
 import InputUstadzModal from "../../components/InputUstadzModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
-import { getImageUrl } from '../../utils/imageUrl';
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 export default function DataUstadz() {
   const [ustadzList, setUstadzList] = useState([]);
@@ -141,13 +141,7 @@ export default function DataUstadz() {
                       <tr key={item.id} className="hover:bg-gray-50 transition">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
-                              {item.foto_profil ? (
-                                <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover"/>
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.nama.charAt(0)}</div>
-                              )}
-                            </div>
+                            <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 border border-gray-100 flex-shrink-0" />
                             <div>
                               <p className="font-semibold text-gray-800">
                                 {item.nama}
@@ -211,13 +205,7 @@ export default function DataUstadz() {
                   className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
-                      {item.foto_profil ? (
-                        <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover"/>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.nama.charAt(0)}</div>
-                      )}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 border border-gray-100 flex-shrink-0" />
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 text-lg leading-tight">
                         {item.nama}

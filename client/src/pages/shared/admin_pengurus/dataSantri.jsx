@@ -12,7 +12,7 @@ import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
-import { getImageUrl } from '../../../utils/imageUrl';
+import ProfileAvatar from '../../../components/ProfileAvatar';
 
 /**
  * @param {string} rolePrefix — "admin" | "pengurus"
@@ -148,13 +148,7 @@ export default function DataSantriPage({ rolePrefix }) {
                     <tr key={item.id} className="hover:bg-gray-50 transition">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
-                            {item.foto_profil ? (
-                              <img src={getImageUrl(item.foto_profil)} alt={item.nama} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-green-600 font-bold text-sm bg-green-100 w-full h-full flex items-center justify-center">{item.nama.charAt(0).toUpperCase()}</span>
-                            )}
-                          </div>
+                          <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 flex-shrink-0" />
                           <div className="min-w-0"><p className="font-semibold text-gray-800 truncate">{item.nama}</p><p className="text-xs text-gray-500 truncate">NIS: {item.nip}</p></div>
                         </div>
                       </td>
@@ -186,13 +180,7 @@ export default function DataSantriPage({ rolePrefix }) {
             {currentData.length > 0 ? currentData.map((item) => (
               <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden border border-gray-100">
-                    {item.foto_profil ? (
-                      <img src={getImageUrl(item.foto_profil)} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold">{item.nama.charAt(0)}</div>
-                    )}
-                  </div>
+                  <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 flex-shrink-0" />
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-800 text-lg leading-tight">{item.nama}</h3>
                     <p className="text-sm text-gray-500 font-medium">NIS: {item.nip}</p>
