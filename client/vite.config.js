@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png', 'pwa-192x192.png', 'pwa-512x512.png'],
+      includeAssets: ['logo.png', 'pwa-192x192.png', 'pwa-512x512.png', 'apple-splash.png'],
       devOptions: {
         enabled: true,
         type: 'module',
@@ -54,7 +54,7 @@ export default defineConfig({
         start_url: '/',
         scope: '/',
         display: 'standalone',
-        background_color: '#f9fafb',
+        background_color: '#f0fdf4',
         theme_color: '#15803d',
         orientation: 'portrait-primary',
         categories: ['education', 'health', 'utilities'],

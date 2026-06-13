@@ -34,7 +34,10 @@ api.interceptors.response.use(
     );
 
 
-    if (error.response && error.response.status === 401 && !isLoginURL) {
+    const status = error.response?.status;
+    const isAuthError = status === 401 || (status === 403 && error.response.data?.message?.toLowerCase().includes('token'));
+
+    if (error.response && isAuthError && !isLoginURL) {
       if (isPublicPath) {
         console.warn('Token tidak valid saat akses halaman publik. Token dibersihkan tanpa redirect.');
         clearAuthSession();
@@ -43,6 +46,7 @@ api.interceptors.response.use(
       console.warn('Token expired atau tidak valid. Mengarahkan ke Login...');
       clearAuthSession();
       window.location.href = '/login';
+      return new Promise(() => {}); // Return pending promise to suppress warning/alert in page-level catch blocks
     }
     return Promise.reject(error);
   }
