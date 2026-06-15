@@ -48,23 +48,7 @@ app.use('/api/ppdb/public',   require('./routes/ppdb/publicPpdbRoutes'));
 app.use('/api/auth',          require('./routes/authRoutes'));
 
 
-// ── CRON ENDPOINT (dipanggil Vercel Cron) ────────────────────
-app.post('/api/cron/auto-close-konsultasi', async (req, res) => {
-  // Validasi secret agar tidak bisa dipanggil sembarangan
-  const secret = req.headers['x-cron-secret'];
-  if (secret !== process.env.CRON_SECRET) {
-    return res.status(401).json({ success: false, message: 'Unauthorized.' });
-  }
-  try {
-    const konsultasiService = require('./controllers/shared/konsultasiService');
-    await konsultasiService.autoCloseExpiredActiveRooms();
-    await konsultasiService.autoCloseInactiveRooms();
-    return res.json({ success: true, message: 'Auto-close konsultasi selesai.' });
-  } catch (err) {
-    console.error('Cron auto-close konsultasi error:', err.message);
-    return res.status(500).json({ success: false, message: err.message });
-  }
-});
+
 
 // ── PROTECTED ROUTES (butuh token) ───────────────────────────
 app.use(verifyToken);
