@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sparkles,
   Stethoscope,
+  LogOut,
 } from "lucide-react";
 import api from "../../config/api";
 import { exportScreeningPdf } from "../../components/PdfScreening";
@@ -152,6 +153,12 @@ export default function SantriScabiesDashboard() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   if (loading || openingConsultation) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -166,14 +173,18 @@ export default function SantriScabiesDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 pb-10">
       <div className="bg-[url('/header.png')] bg-cover bg-center text-white px-4 sm:px-6 py-6 pb-24 shadow-lg">
-        <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <button onClick={() => navigate("/santri")} className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition cursor-pointer">
-            <ArrowLeft size={24} />
-          </button>
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-2xl font-bold truncate">Dashboard Scabies</h1>
             <p className="text-green-100 text-sm truncate">Pusat edukasi, konsultasi, dan ringkasan kesehatan santri</p>
           </div>
+          <button 
+            onClick={handleLogout} 
+            className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+          >
+            <LogOut size={16} />
+            <span>Keluar</span>
+          </button>
         </div>
       </div>
 

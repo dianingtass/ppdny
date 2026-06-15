@@ -187,12 +187,12 @@ export default function Login() {
           <div className="p-30 w-144 h-144 rounded-full flex items-center justify-center bg-[radial-gradient(circle,rgba(255,255,255,0.3)_0%,rgba(0,0,0,0)_60%)]">
             <img src="/logo.png" alt="" />
           </div>
-          <span className="text-5xl -mt-28 z-5 mb-3 tracking-tight simtren flex">
-            <h1 className="font-black pr-4">S I M</h1>
-            <h1 className="font-light">- T r e n</h1>
+          <span className="text-5xl -mt-28 z-5 mb-3 tracking-tight scabismart flex">
+            <h1 className="font-black pr-4">Scabi</h1>
+            <h1 className="font-light">Smart</h1>
           </span>
           <p className="text-lg font-medium mb-6 z-5 text-green-100">
-            Sistem Informasi Manajemen Pesantren
+            Sistem Informasi &amp; Layanan Kesehatan
           </p>
         </div>
       </div>
@@ -200,22 +200,15 @@ export default function Login() {
       {/* --- KOLOM KANAN (FORM LOGIN) --- */}
       <div className="flex w-full lg:w-1/2 justify-center items-center px-4 sm:px-6 lg:bg-white relative z-10">
         <div className="w-full max-w-lg bg-white/20 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-8 rounded-3xl shadow-lg lg:shadow-none border border-white/20 lg:border-none">
-          <button
-            onClick={() => navigate("/")}
-            className="absolute top-6 left-6 lg:top-8 lg:left-8 flex items-center gap-2 text-white lg:text-gray-800 hover:text-white lg:hover:text-green-600 font-bold text-lg transition-colors z-50"
-          >
-            <ArrowLeft size={24} strokeWidth={3} />
-            <span className="hidden md:inline">Kembali ke Beranda</span>
-          </button>
           <div className="lg:hidden text-center mb-8">
             <div className="w-24 h-24 mx-auto flex items-center justify-center mb-4">
               <img src="/logo.png" alt="" />
             </div>
             <span>
-              <h2 className="text-2xl font-black text-white inline">SIM</h2>
-              <h2 className="text-2xl font-normal text-white inline">-Tren</h2>
+              <h2 className="text-2xl font-black text-white inline">Scabi</h2>
+              <h2 className="text-2xl font-normal text-white inline">Smart</h2>
             </span>
-            <p className="text-green-100 text-sm mt-1">Sistem Informasi Manajemen Pesantren</p>
+            <p className="text-green-100 text-sm mt-1">Sistem Informasi &amp; Layanan Kesehatan</p>
           </div>
 
           <div className="hidden lg:block mb-8">

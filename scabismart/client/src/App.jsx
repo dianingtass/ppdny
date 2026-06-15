@@ -81,7 +81,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/materi" element={<MateriView />} />
           <Route path="/materi/:id" element={<DetailMateri />} />
 
