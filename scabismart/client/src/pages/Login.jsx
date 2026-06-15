@@ -169,7 +169,7 @@ export default function Login() {
     e.preventDefault();
     if (!forgotData.nama || !forgotData.nip) return showAlert("error", "Nama dan NIS/NIP wajib diisi!");
     const nomorAdmin = "6287876383817";
-    const pesan = `[Permintaan Reset Kata Sandi Akun ${forgotData.role} SIM-Tren PPDNY]\nAtas nama: *${forgotData.nama}*\nNIS/NIP: *${forgotData.nip}*`;
+    const pesan = `[Permintaan Reset Kata Sandi Akun ${forgotData.role} ScabiSmart PPDNY]\nAtas nama: *${forgotData.nama}*\nNIS/NIP: *${forgotData.nip}*`;
     window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, "_blank");
     setOpenForgot(false);
     setForgotData({ role: "Santri", nama: "", nip: "" });

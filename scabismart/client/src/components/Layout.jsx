@@ -133,7 +133,7 @@ export default function GlobalLayout() {
 
     { category: "OPERASIONAL", roles: ["timkesehatan", "pimpinan", "admin"] },
     {
-      name: "SIM-Tren (Operasional)",
+      name: "ScabiSmart (Operasional)",
       path: "https://ppdny.vercel.app/",
       icon: Home,
       roles: ["timkesehatan", "pimpinan", "admin"],

@@ -77,7 +77,7 @@ async function generate() {
     <body>
       <div class="container">
         <img src="${logoPath}" class="logo" />
-        <h1 class="title">SIM-Tren</h1>
+        <h1 class="title">ScabiSmart</h1>
         <p class="subtitle">Sistem Informasi Pesantren</p>
       </div>
     </body>

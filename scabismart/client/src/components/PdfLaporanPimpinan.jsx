@@ -212,7 +212,7 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
       doc.setFontSize(8);
       doc.setFont("helvetica", "italic");
       doc.setTextColor(100);
-      doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", 105, 297 - 15, { align: "center" });
+      doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", 105, 297 - 15, { align: "center" });
       doc.text(`Halaman ${i} dari ${pageCount}`, 210 - margin.right, 297 - 15, { align: "right" });
     }
 

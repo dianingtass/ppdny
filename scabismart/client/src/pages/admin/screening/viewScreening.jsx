@@ -87,7 +87,7 @@ export default function ViewScreening() {
                     <h1 className="text-xl font-bold text-black tracking-wide uppercase">
                         Laporan Hasil Screening Kesehatan
                     </h1>
-                    <p className="text-[12px] text-gray-500 italic">Sistem Manajemen Pondok Pesantren (SIM-Tren)</p>
+                    <p className="text-[12px] text-gray-500 italic">Sistem Manajemen Pondok Pesantren (ScabiSmart)</p>
                     <div className="h-[1px] bg-black my-4"></div>
                 </div>
 

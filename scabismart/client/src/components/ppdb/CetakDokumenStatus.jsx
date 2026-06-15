@@ -114,7 +114,7 @@ export const cetakUndanganSeleksi = async ({ noPendaftaran, namaLengkap, namaGel
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(100);
-    doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", 105, 297 - 15, { align: "center" });
+    doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", 105, 297 - 15, { align: "center" });
   }
 
   doc.save(`Undangan_Seleksi_${noPendaftaran}.pdf`);
@@ -221,7 +221,7 @@ export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAja
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(100);
-    doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", 105, 297 - 15, { align: "center" });
+    doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", 105, 297 - 15, { align: "center" });
   }
 
   doc.save(`Surat_Kelulusan_${noPendaftaran}.pdf`);

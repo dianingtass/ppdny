@@ -148,7 +148,7 @@ export default function LandingPage() {
                 to="/login"
                 className="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-sm backdrop-blur-sm transition"
               >
-                <LogIn size={20} className="text-green-400" /> Login ke SIM-Tren
+                <LogIn size={20} className="text-green-400" /> Login ke ScabiSmart
               </Link>
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function LandingPage() {
           to="/login"
           className="flex-1 py-3 px-2 bg-gray-100 text-gray-800 font-bold rounded-xl text-center text-sm flex items-center justify-center mb-3"
         >
-          Masuk SIM-Tren
+          Masuk ScabiSmart
         </Link>
         <Link
           to="/ppdb/daftar"

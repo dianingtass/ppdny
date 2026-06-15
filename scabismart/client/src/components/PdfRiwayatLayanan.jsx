@@ -180,7 +180,7 @@ export const PdfRiwayatLayanan = async (detail, santriNama) => {
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(156, 163, 175);
-      doc.text(`Dicetak oleh SIM-TREN · ${new Date().toLocaleDateString("id-ID")} · Halaman ${i} dari ${pageCount}`, 105, 290, { align: "center" });
+      doc.text(`Dicetak oleh ScabiSmart · ${new Date().toLocaleDateString("id-ID")} · Halaman ${i} dari ${pageCount}`, 105, 290, { align: "center" });
     }
 
     const namaFile = `Riwayat_Layanan_${(detail.jenis_layanan?.nama_layanan || "Layanan").replace(/\s+/g, "_")}_${new Date().toLocaleDateString("id-ID").replace(/\//g, "-")}.pdf`;

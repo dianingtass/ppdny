@@ -321,7 +321,7 @@ export const exportScreeningPdf = async (data, screeningId, action='download') =
       doc.setFontSize(8);
       doc.setFont("helvetica", "italic");
       doc.setTextColor(150);
-      doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", 105, 297 - 15, { align: "center" });
+      doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", 105, 297 - 15, { align: "center" });
       doc.text(`Halaman ${i} dari ${pageCount}`, printWidth, 297 - 15, { align: "right" });
     }
 

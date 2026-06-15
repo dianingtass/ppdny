@@ -67,7 +67,7 @@ export default function InstallPrompt() {
       {/* Banner utama — muncul dari bawah */}
       <div
         role="dialog"
-        aria-label="Instal aplikasi SIM-Tren"
+        aria-label="Instal aplikasi ScabiSmart"
         className="fixed bottom-0 left-0 right-0 z-[9999] animate-slide-up"
         style={{ fontFamily: '"Geist", sans-serif' }}
       >
@@ -80,7 +80,7 @@ export default function InstallPrompt() {
                 <Smartphone size={20} className="text-white" />
               </div>
               <div>
-                <p className="text-white font-semibold text-sm leading-tight">Instal SIM-Tren</p>
+                <p className="text-white font-semibold text-sm leading-tight">Instal ScabiSmart</p>
                 <p className="text-green-200 text-xs">Akses lebih cepat dari homescreen</p>
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function InstallPrompt() {
             <div className="flex items-start gap-3 mb-4">
               <img
                 src="/pwa-192x192.png"
-                alt="Logo SIM-Tren"
+                alt="Logo ScabiSmart"
                 className="w-14 h-14 rounded-2xl object-contain flex-shrink-0 shadow-sm border border-gray-100"
               />
               <div>
@@ -106,7 +106,7 @@ export default function InstallPrompt() {
                   Tambahkan ke layar utama HP Anda
                 </p>
                 <p className="text-gray-500 text-xs leading-relaxed">
-                  Buka SIM-Tren lebih cepat tanpa perlu buka browser setiap saat. Bekerja bahkan saat koneksi lambat.
+                  Buka ScabiSmart lebih cepat tanpa perlu buka browser setiap saat. Bekerja bahkan saat koneksi lambat.
                 </p>
               </div>
             </div>

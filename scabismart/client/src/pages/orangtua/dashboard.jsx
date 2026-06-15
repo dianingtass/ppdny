@@ -83,7 +83,7 @@ export default function OrangTuaDashboard() {
       <div className="bg-[url('/header.png')] bg-cover bg-center text-white p-6 pb-20">
         <div className="max-w-6xl mx-auto flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold">SIM-Tren</h1>
+            <h1 className="text-2xl font-bold">ScabiSmart</h1>
               <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
           </div>
           <div className="flex items-center space-x-4">

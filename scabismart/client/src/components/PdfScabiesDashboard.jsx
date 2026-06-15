@@ -125,7 +125,7 @@ const addFooter = (doc) => {
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(150);
-    doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", PAGE_WIDTH / 2, PAGE_HEIGHT - 15, {
+    doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", PAGE_WIDTH / 2, PAGE_HEIGHT - 15, {
       align: "center",
     });
     doc.text(`Halaman ${i} dari ${pageCount}`, PAGE_WIDTH - margin.right, PAGE_HEIGHT - 15, {

@@ -122,7 +122,7 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
 
     // Teks catatan dipotong berdasarkan lebar printWidth A4
     const catatan1 = "1. Harap simpan dokumen ini dengan baik sebagai bukti pendaftaran yang sah.";
-    const catatan2 = "2. Gunakan Nomor Pendaftaran di atas untuk mengecek status verifikasi dokumen dan kelulusan \n    seleksi secara berkala melalui portal PPDB SIM-Tren.";
+    const catatan2 = "2. Gunakan Nomor Pendaftaran di atas untuk mengecek status verifikasi dokumen dan kelulusan \n    seleksi secara berkala melalui portal PPDB ScabiSmart.";
     const catatan3 = "3. Keputusan Panitia Seleksi bersifat mutlak dan tidak dapat diganggu gugat.";
 
     doc.text(doc.splitTextToSize(catatan1, printWidth), margin.left, cursorY);
@@ -139,7 +139,7 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
       doc.setFont("helvetica", "italic");
       doc.setTextColor(100);
       doc.text(`Tanggal Cetak: ${formatDate(new Date())}`, 105, 297 - 21, { align: "center" });
-      doc.text("Dokumen ini dihasilkan secara otomatis oleh SIM-Tren.", 105, 297 - 15, { align: "center" });
+      doc.text("Dokumen ini dihasilkan secara otomatis oleh ScabiSmart.", 105, 297 - 15, { align: "center" });
     }
 
     // Save PDF

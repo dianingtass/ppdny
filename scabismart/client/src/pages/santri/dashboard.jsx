@@ -215,7 +215,7 @@ export default function SantriDashboard() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold">SIM-Tren</h1>
+              <h1 className="text-2xl font-bold">ScabiSmart</h1>
               <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
             </div>
             <div className="flex items-center space-x-4">
