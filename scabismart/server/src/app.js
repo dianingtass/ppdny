@@ -77,7 +77,7 @@ app.use(activityLog);
 
 app.use('/api/santri/notifications',   require('./routes/santri/notificationRoutes'));
 app.use('/api/orangtua/notifications', require('./routes/orangtua/notificationRoutes'));
-app.use('/api/ustadz/notifications',   require('./routes/ustadz/notificationRoutes'));
+
 
 app.use('/api/santri',                require('./routes/santri/dashboardRoutes'));
 app.use('/api/santri/profile',        require('./routes/santri/pendataanRoutes'));
