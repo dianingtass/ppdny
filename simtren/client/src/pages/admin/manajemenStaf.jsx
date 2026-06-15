@@ -181,7 +181,7 @@ export default function ManajemenStaf() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">Manajemen Staf</h1>
-          <p className="text-gray-500 text-sm">Kelola akun administrator, pimpinan, tim kesehatan, dan pengurus</p>
+          <p className="text-gray-500 text-sm">Kelola akun administrator, pimpinan, dan pengurus</p>
         </div>
         <button onClick={handleAdd} className="hidden md:flex bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium items-center shadow-lg hover:shadow-green-500/30 transition-all">
           <Plus size={20} className="mr-2" /> Tambah Staf Baru
@@ -210,7 +210,7 @@ export default function ManajemenStaf() {
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-          {["Semua", "Admin", "Pimpinan", "Tim Kesehatan", "Pengurus"].map((roleName) => (
+          {["Semua", "Admin", "Pimpinan", "Pengurus"].map((roleName) => (
               <button
                 key={roleName}
                 onClick={() => setFilterRole(roleName)}

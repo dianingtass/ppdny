@@ -16,7 +16,6 @@ const ROLE_DASHBOARD = {
   pimpinan:     "/pimpinan",
   ustadz:       "/ustadz",
   admin:        "/admin",
-  timkesehatan: "/timkesehatan",
 };
 
 export default function Login() {
@@ -57,6 +56,40 @@ export default function Login() {
 
   // Session check saat mount
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ssoToken = params.get("sso_token");
+
+    if (ssoToken) {
+      const fetchSSOProfile = async () => {
+        setLoading(true);
+        setError("");
+        try {
+          const response = await api.get("/auth/me", {
+            headers: {
+              Authorization: `Bearer ${ssoToken}`
+            }
+          });
+
+          if (response.data.success) {
+            const user = response.data.data;
+            setAuthSession({ token: ssoToken, user });
+            window.history.replaceState({}, document.title, window.location.pathname);
+            redirectByRole(getRoleSafe(user), true);
+          } else {
+            setError("Gagal melakukan verifikasi SSO.");
+          }
+        } catch (err) {
+          console.error("SSO Error:", err);
+          setError("Gagal melakukan login otomatis (SSO): " + (err.response?.data?.message || err.message));
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchSSOProfile();
+      return;
+    }
+
     const token = getAuthToken();
     const user = getStoredAuthUser();
 

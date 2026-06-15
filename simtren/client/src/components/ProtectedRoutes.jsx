@@ -9,7 +9,6 @@ const ROLE_DASHBOARD = {
   pimpinan:     '/pimpinan',
   ustadz:       '/ustadz',
   admin:        '/admin',
-  timkesehatan: '/timkesehatan',
 };
 
 const ProtectedRoute = ({ allowedRoles }) => {

@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Layout from "./components/Layout"
@@ -89,7 +89,7 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={['santri']} />}>
             <Route path="/santri">
-              <Route index element={<SantriDashboard />} />
+              <Route index element={<Navigate to="/santri/scabies" replace />} />
 
               <Route path="scabies">
                 <Route index element={<SantriScabiesDashboard />} />

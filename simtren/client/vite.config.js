@@ -48,7 +48,7 @@ export default defineConfig({
       manifest: {
         name: 'SIM-Tren',
         short_name: 'SIM-Tren',
-        description: "Aplikasi manajemen dan layanan kesehatan Pondok Pesantren Darun'naim Yapia",
+        description: "Sistem Informasi Manajemen Pondok Pesantren Darun'naim Yapia (SIM-Tren)",
         lang: 'id',
         dir: 'ltr',
         start_url: '/',
@@ -57,7 +57,7 @@ export default defineConfig({
         background_color: '#f0fdf4',
         theme_color: '#15803d',
         orientation: 'portrait-primary',
-        categories: ['education', 'health', 'utilities'],
+        categories: ['education', 'utilities'],
         icons: [
           {
             src: '/pwa-192x192.png',

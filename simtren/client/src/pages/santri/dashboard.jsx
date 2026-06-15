@@ -53,7 +53,11 @@ export default function SantriDashboard() {
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu.nama);
-    if (menu.endpoint) {
+    if (menu.isExternal) {
+      const token = localStorage.getItem("token");
+      const url = token ? `${menu.endpoint}login?sso_token=${token}` : menu.endpoint;
+      window.open(url, "_blank");
+    } else if (menu.endpoint) {
       navigate(menu.endpoint);
     }
   };
@@ -201,11 +205,23 @@ export default function SantriDashboard() {
     "history": "bg-indigo-500"
   };
 
-  const menuToDisplay = menu_cepat.length > 0 ? menu_cepat.map((menu) => ({
+  const menuToDisplayRaw = menu_cepat.length > 0 ? menu_cepat.map((menu) => ({
     ...menu,
     ikon: iconMap[menu.icon] || User,
     warna: colorMap[menu.icon] || "bg-gray-500"
   })) : defaultMenu;
+
+  const menuToDisplay = [
+    ...menuToDisplayRaw,
+    {
+      id: 99,
+      nama: "Layanan Scabies",
+      ikon: Cross,
+      warna: "bg-teal-600",
+      isExternal: true,
+      endpoint: "https://scabismart-ppdny.vercel.app/"
+    }
+  ];
   
   return (
     <div className="min-h-screen bg-gray-50 pb-24">

@@ -35,19 +35,7 @@ exports.getSantriNotifs = async (req, res) => {
             });
         });
 
-        // C. Screening Scabies Terakhir
-        const screening = await prisma.screening.findMany({
-            where: { id_santri: userId },
-            take: 1, orderBy: { tanggal: 'desc' }
-        });
-        if(screening.length > 0) {
-            notifs.push({
-                tipe: 'kesehatan', judul: "Hasil Screening Kesehatan",
-                pesan: `Diagnosa terakhir: ${screening[0].diagnosa.replace(/_/g, ' ')}`,
-                waktu: screening[0].tanggal, url: '/santri/kesehatan',
-                is_new: user.last_opened_notif ? new Date(screening[0].tanggal) > new Date(user.last_opened_notif) : true
-            });
-        }
+
 
         notifs.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
         res.json({ success: true, data: notifs.slice(0, 10) });

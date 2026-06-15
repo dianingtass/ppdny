@@ -38,7 +38,7 @@ export default function FaqPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">FAQ</h1>
-        <p className="text-gray-500 text-sm">Pertanyaan yang sering ditanyakan seputar sistem dan modul kesehatan.</p>
+        <p className="text-gray-500 text-sm">Pertanyaan yang sering ditanyakan seputar sistem dan operasional pesantren.</p>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 sm:p-6 space-y-3">

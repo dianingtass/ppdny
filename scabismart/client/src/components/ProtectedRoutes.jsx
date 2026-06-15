@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { clearAuthSession, getAuthToken, getStoredAuthUser } from '../utils/authStorage';
 
 const ROLE_DASHBOARD = {
-  santri:       '/santri',
+  santri:       '/santri/scabies',
   orangtua:     '/orangtua',
   wali:         '/orangtua',
   pengurus:     '/pengurus',

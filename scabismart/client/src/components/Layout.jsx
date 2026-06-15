@@ -26,7 +26,8 @@ import {
   BarChart3,
   UserPlus,
   ClipboardCheck,
-  MessageCircle
+  MessageCircle,
+  Home
 } from "lucide-react";
 
 export default function GlobalLayout() {
@@ -128,6 +129,15 @@ export default function GlobalLayout() {
       path: "/konsultasi",
       icon: MessageCircle,
       roles: ["timkesehatan"],
+    },
+
+    { category: "OPERASIONAL", roles: ["timkesehatan", "pimpinan", "admin"] },
+    {
+      name: "SIM-Tren (Operasional)",
+      path: "https://ppdny.vercel.app/",
+      icon: Home,
+      roles: ["timkesehatan", "pimpinan", "admin"],
+      isExternal: true,
     },
 
     { category: "BANTUAN", roles: ["timkesehatan", "pimpinan", "admin"] },
@@ -247,7 +257,13 @@ export default function GlobalLayout() {
 
                 <button
                   onClick={() => {
-                    navigate(targetPath);
+                    if (item.isExternal) {
+                      const token = localStorage.getItem("token");
+                      const url = token ? `${item.path}login?sso_token=${token}` : item.path;
+                      window.open(url, "_blank");
+                    } else {
+                      navigate(targetPath);
+                    }
                     setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 font-medium

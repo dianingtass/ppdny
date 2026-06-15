@@ -7,8 +7,6 @@ import {
   Users,
   List,
   BookOpen,
-  BookOpenText,
-  ScanHeart,
   FileText,
   CreditCard,
   Menu,
@@ -21,12 +19,10 @@ import {
   Loader2,
   Star,
   History,
-  BookCheck,
   Receipt,
   BarChart3,
   UserPlus,
-  ClipboardCheck,
-  MessageCircle
+  ClipboardCheck
 } from "lucide-react";
 
 export default function GlobalLayout() {
@@ -83,7 +79,7 @@ export default function GlobalLayout() {
       name: "Dashboard",
       path: "",
       icon: LayoutDashboard,
-      roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
+      roles: ["pengurus", "pimpinan", "admin"],
     },
 
     { category: "PENDATAAN", roles: ["pengurus", "admin", "pimpinan"] },
@@ -128,49 +124,7 @@ export default function GlobalLayout() {
       roles: ["pengurus", "admin"],
     },
 
-    { category: "KESEHATAN", roles: ["timkesehatan", "admin", "pimpinan"] },
 
-    {
-      name: "Materi Scabies",
-      path: "/scabies/materi",
-      icon: BookOpenText,
-      roles: ["pimpinan"],
-    },
-
-    {
-      name: "Materi",
-      path: "/manageMateri",
-      icon: BookOpenText,
-      roles: ["timkesehatan", "admin"],
-    },
-
-    {
-      name: "Screening",
-      path: "/daftarSantriScreening",
-      icon: ScanHeart,
-      roles: ["timkesehatan", "admin", "pimpinan"],
-    },
-
-    {
-      name: "Observasi Cuci Tangan",
-      path: "/daftarSantriObservasi",
-      icon: ClipboardCheck,
-      roles: ["timkesehatan", "admin", "pimpinan"],
-    },
-
-    {
-      name: "Absensi Kesehatan",
-      path: "/daftarAbsensiKamar",
-      icon: BookCheck,
-      roles: ["timkesehatan", "admin"],
-    },
-
-    {
-      name: "Konsultasi",
-      path: "/konsultasi",
-      icon: MessageCircle,
-      roles: ["timkesehatan"],
-    },
 
     { category: "PENGADUAN", roles: ["admin", "pimpinan"] },
 
@@ -249,13 +203,22 @@ export default function GlobalLayout() {
       roles: ["admin"],
     },
 
-    { category: "BANTUAN", roles: ["pengurus", "timkesehatan", "pimpinan", "admin"] },
+    { category: "KESEHATAN", roles: ["pimpinan", "admin"] },
+    {
+      name: "Layanan Scabies",
+      path: "https://scabismart-ppdny.vercel.app/",
+      icon: Activity,
+      roles: ["pimpinan", "admin"],
+      isExternal: true,
+    },
+
+    { category: "BANTUAN", roles: ["pengurus", "pimpinan", "admin"] },
 
     {
       name: "FAQ",
       path: "/faq",
       icon: Receipt,
-      roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
+      roles: ["pengurus", "pimpinan", "admin"],
     }
   ];
 
@@ -267,10 +230,7 @@ export default function GlobalLayout() {
 
     const path = location.pathname;
 
-    if (path.includes("manageMateri")) return "Materi";
-    if (path.includes("daftarSantriScreening")) return "Screening";
-    if (path.includes("daftarAbsensiKamar")) return "Absensi Kesehatan";
-    if (path.includes("konsultasi")) return "Konsultasi";
+
 
     const menuMatch = filteredMenu.find((m) => {
 
@@ -366,7 +326,13 @@ export default function GlobalLayout() {
 
                 <button
                   onClick={() => {
-                    navigate(targetPath);
+                    if (item.isExternal) {
+                      const token = localStorage.getItem("token");
+                      const url = token ? `${item.path}login?sso_token=${token}` : item.path;
+                      window.open(url, "_blank");
+                    } else {
+                      navigate(targetPath);
+                    }
                     setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 font-medium

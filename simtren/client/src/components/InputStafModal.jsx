@@ -15,7 +15,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
   const { message, showAlert, clearAlert } = useAlert();
 
   const [formData, setFormData] = useState(initialForm);
-  const availableRoles = ["Admin", "Pimpinan", "Tim Kesehatan", "Pengurus", "Ustadz"];
+  const availableRoles = ["Admin", "Pimpinan", "Pengurus", "Ustadz"];
 
   useEffect(() => {
     if (isOpen) {
