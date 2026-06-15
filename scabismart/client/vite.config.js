@@ -46,8 +46,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'SIM-Tren',
-        short_name: 'SIM-Tren',
+        name: 'ScabiSmart',
+        short_name: 'ScabiSmart',
         description: "Aplikasi manajemen dan layanan kesehatan Pondok Pesantren Darun'naim Yapia",
         lang: 'id',
         dir: 'ltr',

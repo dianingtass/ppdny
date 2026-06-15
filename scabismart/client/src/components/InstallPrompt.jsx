@@ -111,18 +111,6 @@ export default function InstallPrompt() {
               </div>
             </div>
 
-            {/* Fitur singkat */}
-            <div className="flex gap-2 mb-4">
-              {['⚡ Cepat', '📶 Offline', '🔔 Notifikasi'].map((f) => (
-                <span
-                  key={f}
-                  className="text-xs bg-green-50 text-green-700 border border-green-100 rounded-full px-2.5 py-1 font-medium"
-                >
-                  {f}
-                </span>
-              ))}
-            </div>
-
             {/* Tombol aksi */}
             <div className="flex gap-2">
               <button
