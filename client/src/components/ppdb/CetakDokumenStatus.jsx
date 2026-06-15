@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-const logoPesantren = "/logo-border.png"; 
+const logoPesantren = "/logo.png";
 
 const getBase64ImageFromUrl = async (imageUrl) => {
   const res = await fetch(imageUrl);
@@ -14,8 +14,8 @@ const getBase64ImageFromUrl = async (imageUrl) => {
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
-  return new Intl.DateTimeFormat("id-ID", { 
-    day: "numeric", month: "long", year: "numeric" 
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric", month: "long", year: "numeric"
   }).format(new Date(dateString));
 };
 
@@ -24,7 +24,7 @@ const formatDate = (dateString) => {
 // ---------------------------------------------------------
 export const cetakUndanganSeleksi = async ({ noPendaftaran, namaLengkap, namaGelombang, tahunAjaran, tanggalSeleksi }) => {
   const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4", compress: true });
-  const margin = { left: 20, right: 20 }; 
+  const margin = { left: 20, right: 20 };
   let cursorY = 10;
   const printWidth = 210 - margin.left - margin.right;
   doc.setLineHeightFactor(1.5);
@@ -36,39 +36,39 @@ export const cetakUndanganSeleksi = async ({ noPendaftaran, namaLengkap, namaGel
   } catch (error) {
     console.warn("Gagal memuat logo kop surat:", error);
   }
-  
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.text("YAYASAN DARUNNA'IM YAPIA", 105, cursorY + 6, { align: "center" });
-      
+
   doc.setFontSize(12);
   doc.text("PONDOK PESANTREN MODERN DARUN-NA'IM YAPIA", 105, cursorY + 11, { align: "center" });
-      
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.text("Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya, Kec. Parung, Kab. Bogor", 105, cursorY + 15, { align: "center" });
   doc.text("Email: ponpesmodern.darunnaimyapia@gmail.com | IG: @ponpes_modern_darun_naim_yapia", 105, cursorY + 18, { align: "center" });
-  
+
   // Garis Bawah Kop Surat
-  cursorY += 23; 
+  cursorY += 23;
   doc.setLineWidth(0.8);
   doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
   cursorY += 1;
   doc.setLineWidth(0.2);
   doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
-  
+
   // ISI SURAT
   cursorY += 8;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.text("SURAT PANGGILAN SELEKSI", 105, cursorY, { align: "center" });
-  
+
   cursorY += 12;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
-  
+
   const openingText = `Berdasarkan hasil verifikasi dokumen pendaftaran Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran ${tahunAjaran}, kami memberitahukan bahwa Calon Santri di bawah ini:`;
-  doc.text(openingText, margin.left, cursorY, { align: "justify", maxWidth: printWidth - 1.5-1.5 });
+  doc.text(openingText, margin.left, cursorY, { align: "justify", maxWidth: printWidth - 1.5 - 1.5 });
 
   cursorY += 14;
   doc.setFont("helvetica", "bold");
@@ -81,11 +81,11 @@ export const cetakUndanganSeleksi = async ({ noPendaftaran, namaLengkap, namaGel
   cursorY += 8;
   doc.setFont("helvetica", "normal");
   const middleText = `Dinyatakan LOLOS VERIFIKASI BERKAS dan diwajibkan untuk hadir mengikuti Ujian Seleksi (Tes Baca Al-Quran & Wawancara) yang akan diselenggarakan pada:`;
-  doc.text(middleText, margin.left, cursorY, { align: "justify", maxWidth: printWidth - 1.5-1.5 });
+  doc.text(middleText, margin.left, cursorY, { align: "justify", maxWidth: printWidth - 1.5 - 1.5 });
 
   cursorY += 14;
   doc.setFont("helvetica", "bold");
-  const jadwalTes = tanggalSeleksi ? formatDate(tanggalSeleksi) : "Menunggu Jadwal dari Panitia"; 
+  const jadwalTes = tanggalSeleksi ? formatDate(tanggalSeleksi) : "Menunggu Jadwal dari Panitia";
   doc.text("Hari / Tanggal", margin.left + 10, cursorY); doc.text(`: ${jadwalTes}`, margin.left + 50, cursorY);
   cursorY += 6;
   doc.text("Waktu", margin.left + 10, cursorY); doc.text(`: 08.00 WIB s/d Selesai`, margin.left + 50, cursorY);
@@ -124,7 +124,7 @@ export const cetakUndanganSeleksi = async ({ noPendaftaran, namaLengkap, namaGel
 // 2. FUNGSI CETAK BUKTI KELULUSAN
 export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAjaran, nilaiQuran, nilaiTulis, nilaiWawancara, nilaiTotal }) => {
   const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4", compress: true });
-  const margin = { left: 20, right: 20 }; 
+  const margin = { left: 20, right: 20 };
   const printWidth = 210 - margin.left - margin.right;
   let cursorY = 10;
   doc.setLineHeightFactor(1.5);
@@ -136,33 +136,33 @@ export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAja
   } catch (error) {
     console.warn("Gagal memuat logo kop surat:", error);
   }
-  
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.text("YAYASAN DARUNNA'IM YAPIA", 105, cursorY + 6, { align: "center" });
-      
+
   doc.setFontSize(12);
   doc.text("PONDOK PESANTREN MODERN DARUN-NA'IM YAPIA", 105, cursorY + 11, { align: "center" });
-      
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.text("Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya, Kec. Parung, Kab. Bogor", 105, cursorY + 15, { align: "center" });
   doc.text("Email: ponpesmodern.darunnaimyapia@gmail.com | IG: @ponpes_modern_darun_naim_yapia", 105, cursorY + 18, { align: "center" });
-  
+
   // Garis Bawah Kop Surat
-  cursorY += 23; 
+  cursorY += 23;
   doc.setLineWidth(0.8);
   doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
   cursorY += 1;
   doc.setLineWidth(0.2);
   doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
-  
+
   // ISI SURAT
   cursorY += 8;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.text("SURAT KETERANGAN LULUS SELEKSI", 105, cursorY, { align: "center" });
-  
+
   cursorY += 12;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
@@ -177,13 +177,13 @@ export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAja
   cursorY += 8;
   doc.setFont("helvetica", "normal");
   doc.text("Dengan rincian nilai tes sebagai berikut:", margin.left, cursorY);
-  
+
   // KOTAK NILAI
   cursorY += 4;
-  doc.setFillColor(249, 250, 251); 
-  doc.setDrawColor(229, 231, 235); 
+  doc.setFillColor(249, 250, 251);
+  doc.setDrawColor(229, 231, 235);
   doc.roundedRect(margin.left, cursorY, printWidth, 34, 3, 3, 'FD');
-  
+
   doc.setFontSize(10);
   cursorY += 8;
   doc.text("1. Tes Bacaan & Hafalan Al-Quran", margin.left + 5, cursorY); doc.text(`: ${nilaiQuran || 0}`, margin.left + 80, cursorY);
@@ -191,7 +191,7 @@ export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAja
   doc.text("2. Tes Tulis", margin.left + 5, cursorY); doc.text(`: ${nilaiTulis || 0}`, margin.left + 80, cursorY);
   cursorY += 6;
   doc.text("3. Wawancara", margin.left + 5, cursorY); doc.text(`: ${nilaiWawancara || 0}`, margin.left + 80, cursorY);
-  
+
   cursorY += 8;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
@@ -199,7 +199,7 @@ export const cetakBuktiKelulusan = async ({ noPendaftaran, namaLengkap, tahunAja
 
   cursorY += 16;
   doc.setFontSize(14);
-  doc.setTextColor(21, 128, 61); 
+  doc.setTextColor(21, 128, 61);
   doc.text("DINYATAKAN LULUS DAN DITERIMA", 105, cursorY, { align: "center" });
 
   cursorY += 10;

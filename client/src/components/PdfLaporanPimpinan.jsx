@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas-pro";
 
-const logoPesantren = "/logo-border.png"; 
+const logoPesantren = "/logo.png";
 
 const getBase64ImageFromUrl = async (imageUrl) => {
   const res = await fetch(imageUrl);
@@ -23,11 +23,11 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true 
+      compress: true
     });
 
-    const margin = { left: 20, right: 20, bottom: 20 }; 
-    const firstPageMarginTop = 10; 
+    const margin = { left: 20, right: 20, bottom: 20 };
+    const firstPageMarginTop = 10;
     const normalMarginTop = 20;
     const printWidth = 210 - margin.left - margin.right;
     let cursorY = firstPageMarginTop;
@@ -54,36 +54,36 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("YAYASAN DARUNNA'IM YAPIA", 105, cursorY + 6, { align: "center" });
-    
+
     doc.setFontSize(12);
     doc.text("PONDOK PESANTREN MODERN DARUN-NA'IM YAPIA", 105, cursorY + 11, { align: "center" });
-    
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.text("Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya, Kec. Parung, Kab. Bogor", 105, cursorY + 15, { align: "center" });
     doc.text("Email: ponpesmodern.darunnaimyapia@gmail.com | IG: @ponpes_modern_darun_naim_yapia", 105, cursorY + 18, { align: "center" });
 
     // c. Garis Bawah Kop Surat
-    cursorY += 23; 
+    cursorY += 23;
     doc.setLineWidth(0.8);
     doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
     cursorY += 1;
     doc.setLineWidth(0.2);
     doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
-    
+
     // JUDUL DOKUMEN & TANGGAL
     cursorY += 8;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.text("LAPORAN MANAJEMEN PIMPINAN", 105, cursorY, { align: "center" });
-    
+
     cursorY += 6;
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     const tglCetak = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
     doc.text(`Tanggal Cetak: ${tglCetak}`, 105, cursorY, { align: "center" });
 
-    cursorY += 12; 
+    cursorY += 12;
 
 
     // 1. RINGKASAN KEUANGAN
@@ -101,7 +101,7 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
         ['Tunggakan SPP', `${data.keuangan.persentase_tunggakan}% Santri`]
       ],
       theme: 'grid',
-      headStyles: { fillColor: [22, 163, 74], halign: 'center' }, 
+      headStyles: { fillColor: [22, 163, 74], halign: 'center' },
       columnStyles: { 0: { cellWidth: 100 }, 1: { halign: 'center' } },
       styles: { font: 'helvetica', fontSize: 10 }
     });
@@ -110,15 +110,15 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
     // Grafik Keuangan (Bar Chart)
     if (barChartRef && barChartRef.current) {
       const barCanvas = await html2canvas(barChartRef.current, { scale: 2, backgroundColor: "#FFFFFF" });
-      
+
       const barImg = barCanvas.toDataURL("image/jpeg", 0.7);
       const imgProps = doc.getImageProperties(barImg);
-      const pdfImgWidth = 120; 
+      const pdfImgWidth = 120;
       const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
       const centeredX = (210 - pdfImgWidth) / 2;
 
       checkPageBreak(pdfImgHeight + 10);
-      
+
       doc.addImage(barImg, "JPEG", centeredX, cursorY, pdfImgWidth, pdfImgHeight, undefined, 'FAST');
       cursorY += pdfImgHeight + 12;
     }
@@ -130,7 +130,7 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
     doc.text("2. Rekapitulasi Kesehatan (Screening Scabies)", margin.left, cursorY);
     cursorY += 4;
 
-    const dataKesehatanTabel = data.kesehatan && data.kesehatan.length > 0 
+    const dataKesehatanTabel = data.kesehatan && data.kesehatan.length > 0
       ? data.kesehatan.map(item => [item.name, `${item.value} Santri`])
       : [['Data Kosong', '-']];
 
@@ -149,15 +149,15 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
     // Grafik Kesehatan (Pie Chart)
     if (pieChartRef && pieChartRef.current) {
       const pieCanvas = await html2canvas(pieChartRef.current, { scale: 2, backgroundColor: "#FFFFFF" });
-      
+
       const pieImg = pieCanvas.toDataURL("image/jpeg", 0.7);
-      const pieSize = 90; 
+      const pieSize = 90;
       const imgProps = doc.getImageProperties(pieImg);
       const pdfImgHeight = (imgProps.height * pieSize) / imgProps.width;
       const centeredX = (210 - pieSize) / 2;
 
       checkPageBreak(pdfImgHeight + 10);
-      
+
       doc.addImage(pieImg, "JPEG", centeredX, cursorY, pieSize, pdfImgHeight, undefined, 'FAST');
       cursorY += pdfImgHeight + 12;
     }

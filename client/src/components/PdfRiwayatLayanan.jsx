@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-const logoPesantren = "/logo-border.png";
+const logoPesantren = "/logo.png";
 
 const getBase64ImageFromUrl = async (imageUrl) => {
   const res = await fetch(imageUrl);
@@ -50,17 +50,17 @@ export const PdfRiwayatLayanan = async (detail, santriNama) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("YAYASAN DARUNNA'IM YAPIA", 105, cursorY + 6, { align: "center" });
-    
+
     doc.setFontSize(12);
     doc.text("PONDOK PESANTREN MODERN DARUN-NA'IM YAPIA", 105, cursorY + 11, { align: "center" });
-    
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.text("Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya, Kec. Parung, Kab. Bogor", 105, cursorY + 15, { align: "center" });
     doc.text("Email: ponpesmodern.darunnaimyapia@gmail.com | IG: @ponpes_modern_darun_naim_yapia", 105, cursorY + 18, { align: "center" });
 
     // c. Garis Bawah Kop Surat
-    cursorY += 23; 
+    cursorY += 23;
     doc.setLineWidth(0.8);
     doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
     cursorY += 1;

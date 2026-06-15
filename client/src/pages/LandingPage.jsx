@@ -11,7 +11,9 @@ import {
   Mail,
   Instagram,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Target,
+  Compass
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -202,17 +204,64 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* QUOTE / HIKMAH SECTION */}
-      <section className="py-16 relative overflow-hidden bg-green-600 text-white">
+      {/* VISI & MISI SECTION */}
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-900 text-white">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <h3 className="text-xl md:text-2xl font-bold mb-8 leading-snug">
-            "Dan berpeganglah kamu semuanya kepada tali (agama) Allah, dan
-            janganlah kamu bercerai berai..."
-          </h3>
-          <p className="text-green-200 font-medium tracking-widest uppercase">
-            — QS. Ali Imran [3] : 103 —
-          </p>
+        <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black mb-3">Visi & Misi</h2>
+            <p className="text-green-200 text-sm md:text-base max-w-xl mx-auto">
+              Arah dan komitmen kami dalam membina generasi santri yang berakhlak mulia dan berprestasi unggul.
+            </p>
+            <div className="w-16 h-1 bg-green-400 mx-auto mt-4 rounded-full"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
+            {/* VISI CARD */}
+            <div className="lg:col-span-2 bg-white/10 backdrop-blur-md border border-white/15 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-2xl hover:bg-white/[0.12] transition duration-300">
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-6 border border-white/10">
+                  <Target className="text-green-300 w-6 h-6" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-green-300 mb-2 block">Visi Sekolah</span>
+                <h3 className="text-2xl md:text-3xl font-extrabold mb-4 leading-tight">Unggul Prestasi</h3>
+              </div>
+              <p className="text-lg md:text-xl text-white/95 leading-relaxed font-semibold italic border-l-4 border-green-400 pl-4 py-2 my-auto">
+                "Unggul dalam prestasi akademik dan non-akademik"
+              </p>
+            </div>
+            
+            {/* MISI CARD */}
+            <div className="lg:col-span-3 bg-white/10 backdrop-blur-md border border-white/15 p-8 md:p-10 rounded-3xl shadow-2xl hover:bg-white/[0.12] transition duration-300">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
+                  <Compass className="text-green-300 w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-300 block">Misi Sekolah</span>
+                  <h3 className="text-xl font-bold text-white">Upaya & Langkah Kami</h3>
+                </div>
+              </div>
+              
+              <div className="space-y-5">
+                {[
+                  { key: "a", text: "Menciptakan lingkungan sekolah yang kondusif atraktif, kreatif dan inovatif." },
+                  { key: "b", text: "Menumbuhkan rasa percaya diri siswa bertanggung jawab dan mandiri." },
+                  { key: "c", text: "Pembiasan nilai-nilai keagamaan dan disiplin." },
+                  { key: "d", text: "Mengembangkan minat dan bakat siswa dalam bidang Agama, Seni, Olahraga, Sains dan Bahasa." }
+                ].map((item) => (
+                  <div key={item.key} className="flex gap-4 items-start group/item">
+                    <div className="w-8 h-8 rounded-xl bg-green-500/20 group-hover/item:bg-green-500/40 flex items-center justify-center font-bold text-green-200 shrink-0 mt-0.5 transition-colors">
+                      {item.key}
+                    </div>
+                    <p className="text-base text-white/90 leading-relaxed font-medium transition-colors group-hover/item:text-white">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

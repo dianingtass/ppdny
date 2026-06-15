@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-const logoPesantren = "/logo-border.png"; 
+const logoPesantren = "/logo.png";
 
 // Helper: Convert Image URL/Path ke Base64
 const getBase64ImageFromUrl = async (imageUrl) => {
@@ -16,8 +16,8 @@ const getBase64ImageFromUrl = async (imageUrl) => {
 // Helper: Format Tanggal
 const formatDate = (dateString) => {
   if (!dateString) return "-";
-  return new Intl.DateTimeFormat("id-ID", { 
-    day: "2-digit", month: "long", year: "numeric" 
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit", month: "long", year: "numeric"
   }).format(new Date(dateString));
 };
 
@@ -29,12 +29,12 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true 
+      compress: true
     });
 
     // MARGIN SAMA PERSIS
-    const margin = { left: 20, right: 20, bottom: 20 }; 
-    const firstPageMarginTop = 10; 
+    const margin = { left: 20, right: 20, bottom: 20 };
+    const firstPageMarginTop = 10;
     const printWidth = 210 - margin.left - margin.right;
     let cursorY = firstPageMarginTop;
     doc.setLineHeightFactor(1.5);
@@ -50,17 +50,17 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("YAYASAN DARUNNA'IM YAPIA", 105, cursorY + 6, { align: "center" });
-    
+
     doc.setFontSize(12);
     doc.text("PONDOK PESANTREN MODERN DARUN-NA'IM YAPIA", 105, cursorY + 11, { align: "center" });
-    
+
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.text("Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya, Kec. Parung, Kab. Bogor", 105, cursorY + 15, { align: "center" });
     doc.text("Email: ponpesmodern.darunnaimyapia@gmail.com | IG: @ponpes_modern_darun_naim_yapia", 105, cursorY + 18, { align: "center" });
 
     // Garis Bawah Kop Surat
-    cursorY += 23; 
+    cursorY += 23;
     doc.setLineWidth(0.8);
     doc.line(margin.left, cursorY, 210 - margin.right, cursorY);
     cursorY += 1;
@@ -73,23 +73,23 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
     doc.setFontSize(14);
     doc.text("BUKTI PENDAFTARAN PESERTA DIDIK BARU", 105, cursorY, { align: "center" });
 
-    cursorY += 12; 
+    cursorY += 12;
 
     // ISI DOKUMEN 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.text("Telah diterima formulir pendaftaran secara online atas nama:", margin.left, cursorY);
-    
+
     cursorY += 8;
     doc.setFont("helvetica", "bold");
     doc.text("Nama Lengkap", margin.left + 10, cursorY);
-    doc.text(`:  ${namaLengkap}`, margin.left + 50, cursorY); 
-    
+    doc.text(`:  ${namaLengkap}`, margin.left + 50, cursorY);
+
     cursorY += 7;
     doc.setFont("helvetica", "normal");
     doc.text("Gelombang", margin.left + 10, cursorY);
     doc.text(`:  ${namaGelombang}`, margin.left + 50, cursorY);
-    
+
     cursorY += 7;
     doc.text("Tahun Ajaran", margin.left + 10, cursorY);
     doc.text(`:  ${tahunAjaran}`, margin.left + 50, cursorY);
@@ -99,13 +99,13 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
     doc.setDrawColor(22, 163, 74); // Hijau border
     doc.setFillColor(240, 253, 244); // Hijau sangat muda (bg-green-50)
     // Kotak memanjang mengikuti printWidth (A4)
-    doc.roundedRect(margin.left, cursorY, printWidth, 26, 3, 3, "FD"); 
-    
+    doc.roundedRect(margin.left, cursorY, printWidth, 26, 3, 3, "FD");
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(21, 128, 61); // Hijau gelap
     doc.text("NOMOR PENDAFTARAN", 105, cursorY + 9, { align: "center" });
-    
+
     doc.setFontSize(16);
     doc.setTextColor(0, 0, 0); // Hitam
     doc.text(noPendaftaran, 105, cursorY + 18, { align: "center" });
@@ -115,20 +115,20 @@ export const cetakBuktiPendaftaran = async ({ noPendaftaran, namaLengkap, namaGe
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.text("Catatan Penting:", margin.left, cursorY);
-    
+
     cursorY += 6;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    
+
     // Teks catatan dipotong berdasarkan lebar printWidth A4
     const catatan1 = "1. Harap simpan dokumen ini dengan baik sebagai bukti pendaftaran yang sah.";
     const catatan2 = "2. Gunakan Nomor Pendaftaran di atas untuk mengecek status verifikasi dokumen dan kelulusan \n    seleksi secara berkala melalui portal PPDB SIM-Tren.";
     const catatan3 = "3. Keputusan Panitia Seleksi bersifat mutlak dan tidak dapat diganggu gugat.";
-    
+
     doc.text(doc.splitTextToSize(catatan1, printWidth), margin.left, cursorY);
     cursorY += 6;
     doc.text(doc.splitTextToSize(catatan2, printWidth), margin.left, cursorY);
-    cursorY += 12; 
+    cursorY += 12;
     doc.text(doc.splitTextToSize(catatan3, printWidth), margin.left, cursorY);
 
     // FOOTER 
