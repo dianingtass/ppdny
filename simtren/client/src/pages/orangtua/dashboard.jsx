@@ -4,7 +4,6 @@ import api from "../../config/api";
 import {
   User,
   Calendar,
-  Cross,
   AlertCircle,
   History,
   Clock,
@@ -165,11 +164,10 @@ export default function OrangTuaDashboard() {
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-4">
               <h3 className="font-bold text-gray-800 mb-4 px-2">Menu Wali</h3>
-              <div className="grid grid-cols-4 gap-2 text-white">
+              <div className="grid grid-cols-3 gap-2 text-white">
                 <MenuButton icon={<Wallet />} label="Keuangan" onClick={() => navigate("/orangtua/keuangan")} color="bg-green-500" />
                 <MenuButton icon={<Calendar />} label="Kegiatan" onClick={() => navigate("/orangtua/kegiatan")} color="bg-purple-500" />
                 <MenuButton icon={<AlertCircle />} label="Aduan" onClick={() => navigate("/orangtua/pengaduan")} color="bg-orange-500" />
-                <MenuButton icon={<Cross />} label="Scabies" onClick={() => navigate("/orangtua/kesehatan")} color="bg-teal-500" />
               </div>
             </div>
             
@@ -229,19 +227,7 @@ export default function OrangTuaDashboard() {
               )}
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Cross className="text-teal-500" /> Kondisi Kesehatan</h3>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
-                  <p className="text-xs font-bold text-red-600 mb-1 uppercase">Observasi Terakhir</p>
-                  <p className="text-sm font-medium text-gray-700">{data.kesehatan.observasi?.catatan || 'Belum ada catatan'}</p>
-                </div>
-                <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100">
-                  <p className="text-xs font-bold text-orange-600 mb-1 uppercase">Diagnosa Scabies</p>
-                  <p className="text-sm font-bold text-gray-800">{data.kesehatan.screening?.diagnosa || 'Belum Screening'}</p>
-                </div>
-              </div>
-            </div>
+
           </div>
 
         </div>

@@ -176,36 +176,35 @@ export default function SantriDashboard() {
   const pengaduanList = Array.isArray(aktivitas_terakhir.pengaduan) 
     ? aktivitas_terakhir.pengaduan 
     : [];
-
-  // 2. Definisikan aktivitasArray (Gabungan Observasi + Screening)
-  const aktivitasArray = [
-    ...(aktivitas_terakhir.observasi ? [{
-      ...aktivitas_terakhir.observasi,
-      jenis: "observasi",
-      tanggal: formatDate(aktivitas_terakhir.observasi.tanggal)
-    }] : []),
-    ...(aktivitas_terakhir.screening ? [{
-      ...aktivitas_terakhir.screening,
-      jenis: "screening",
-      tanggal: formatDate(aktivitas_terakhir.screening.tanggal)
-    }] : [])
-  ].sort((a, b) => new Date(b.waktu || b.tanggal) - new Date(a.waktu || a.tanggal));
-
   // Default menu jika tidak ada dari backend
   const defaultMenu = [
     { id: 1, nama: "Pendataan Diri", ikon: User, warna: "bg-blue-500" },
     { id: 2, nama: "Tagihan & Keuangan", ikon: CreditCard, warna: "bg-green-500" },
     { id: 3, nama: "Kegiatan", ikon: Calendar, warna: "bg-purple-500" },
     { id: 4, nama: "Pengaduan", ikon: AlertCircle, warna: "bg-orange-500" },
-    { id: 5, nama: "Laporan", ikon: FileText, warna: "bg-red-500" },
-    { id: 6, nama: "Riwayat", ikon: History, warna: "bg-indigo-500" },
-    { id: 7, nama: "Scabies", ikon: Cross, warna: "bg-teal-500" }
+    { id: 5, nama: "Riwayat Layanan", ikon: History, warna: "bg-indigo-500" }
   ];
 
-  const menuToDisplay = menu_cepat.length > 0 ? menu_cepat.map((menu, index) => ({
+  const iconMap = {
+    "user": User,
+    "credit-card": CreditCard,
+    "calendar": Calendar,
+    "alert-circle": AlertCircle,
+    "history": History
+  };
+
+  const colorMap = {
+    "user": "bg-blue-500",
+    "credit-card": "bg-green-500",
+    "calendar": "bg-purple-500",
+    "alert-circle": "bg-orange-500",
+    "history": "bg-indigo-500"
+  };
+
+  const menuToDisplay = menu_cepat.length > 0 ? menu_cepat.map((menu) => ({
     ...menu,
-    ikon: [User, CreditCard, Calendar, AlertCircle, FileText, Cross][index] || User,
-    warna: ["bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500", "bg-red-500", "bg-teal-500"][index] || "bg-gray-500"
+    ikon: iconMap[menu.icon] || User,
+    warna: colorMap[menu.icon] || "bg-gray-500"
   })) : defaultMenu;
   
   return (
@@ -422,42 +421,6 @@ export default function SantriDashboard() {
                 )}
               </div>
 
-              {/* Recent Activity */}
-              <div className="bg-white rounded-2xl shadow-md p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <History className="mr-2" size={24} />
-                  Aktivitas Terakhir
-                </h3>
-                
-                {aktivitasArray.length > 0 ? (
-                  <div className="space-y-4">
-                    {aktivitasArray.slice(0, 3).map((aktivitas, index) => (
-                      <div key={index} className="p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-800 truncate">{aktivitas.deskripsi}</p>
-                            <p className="text-sm text-gray-500">{aktivitas.tanggal}</p>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(aktivitas.status)} flex items-center ml-2 flex-shrink-0`}>
-                            <span className="mr-1">{getStatusIcon(aktivitas.status)}</span>
-                            {aktivitas.status}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 capitalize">{aktivitas.jenis}</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">Belum ada aktivitas</p>
-                  </div>
-                )}
-                
-                <button onClick={() => navigate("/santri/riwayat")} className="w-full mt-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-medium transition flex items-center justify-center">
-                  Lihat Semua Aktivitas <ChevronRight size={20} className="ml-2" />
-                </button>
-              </div>
               
             </div>
           </div>
@@ -520,30 +483,6 @@ export default function SantriDashboard() {
                       </p>
                     </div>
                     <AlertCircle className="text-blue-600" size={32} />
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-green-50 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 mb-1">Observasi Kesehatan</p>
-                      <p className="text-3xl font-bold text-green-700">
-                        {statistik.jumlah_observasi || 0}
-                      </p>
-                    </div>
-                    <User className="text-green-600" size={32} />
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-purple-50 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 mb-1">Screening</p>
-                      <p className="text-3xl font-bold text-purple-700">
-                        {statistik.jumlah_screening || 0}
-                      </p>
-                    </div>
-                    <FileText className="text-purple-600" size={32} />
                   </div>
                 </div>
               </div>

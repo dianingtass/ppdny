@@ -123,50 +123,11 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
       cursorY += pdfImgHeight + 12;
     }
 
-    // 2. REKAPITULASI KESEHATAN SANTRI
-    checkPageBreak(30);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("2. Rekapitulasi Kesehatan (Screening Scabies)", margin.left, cursorY);
-    cursorY += 4;
-
-    const dataKesehatanTabel = data.kesehatan && data.kesehatan.length > 0
-      ? data.kesehatan.map(item => [item.name, `${item.value} Santri`])
-      : [['Data Kosong', '-']];
-
-    autoTable(doc, {
-      startY: cursorY,
-      margin: { left: margin.left + 5, right: margin.right },
-      head: [['Kategori', 'Jumlah Santri']],
-      body: dataKesehatanTabel,
-      theme: 'grid',
-      headStyles: { fillColor: [22, 163, 74], halign: 'center' },
-      columnStyles: { 0: { cellWidth: 100 }, 1: { halign: 'center' } },
-      styles: { font: 'helvetica', fontSize: 10 }
-    });
-    cursorY = doc.lastAutoTable.finalY + 8;
-
-    // Grafik Kesehatan (Pie Chart)
-    if (pieChartRef && pieChartRef.current) {
-      const pieCanvas = await html2canvas(pieChartRef.current, { scale: 2, backgroundColor: "#FFFFFF" });
-
-      const pieImg = pieCanvas.toDataURL("image/jpeg", 0.7);
-      const pieSize = 90;
-      const imgProps = doc.getImageProperties(pieImg);
-      const pdfImgHeight = (imgProps.height * pieSize) / imgProps.width;
-      const centeredX = (210 - pieSize) / 2;
-
-      checkPageBreak(pdfImgHeight + 10);
-
-      doc.addImage(pieImg, "JPEG", centeredX, cursorY, pieSize, pdfImgHeight, undefined, 'FAST');
-      cursorY += pdfImgHeight + 12;
-    }
-
-    // 3. REKAPITULASI PENGADUAN
+    // 2. REKAPITULASI PENGADUAN
     checkPageBreak(40);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text("3. Rekapitulasi Pengaduan", margin.left, cursorY);
+    doc.text("2. Rekapitulasi Pengaduan", margin.left, cursorY);
     cursorY += 4;
 
     autoTable(doc, {
@@ -185,11 +146,11 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
     });
     cursorY = doc.lastAutoTable.finalY + 12;
 
-    // 4. INDEKS KEPUASAN SANTRI
+    // 3. INDEKS KEPUASAN SANTRI
     checkPageBreak(20);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text("4. Indeks Kepuasan Santri", margin.left, cursorY);
+    doc.text("3. Indeks Kepuasan Santri", margin.left, cursorY);
     cursorY += 4;
 
     autoTable(doc, {
