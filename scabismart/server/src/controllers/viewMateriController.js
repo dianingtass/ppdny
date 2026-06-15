@@ -1,0 +1,40 @@
+const prisma = require('../config/prisma');
+
+exports.getViewMateri = async (req, res) => {
+    try {
+        const materiList = await prisma.materi.findMany({
+            where: { is_active: true },
+            select: {
+                id_materi:      true,
+                gambar:         true,
+                judul_materi:   true,
+                ringkasan:      true,
+                penulis:        true,
+                sumber:         true,
+                tanggal_dibuat: true,
+            },
+            orderBy: { id_materi: 'desc' }
+        });
+
+        const formattedData = materiList.map(item => ({
+            id:             item.id_materi,
+            gambar:         item.gambar,
+            judul:          item.judul_materi,
+            ringkasan:      item.ringkasan,
+            penulis:        item.penulis || 'Admin',
+            sumber:         item.sumber || 'teori',
+            tanggal_dibuat: item.tanggal_dibuat,
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: {
+                summary: { total_materi: formattedData.length },
+                list_materi: formattedData
+            }
+        });
+    } catch (error) {
+        console.error('Error Get Materi:', error);
+        res.status(500).json({ success: false, message: 'Gagal memuat data materi' });
+    }
+};

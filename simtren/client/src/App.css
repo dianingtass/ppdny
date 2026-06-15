@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+@import "tailwindcss";
+
+*{
+    font-family: "Geist", sans-serif;
+}
+
+.simtren{
+    font-family: 'Gotham', sans-serif;
+}
+
+
+.ql-editor {
+    min-height: 200px;
+}
+
+/* label default */
+.ql-snow .ql-picker.ql-size .ql-picker-label::before {
+  content: attr(data-value);
+}
+
+.prose p, ul, ol{
+  font-size: 16px;
+}
+
+.recharts-surface, .recharts-sector{
+  outline: none;
+}
+
+.recharts-surface:active, .recharts-sector:active{
+  outline: none;
+}
+
+.pdf-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  background: white;
+  page-break-after: always;
+}
+
+.avoid-break {
+  page-break-inside: avoid;
+}

@@ -1,0 +1,933 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model absensi {
+  id          Int            @id @default(autoincrement())
+  id_user     Int
+  id_kegiatan Int
+  status      absensi_status
+  keterangan  String?        @db.Text
+  is_active   Boolean?       @default(true)
+  users       users          @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "absensi_ibfk_1")
+  kegiatan    kegiatan       @relation(fields: [id_kegiatan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "absensi_ibfk_2")
+
+  @@index([id_kegiatan], map: "id_kegiatan")
+  @@index([id_user], map: "id_user")
+}
+
+model absensi_detail {
+  id_detail       Int                   @id @default(autoincrement())
+  id_heading      Int?
+  id_item         Int?
+  status          absensi_detail_status
+  is_active       Boolean
+  heading_absensi heading_absensi?      @relation(fields: [id_heading], references: [id_heading], onDelete: NoAction, onUpdate: NoAction, map: "absensi_detail_heading_absensi_FK")
+  item_kebersihan item_kebersihan?      @relation(fields: [id_item], references: [id_item], onDelete: NoAction, onUpdate: NoAction, map: "absensi_detail_item_kebersihan_FK")
+
+  @@index([id_heading], map: "absensi_detail_heading_absensi_FK")
+  @@index([id_item], map: "absensi_detail_item_kebersihan_FK")
+}
+
+model activity_log {
+  id         Int                @id @default(autoincrement())
+  id_user    Int?
+  role_user  String?            @db.VarChar(100)
+  aksi       activity_log_aksi?
+  entitas    String?            @db.VarChar(100)
+  id_entitas Int?
+  keterangan String?            @db.Text
+  data       Json?
+  created_at DateTime?          @default(now()) @db.DateTime(0)
+  users      users?             @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "activity_log_users_FK")
+
+  @@index([id_user], map: "activity_log_users_FK")
+}
+
+model detail_materi {
+  id_detail_materi Int     @id @default(autoincrement())
+  id_materi        Int
+  isi_materi       String? @db.Text
+  is_active        Boolean
+  materi           materi  @relation(fields: [id_materi], references: [id_materi], onDelete: NoAction, onUpdate: NoAction, map: "detail_materi_materi_FK")
+
+  @@index([id_materi], map: "detail_materi_materi_FK")
+}
+
+model detail_observasi {
+  id_detail_obsrevasi     Int                   @id @default(autoincrement())
+  id_observasi            Int?
+  id_pertanyaan_observasi Int?
+  jawaban                 Boolean
+  is_active               Boolean
+  observasi               observasi?            @relation(fields: [id_observasi], references: [id_observasi], onDelete: NoAction, onUpdate: NoAction, map: "detail_observasi_observasi_FK")
+  pertanyaan_observasi    pertanyaan_observasi? @relation(fields: [id_pertanyaan_observasi], references: [id_pertanyaan_observasi], onDelete: NoAction, onUpdate: NoAction, map: "detail_observasi_pertanyaan_observasi_FK")
+
+  @@index([id_observasi], map: "detail_observasi_observasi_FK")
+  @@index([id_pertanyaan_observasi], map: "detail_observasi_pertanyaan_observasi_FK")
+}
+
+model detail_screening {
+  id_detail_screening     Int                  @id @default(autoincrement())
+  id_screening            Int
+  id_pertanyaan_screening Int
+  jawaban                 Boolean?
+  is_active               Boolean
+  nilai_number            Int?
+  pertanyaan_screening    pertanyaan_screening @relation(fields: [id_pertanyaan_screening], references: [id_pertanyaan_screening], onDelete: NoAction, onUpdate: NoAction, map: "detail_screening_pertanyaan_screening_FK")
+  screening               screening            @relation(fields: [id_screening], references: [id_screening], onDelete: NoAction, onUpdate: NoAction, map: "detail_screening_screening_FK")
+
+  @@index([id_pertanyaan_screening], map: "detail_screening_pertanyaan_screening_FK")
+  @@index([id_screening], map: "detail_screening_screening_FK")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model feedback {
+  id                 Int              @id @default(autoincrement())
+  id_user            Int
+  id_riwayat_layanan Int?
+  id_kegiatan        Int?
+  rating             Int?
+  isi_text           String?          @db.Text
+  tanggal            DateTime?        @db.Date
+  is_active          Boolean?         @default(true)
+  users              users            @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_1")
+  riwayat_layanan    riwayat_layanan? @relation(fields: [id_riwayat_layanan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_2")
+  kegiatan           kegiatan?        @relation(fields: [id_kegiatan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_3")
+
+  @@index([id_kegiatan], map: "id_kegiatan")
+  @@index([id_riwayat_layanan], map: "id_riwayat_layanan")
+  @@index([id_user], map: "id_user")
+}
+
+model heading_absensi {
+  id_heading     Int              @id @default(autoincrement())
+  id_kamar       Int?
+  id_timkes      Int?
+  tanggal        DateTime?        @db.Date
+  catatan        String?          @db.Text
+  is_active      Boolean
+  absensi_detail absensi_detail[]
+  kamar          kamar?           @relation(fields: [id_kamar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "heading_absensi_kamar_FK")
+  users          users?           @relation(fields: [id_timkes], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "heading_absensi_users_FK")
+
+  @@index([id_kamar], map: "heading_absensi_kamar_FK")
+  @@index([id_timkes], map: "heading_absensi_users_FK")
+}
+
+model item_kebersihan {
+  id_item          Int                               @id @default(autoincrement())
+  nama_item        String                            @db.VarChar(500)
+  waktu_pengerjaan item_kebersihan_waktu_pengerjaan?
+  is_active        Boolean
+  absensi_detail   absensi_detail[]
+}
+
+model jenis_layanan {
+  id              Int               @id @default(autoincrement())
+  nama_layanan    String            @db.VarChar(100)
+  deskripsi       String?           @db.Text
+  estimasi        String?           @db.VarChar(50)
+  is_active       Boolean?          @default(true)
+  riwayat_layanan riwayat_layanan[]
+}
+
+model jenis_tagihan {
+  id            Int       @id @default(autoincrement())
+  jenis_tagihan String?   @db.VarChar(100)
+  is_active     Boolean?
+  tagihan       tagihan[]
+}
+
+model kamar {
+  id              Int               @id @default(autoincrement())
+  id_wali         Int?
+  kamar           String?           @db.VarChar(100)
+  kapasitas       Int?
+  gender          kamar_gender?
+  lokasi          String?           @db.VarChar(100)
+  keterangan      String?           @db.Text
+  is_active       Boolean?
+  heading_absensi heading_absensi[]
+  users           users?            @relation(fields: [id_wali], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kamar_users_FK")
+  kamar_santri    kamar_santri[]
+  kegiatan        kegiatan[]
+  observasi       observasi[]
+
+  @@index([id_wali], map: "kamar_users_FK")
+}
+
+model kamar_santri {
+  id             Int       @id @default(autoincrement())
+  id_santri      Int?
+  id_kamar       Int?
+  tanggal_masuk  DateTime? @db.Date
+  tanggal_keluar DateTime? @db.Date
+  is_active      Boolean?
+  kamar          kamar?    @relation(fields: [id_kamar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kamar_santri_kamar_FK")
+  users          users?    @relation(fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kamar_santri_users_FK")
+
+  @@index([id_kamar], map: "kamar_santri_kamar_FK")
+  @@index([id_santri], map: "kamar_santri_users_FK")
+}
+
+model kegiatan {
+  id               Int        @id @default(autoincrement())
+  id_kelas         Int?
+  id_kamar         Int?
+  nama_kegiatan    String     @db.VarChar(100)
+  tanggal          DateTime?  @db.Date
+  lokasi           String?    @db.VarChar(100)
+  waktu_mulai      DateTime?  @db.Time(0)
+  waktu_selesai    DateTime?  @db.Time(0)
+  penanggung_jawab Int?
+  deskripsi        String?    @db.Text
+  rutin            Boolean?   @default(false)
+  is_active        Boolean?   @default(true)
+  absensi          absensi[]
+  feedback         feedback[]
+  users            users?     @relation(fields: [penanggung_jawab], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kegiatan_ibfk_1")
+  kamar            kamar?     @relation(fields: [id_kamar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kegiatan_kamar_FK")
+  kelas            kelas?     @relation(fields: [id_kelas], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kegiatan_kelas_FK")
+
+  @@index([id_kelas], map: "kegiatan_kelas_FK")
+  @@index([id_kamar], map: "kegiatan_kamar_FK")
+  @@index([penanggung_jawab], map: "penanggung_jawab")
+}
+
+model kelas {
+  id           Int            @id @default(autoincrement())
+  id_wali      Int
+  kelas        String?        @db.VarChar(100)
+  tahun_ajaran String?        @db.VarChar(100)
+  is_active    Boolean        @default(true)
+  kegiatan     kegiatan[]
+  users        users          @relation(fields: [id_wali], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kelas_users_FK")
+  kelas_santri kelas_santri[]
+
+  @@index([id_wali], map: "kelas_users_FK")
+}
+
+model kelas_santri {
+  id        Int     @id @default(autoincrement())
+  id_santri Int?
+  id_kelas  Int?
+  is_active Boolean
+  kelas     kelas?  @relation(fields: [id_kelas], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kelas_santri_kelas_FK")
+  users     users?  @relation(fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kelas_santri_users_FK")
+
+  @@index([id_kelas], map: "kelas_santri_kelas_FK")
+  @@index([id_santri], map: "kelas_santri_users_FK")
+}
+
+model materi {
+  id_materi        Int                @id @default(autoincrement())
+  judul_materi     String             @db.VarChar(100)
+  penulis          String?            @db.VarChar(100)
+  is_active        Boolean
+  gambar           String?            @db.VarChar(1000)
+  ringkasan        String             @db.Text
+  tanggal_dibuat   DateTime?          @db.DateTime(0)
+  sumber           materi_sumber
+  detail_materi    detail_materi[]
+  materi_comment   materi_comment[]
+  pengajuan_materi pengajuan_materi[]
+}
+
+model observasi {
+  id_observasi                     Int                @id @default(autoincrement())
+  id_santri                        Int?
+  id_kamar                         Int?
+  id_timkes                        Int?
+  tanggal                          DateTime?          @db.DateTime(0)
+  waktu                            observasi_waktu?
+  is_active                        Boolean
+  skor_diperoleh                   Int?
+  catatan                          String?            @db.Text
+  tindak_lanjut                    String?            @db.Text
+  detail_observasi                 detail_observasi[]
+  kamar                            kamar?             @relation(fields: [id_kamar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "observasi_kamar_FK")
+  users_observasi_id_santriTousers users?             @relation("observasi_id_santriTousers", fields: [id_santri], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "observasi_users_FK")
+  users_observasi_id_timkesTousers users?             @relation("observasi_id_timkesTousers", fields: [id_timkes], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "observasi_users_FK_1")
+
+  @@index([id_kamar], map: "observasi_kamar_FK")
+  @@index([id_santri], map: "observasi_users_FK")
+  @@index([id_timkes], map: "observasi_users_FK_1")
+}
+
+model orangtua {
+  id                                Int     @id @default(autoincrement())
+  id_orangtua                       Int?
+  id_santri                         Int
+  hubungan                          String? @db.VarChar(100)
+  is_active                         Boolean
+  users_orangtua_id_santriTousers   users   @relation("orangtua_id_santriTousers", fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orangtua_users_FK")
+  users_orangtua_id_orangtuaTousers users?  @relation("orangtua_id_orangtuaTousers", fields: [id_orangtua], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orangtua_users_FK_1")
+
+  @@index([id_santri], map: "orangtua_users_FK")
+  @@index([id_orangtua], map: "orangtua_users_FK_1")
+}
+
+model pembayaran {
+  id            Int                     @id @default(autoincrement())
+  id_tagihan    Int
+  tanggal_bayar DateTime                @db.Date
+  nominal       Float                   @default(0) @db.Float
+  metode_bayar  pembayaran_metode_bayar
+  bukti_bayar   String?                 @db.VarChar(255)
+  status        pembayaran_status
+  is_active     Boolean?                @default(true)
+  tagihan       tagihan                 @relation(fields: [id_tagihan], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "pembayaran_ibfk_1")
+
+  @@index([id_tagihan], map: "id_tagihan")
+}
+
+model penanganan {
+  id_penanganan        Int                    @id @default(autoincrement())
+  opsi_penanganan      String                 @db.VarChar(200)
+  is_active            Boolean
+  screening_penanganan screening_penanganan[]
+}
+
+model pengaduan {
+  id                                Int               @id @default(autoincrement())
+  id_pelapor                        Int?
+  id_santri                         Int?
+  waktu_aduan                       DateTime?         @db.DateTime(0)
+  judul                             String?           @db.VarChar(100)
+  deskripsi                         String?           @db.Text
+  status                            pengaduan_status?
+  is_active                         Boolean?          @default(true)
+  users_pengaduan_id_pelaporTousers users?            @relation("pengaduan_id_pelaporTousers", fields: [id_pelapor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_users_FK")
+  users_pengaduan_id_santriTousers  users?            @relation("pengaduan_id_santriTousers", fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_users_FK_1")
+  tanggapan_aduan                   tanggapan_aduan[]
+
+  @@index([id_pelapor], map: "pengaduan_users_FK")
+  @@index([id_santri], map: "pengaduan_users_FK_1")
+}
+
+model pertanyaan_observasi {
+  id_pertanyaan_observasi Int                @id @default(autoincrement())
+  pertanyaan              String?            @db.Text
+  is_active               Boolean
+  detail_observasi        detail_observasi[]
+}
+
+model pertanyaan_screening {
+  id_pertanyaan_screening Int                               @id @default(autoincrement())
+  pertanyaan              String                            @db.Text
+  bagian                  pertanyaan_screening_bagian
+  is_active               Boolean
+  tipe_jawaban            pertanyaan_screening_tipe_jawaban @default(BOOLEAN)
+  detail_screening        detail_screening[]
+}
+
+model ppdb_dokumen {
+  id             Int                         @id @default(autoincrement())
+  id_pendaftar   Int?
+  jenis_dokumen  ppdb_dokumen_jenis_dokumen?
+  nama_file      String?                     @db.VarChar(100)
+  path_file      String?                     @db.VarChar(255)
+  status_verif   ppdb_dokumen_status_verif?  @default(Belum_Diverifikasi)
+  catatan        String?                     @db.Text
+  is_active      Boolean?                    @default(true)
+  ppdb_pendaftar ppdb_pendaftar?             @relation(fields: [id_pendaftar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_dokumen_ppdb_pendaftar_FK")
+
+  @@index([id_pendaftar], map: "ppdb_dokumen_ppdb_pendaftar_FK")
+}
+
+model ppdb_orangtua {
+  id             Int                     @id @default(autoincrement())
+  id_pendaftar   Int?
+  hubungan       ppdb_orangtua_hubungan?
+  nama           String?                 @db.VarChar(100)
+  tempat_lahir   String?                 @db.VarChar(100)
+  tanggal_lahir  DateTime?               @db.Date
+  pendidikan     String?                 @db.VarChar(100)
+  pekerjaan      String?                 @db.VarChar(100)
+  penghasilan    String?                 @db.VarChar(100)
+  no_hp          String?                 @db.VarChar(20)
+  alamat         String?                 @db.Text
+  is_active      Boolean?                @default(true)
+  ppdb_pendaftar ppdb_pendaftar?         @relation(fields: [id_pendaftar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_orangtua_ppdb_pendaftar_FK")
+
+  @@index([id_pendaftar], map: "ppdb_orangtua_ppdb_pendaftar_FK")
+}
+
+model ppdb_pembayaran_ref {
+  id             Int             @id @default(autoincrement())
+  id_pendaftar   Int?
+  id_tagihan     Int?
+  keterangan     String?         @db.VarChar(255)
+  is_active      Boolean?        @default(true)
+  ppdb_pendaftar ppdb_pendaftar? @relation(fields: [id_pendaftar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_pembayaran_ref_ppdb_pendaftar_FK")
+  tagihan        tagihan?        @relation(fields: [id_tagihan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_pembayaran_ref_tagihan_FK")
+
+  @@index([id_pendaftar], map: "ppdb_pembayaran_ref_ppdb_pendaftar_FK")
+  @@index([id_tagihan], map: "ppdb_pembayaran_ref_tagihan_FK")
+}
+
+model ppdb_pendaftar {
+  id                  Int                             @id @default(autoincrement())
+  id_tahun            Int?
+  nama_lengkap        String?                         @db.VarChar(100)
+  jenis_kelamin       ppdb_pendaftar_jenis_kelamin?
+  tempat_lahir        String?                         @db.VarChar(100)
+  tanggal_lahir       DateTime?                       @db.Date
+  anak_ke             Int?                            @db.SmallInt
+  jumlah_saudara      Int?                            @db.SmallInt
+  alamat              String?                         @db.Text
+  no_hp               String?                         @db.VarChar(20)
+  email               String?                         @db.VarChar(100)
+  asal_sekolah        String?                         @db.VarChar(100)
+  jurusan_asal        String?                         @db.VarChar(100)
+  tahun_lulus         String?                         @db.VarChar(100)
+  nilai_rata_rapor    Float?                          @db.Float
+  kemampuan_quran     ppdb_pendaftar_kemampuan_quran?
+  juz_hafalan         Int?                            @default(0)
+  no_pendaftaran      String?                         @db.VarChar(100)
+  status              ppdb_pendaftar_status?
+  catatan_panitia     String?                         @db.Text
+  id_user_aktif       Int?
+  is_active           Boolean?                        @default(true)
+  ppdb_dokumen        ppdb_dokumen[]
+  ppdb_orangtua       ppdb_orangtua[]
+  ppdb_pembayaran_ref ppdb_pembayaran_ref[]
+  ppdb_tahun          ppdb_tahun?                     @relation(fields: [id_tahun], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_pendaftar_ppdb_tahun_FK")
+  users               users?                          @relation(fields: [id_user_aktif], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_pendaftar_users_FK")
+  ppdb_seleksi        ppdb_seleksi[]
+
+  @@index([id_tahun], map: "ppdb_pendaftar_ppdb_tahun_FK")
+  @@index([id_user_aktif], map: "ppdb_pendaftar_users_FK")
+}
+
+model ppdb_seleksi {
+  id                Int                          @id @default(autoincrement())
+  id_pendaftar      Int?
+  id_penilai        Int?
+  nilai_quran       Float?                       @db.Float
+  catatan_quran     String?                      @db.Text
+  juz_diuji         Int?
+  nilai_tulis       Float?                       @db.Float
+  catatan_tulis     String?                      @db.Text
+  nilai_wawancara   Float?                       @db.Float
+  catatan_wawancara String?                      @db.Text
+  nilai_total       Float?                       @db.Float
+  tanggal_seleksi   DateTime?                    @db.DateTime(0)
+  status_seleksi    ppdb_seleksi_status_seleksi?
+  rekomendasi       ppdb_seleksi_rekomendasi?
+  is_active         Boolean?                     @default(true)
+  ppdb_pendaftar    ppdb_pendaftar?              @relation(fields: [id_pendaftar], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_seleksi_ppdb_pendaftar_FK")
+  users             users?                       @relation(fields: [id_penilai], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ppdb_seleksi_users_FK")
+
+  @@index([id_pendaftar], map: "ppdb_seleksi_ppdb_pendaftar_FK")
+  @@index([id_penilai], map: "ppdb_seleksi_users_FK")
+}
+
+model ppdb_tahun {
+  id                 Int              @id @default(autoincrement())
+  nama_gelombang     String?          @db.VarChar(100)
+  tahun_ajaran       String?          @db.VarChar(20)
+  gelombang          Int?             @default(1) @db.SmallInt
+  tanggal_buka       DateTime?        @db.DateTime(0)
+  tanggal_tutup      DateTime?        @db.DateTime(0)
+  tanggal_seleksi    DateTime?        @db.DateTime(0)
+  tanggal_pengumuman DateTime?        @db.DateTime(0)
+  kuota              Int?
+  biaya_pendaftaran  Int?             @default(0)
+  deskripsi          String?          @db.Text
+  is_active          Boolean?         @default(true)
+  ppdb_pendaftar     ppdb_pendaftar[]
+}
+
+model riwayat_layanan {
+  id                     Int                             @id @default(autoincrement())
+  id_layanan             Int
+  id_santri              Int
+  waktu                  DateTime?                       @default(now()) @db.DateTime(0)
+  status_sebelum         riwayat_layanan_status_sebelum?
+  status_sesudah         riwayat_layanan_status_sesudah?
+  catatan                String?                         @db.Text
+  is_active              Boolean?                        @default(true)
+  feedback               feedback[]
+  jenis_layanan          jenis_layanan                   @relation(fields: [id_layanan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "riwayat_layanan_ibfk_1")
+  users                  users                           @relation(fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "riwayat_layanan_ibfk_2")
+  riwayat_layanan_detail riwayat_layanan_detail[]
+
+  @@index([id_layanan], map: "id_layanan")
+  @@index([id_santri], map: "id_santri")
+}
+
+model riwayat_layanan_detail {
+  id              Int             @id @default(autoincrement())
+  id_riwayat      Int
+  aspek           String?         @db.VarChar(100)
+  detail          String?         @db.Text
+  is_active       Boolean?        @default(true)
+  riwayat_layanan riwayat_layanan @relation(fields: [id_riwayat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "riwayat_layanan_detail_ibfk_1")
+
+  @@index([id_riwayat], map: "id_riwayat")
+}
+
+model role {
+  id        Int         @id @default(autoincrement())
+  role      String?     @db.VarChar(100)
+  is_active String?     @default("1") @db.VarChar(100)
+  user_role user_role[]
+}
+
+model screening {
+  id_screening                     Int                    @id @default(autoincrement())
+  id_timkes                        Int
+  id_santri                        Int
+  tanggal                          DateTime?              @db.DateTime(0)
+  total_skor                       Int?
+  status                           screening_status
+  diagnosa                         screening_diagnosa
+  catatan                          String?                @db.Text
+  foto_predileksi                  String?                @db.VarChar(255)
+  is_active                        Boolean
+  detail_screening                 detail_screening[]
+  users_screening_id_timkesTousers users                  @relation("screening_id_timkesTousers", fields: [id_timkes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "screening_users_FK")
+  users_screening_id_santriTousers users                  @relation("screening_id_santriTousers", fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "screening_users_FK_1")
+  screening_penanganan             screening_penanganan[]
+  screening_predileksi             screening_predileksi[]
+
+  @@index([id_timkes], map: "screening_users_FK")
+  @@index([id_santri], map: "screening_users_FK_1")
+}
+
+model screening_penanganan {
+  id            Int        @id @default(autoincrement())
+  id_screening  Int
+  id_penanganan Int
+  penanganan    penanganan @relation(fields: [id_penanganan], references: [id_penanganan], onDelete: NoAction, onUpdate: NoAction, map: "screening_penanganan_penanganan_FK")
+  screening     screening  @relation(fields: [id_screening], references: [id_screening], onDelete: NoAction, onUpdate: NoAction, map: "screening_penanganan_screening_FK")
+
+  @@index([id_penanganan], map: "screening_penanganan_penanganan_FK")
+  @@index([id_screening], map: "screening_penanganan_screening_FK")
+}
+
+model tagihan {
+  id                  Int                   @id @default(autoincrement())
+  id_santri           Int?
+  id_jenis_tagihan    Int?
+  nama_tagihan        String?               @db.VarChar(100)
+  nominal             Int?
+  tanggal_tagihan     DateTime?             @db.Date
+  batas_pembayaran    DateTime?             @db.Date
+  status              tagihan_status?
+  is_active           Boolean?
+  pembayaran          pembayaran[]
+  ppdb_pembayaran_ref ppdb_pembayaran_ref[]
+  jenis_tagihan       jenis_tagihan?        @relation(fields: [id_jenis_tagihan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tagihan_jenis_tagihan_FK")
+  users               users?                @relation(fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tagihan_users_FK")
+
+  @@index([id_jenis_tagihan], map: "tagihan_jenis_tagihan_FK")
+  @@index([id_santri], map: "tagihan_users_FK")
+}
+
+model tanggapan_aduan {
+  id              Int        @id @default(autoincrement())
+  id_aduan        Int?
+  id_user         Int?
+  waktu_tanggapan DateTime?  @db.DateTime(0)
+  tanggapan       String?    @db.Text
+  is_active       Boolean?   @default(true)
+  pengaduan       pengaduan? @relation(fields: [id_aduan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tanggapan_aduan_pengaduan_FK")
+  users           users?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tanggapan_aduan_users_FK")
+
+  @@index([id_aduan], map: "tanggapan_aduan_pengaduan_FK")
+  @@index([id_user], map: "tanggapan_aduan_users_FK")
+}
+
+model user_role {
+  id        Int      @id @default(autoincrement())
+  id_user   Int
+  id_role   Int
+  is_active Boolean? @default(true)
+  role      role     @relation(fields: [id_role], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_role_role_FK")
+  users     users    @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_role_users_FK")
+
+  @@index([id_role], map: "user_role_role_FK")
+  @@index([id_user], map: "user_role_users_FK")
+}
+
+model users {
+  id                                               Int                      @id @default(autoincrement())
+  nip                                              String?                  @db.VarChar(100)
+  nama                                             String?                  @db.VarChar(100)
+  jenis_kelamin                                    users_jenis_kelamin?
+  tempat_lahir                                     String?                  @db.VarChar(100)
+  tanggal_lahir                                    DateTime?                @db.Date
+  email                                            String?                  @db.VarChar(100)
+  no_hp                                            String?                  @db.VarChar(100)
+  alamat                                           String?                  @db.VarChar(255)
+  foto_profil                                      String?                  @db.VarChar(500)
+  password                                         String?                  @db.VarChar(100)
+  is_active                                        Boolean                  @default(true)
+  last_opened_notif                                DateTime?                @db.DateTime(0)
+  absensi                                          absensi[]
+  activity_log                                     activity_log[]
+  feedback                                         feedback[]
+  heading_absensi                                  heading_absensi[]
+  kamar                                            kamar[]
+  kamar_santri                                     kamar_santri[]
+  kegiatan                                         kegiatan[]
+  kelas                                            kelas[]
+  kelas_santri                                     kelas_santri[]
+  konsultasi_message                               konsultasi_message[]
+  konsultasi_read_cursor                           konsultasi_read_cursor[]
+  konsultasi_room_konsultasi_room_id_santriTousers konsultasi_room[]        @relation("konsultasi_room_id_santriTousers")
+  konsultasi_room_konsultasi_room_id_timkesTousers konsultasi_room[]        @relation("konsultasi_room_id_timkesTousers")
+  konsultasi_room_konsultasi_room_closed_byTousers konsultasi_room[]        @relation("konsultasi_room_closed_byTousers")
+  materi_comment                                   materi_comment[]
+  materi_comment_reply                             materi_comment_reply[]
+  observasi_observasi_id_santriTousers             observasi[]              @relation("observasi_id_santriTousers")
+  observasi_observasi_id_timkesTousers             observasi[]              @relation("observasi_id_timkesTousers")
+  orangtua_orangtua_id_santriTousers               orangtua[]               @relation("orangtua_id_santriTousers")
+  orangtua_orangtua_id_orangtuaTousers             orangtua[]               @relation("orangtua_id_orangtuaTousers")
+  pengaduan_pengaduan_id_pelaporTousers            pengaduan[]              @relation("pengaduan_id_pelaporTousers")
+  pengaduan_pengaduan_id_santriTousers             pengaduan[]              @relation("pengaduan_id_santriTousers")
+  pengajuan_materi                                 pengajuan_materi[]
+  ppdb_pendaftar                                   ppdb_pendaftar[]
+  ppdb_seleksi                                     ppdb_seleksi[]
+  riwayat_layanan                                  riwayat_layanan[]
+  screening_screening_id_timkesTousers             screening[]              @relation("screening_id_timkesTousers")
+  screening_screening_id_santriTousers             screening[]              @relation("screening_id_santriTousers")
+  tagihan                                          tagihan[]
+  tanggapan_aduan                                  tanggapan_aduan[]
+  user_role                                        user_role[]
+}
+
+model faq {
+  id_faq     Int       @id @default(autoincrement())
+  pertanyaan String    @db.Text
+  jawaban    String    @db.Text
+  urutan     Int
+  is_active  Boolean
+  created_at DateTime? @db.DateTime(0)
+}
+
+model materi_comment {
+  id_comment           Int                    @id @default(autoincrement())
+  id_materi            Int
+  id_user              Int
+  isi_comment          String                 @db.Text
+  is_active            Boolean
+  created_at           DateTime               @db.DateTime(0)
+  materi               materi                 @relation(fields: [id_materi], references: [id_materi], onDelete: NoAction, onUpdate: NoAction, map: "materi_comment_materi_FK")
+  users                users                  @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "materi_comment_users_FK")
+  materi_comment_reply materi_comment_reply[]
+
+  @@index([id_materi], map: "materi_comment_materi_FK")
+  @@index([id_user], map: "materi_comment_users_FK")
+}
+
+model materi_comment_reply {
+  id_reply       Int            @id @default(autoincrement())
+  id_comment     Int
+  id_user        Int
+  isi_reply      String         @db.Text
+  is_active      Boolean
+  created_at     DateTime       @db.DateTime(0)
+  materi_comment materi_comment @relation(fields: [id_comment], references: [id_comment], onDelete: NoAction, onUpdate: NoAction, map: "materi_comment_reply_materi_comment_FK")
+  users          users          @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "materi_comment_reply_users_FK")
+
+  @@index([id_comment], map: "materi_comment_reply_materi_comment_FK")
+  @@index([id_user], map: "materi_comment_reply_users_FK")
+}
+
+model screening_predileksi {
+  id_predileksi   Int                                   @id @default(autoincrement())
+  id_screening    Int
+  area            screening_predileksi_area?
+  bentuk_kelainan screening_predileksi_bentuk_kelainan?
+  is_active       Boolean
+  screening       screening                             @relation(fields: [id_screening], references: [id_screening], onDelete: NoAction, onUpdate: NoAction, map: "screening_predileksi_screening_FK")
+
+  @@index([id_screening], map: "screening_predileksi_screening_FK")
+}
+
+model konsultasi_message {
+  id_message             Int                             @id @default(autoincrement())
+  id_room                Int
+  id_sender              Int
+  sender_role            konsultasi_message_sender_role?
+  message_text           String                          @db.Text
+  sent_at                DateTime                        @db.DateTime(0)
+  read_at                DateTime?                       @db.DateTime(0)
+  is_active              Boolean
+  konsultasi_room        konsultasi_room                 @relation(fields: [id_room], references: [id_room], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_message_konsultasi_room_FK")
+  users                  users                           @relation(fields: [id_sender], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_message_users_FK")
+  konsultasi_read_cursor konsultasi_read_cursor[]
+
+  @@index([id_room], map: "konsultasi_message_konsultasi_room_FK")
+  @@index([id_sender], map: "konsultasi_message_users_FK")
+}
+
+model konsultasi_read_cursor {
+  id_read              Int                 @id @default(autoincrement())
+  id_room              Int
+  id_user              Int
+  last_read_message_id Int?
+  last_read_at         DateTime?           @db.DateTime(0)
+  konsultasi_message   konsultasi_message? @relation(fields: [last_read_message_id], references: [id_message], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_read_cursor_konsultasi_message_FK")
+  konsultasi_room      konsultasi_room     @relation(fields: [id_room], references: [id_room], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_read_cursor_konsultasi_room_FK")
+  users                users               @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_read_cursor_users_FK")
+
+  @@index([last_read_message_id], map: "konsultasi_read_cursor_konsultasi_message_FK")
+  @@index([id_room], map: "konsultasi_read_cursor_konsultasi_room_FK")
+  @@index([id_user], map: "konsultasi_read_cursor_users_FK")
+}
+
+model konsultasi_room {
+  id_room                                Int                                @id @default(autoincrement())
+  id_santri                              Int
+  id_timkes                              Int
+  status                                 konsultasi_room_status
+  antrian_urutan                         BigInt
+  active_date                            DateTime?                          @db.DateTime(0)
+  last_message_at                        DateTime                           @db.DateTime(0)
+  closed_at                              DateTime?                          @db.DateTime(0)
+  closed_by                              Int?
+  close_reason_type                      konsultasi_room_close_reason_type?
+  closed_reason_text                     String?                            @db.Text
+  created_at                             DateTime                           @db.DateTime(0)
+  updated_at                             DateTime                           @db.DateTime(0)
+  konsultasi_message                     konsultasi_message[]
+  konsultasi_read_cursor                 konsultasi_read_cursor[]
+  users_konsultasi_room_id_santriTousers users                              @relation("konsultasi_room_id_santriTousers", fields: [id_santri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_room_users_FK")
+  users_konsultasi_room_id_timkesTousers users                              @relation("konsultasi_room_id_timkesTousers", fields: [id_timkes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_room_users_FK_1")
+  users_konsultasi_room_closed_byTousers users?                             @relation("konsultasi_room_closed_byTousers", fields: [closed_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "konsultasi_room_users_FK_2")
+
+  @@index([id_santri], map: "konsultasi_room_users_FK")
+  @@index([id_timkes], map: "konsultasi_room_users_FK_1")
+  @@index([closed_by], map: "konsultasi_room_users_FK_2")
+}
+
+model pengajuan_materi {
+  id_pengajuan    Int                     @id @default(autoincrement())
+  judul_materi    String                  @db.Text
+  penulis         String                  @db.Text
+  ringkasan       String                  @db.Text
+  isi_materi      String                  @db.Text
+  gambar          String?                 @db.Text
+  id_pengaju      Int?
+  nama_pengaju    String?                 @db.Text
+  status          pengajuan_materi_status
+  id_materi_hasil Int?
+  catatan_timkes  String?                 @db.Text
+  created_at      DateTime                @default(now()) @db.DateTime(0)
+  updated_at      DateTime                @db.DateTime(0)
+  materi          materi?                 @relation(fields: [id_materi_hasil], references: [id_materi], onDelete: NoAction, onUpdate: NoAction, map: "pengajuan_materi_materi_FK")
+  users           users?                  @relation(fields: [id_pengaju], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengajuan_materi_users_FK")
+
+  @@index([id_materi_hasil], map: "pengajuan_materi_materi_FK")
+  @@index([id_pengaju], map: "pengajuan_materi_users_FK")
+}
+
+enum item_kebersihan_waktu_pengerjaan {
+  Setiap_Hari       @map("Setiap Hari")
+  Dua_Minggu_Sekali @map("Dua Minggu Sekali")
+}
+
+enum pertanyaan_screening_bagian {
+  A
+  B
+}
+
+enum ppdb_dokumen_jenis_dokumen {
+  Foto_3x4       @map("Foto 3x4")
+  Akta_Kelahiran @map("Akta Kelahiran")
+  Kartu_Keluarga @map("Kartu Keluarga")
+  Ijazah
+  SKL
+}
+
+enum ppdb_orangtua_hubungan {
+  Ayah
+  Ibu
+  Wali
+}
+
+enum absensi_status {
+  Hadir
+  Izin
+  Sakit
+  Alpa
+}
+
+enum absensi_detail_status {
+  Tidak_Dilakukan @map("Tidak Dilakukan")
+  Dilakukan
+}
+
+enum activity_log_aksi {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum kamar_gender {
+  Laki_laki @map("Laki-laki")
+  Perempuan
+}
+
+enum ppdb_pendaftar_jenis_kelamin {
+  Laki_laki @map("Laki-laki")
+  Perempuan
+}
+
+enum users_jenis_kelamin {
+  Laki_laki @map("Laki-laki")
+  Perempuan
+}
+
+enum pembayaran_metode_bayar {
+  Transfer
+  Tunai
+}
+
+enum pertanyaan_screening_tipe_jawaban {
+  BOOLEAN
+  NUMBER
+}
+
+enum riwayat_layanan_status_sebelum {
+  Proses
+  Selesai
+  Batal
+}
+
+enum observasi_waktu {
+  Pagi
+  Siang
+  Sore
+  Malam
+}
+
+enum ppdb_dokumen_status_verif {
+  Belum_Diverifikasi @map("Belum Diverifikasi")
+  Terverifikasi
+  Ditolak
+}
+
+enum riwayat_layanan_status_sesudah {
+  Proses
+  Selesai
+  Batal
+}
+
+enum screening_status {
+  Belum_Diproses  @map("Belum Diproses")
+  Sedang_Diproses @map("Sedang Diproses")
+  Selesai
+}
+
+enum pembayaran_status {
+  Pending
+  Berhasil
+  Gagal
+}
+
+enum pengaduan_status {
+  Aktif
+  Selesai
+}
+
+enum screening_diagnosa {
+  Scabies
+  Kemungkinan_Scabies         @map("Kemungkinan Scabies")
+  Bukan_Scabies               @map("Bukan Scabies")
+  Perlu_Evaluasi_Lebih_Lanjut @map("Perlu Evaluasi Lebih Lanjut")
+}
+
+enum tagihan_status {
+  Aktif
+  Lunas
+}
+
+enum ppdb_seleksi_status_seleksi {
+  Belum_Diseleksi  @map("Belum Diseleksi")
+  Sedang_Diseleksi @map("Sedang Diseleksi")
+  Selesai
+}
+
+enum ppdb_seleksi_rekomendasi {
+  Diterima
+  Ditolak
+  Pertimbangan
+}
+
+enum ppdb_pendaftar_kemampuan_quran {
+  Belum_Bisa @map("Belum Bisa")
+  Iqro
+  Juz_Amma   @map("Juz Amma")
+  Al_Quran   @map(" Al Quran")
+  Hafidz
+}
+
+enum ppdb_pendaftar_status {
+  Mendaftar
+  Verifikasi
+  Seleksi
+  Lulus
+  Diterima
+  Ditolak
+  Mengundurkan_Diri @map("Mengundurkan Diri")
+}
+
+enum screening_predileksi_area {
+  kepala
+  leher
+  dada
+  perut
+  tangan_kiri
+  tangan_kanan
+  selangkangan
+  paha_kiri
+  paha_kanan
+  betis_kiri
+  betis_kanan
+}
+
+enum screening_predileksi_bentuk_kelainan {
+  Ruam_Merah
+  Bintil_Merah_Kecil
+  Terowongan_Kecil_di_Kulit
+  Bintil_Bernanah
+}
+
+enum konsultasi_message_sender_role {
+  santri
+  timkesehatan
+}
+
+enum konsultasi_room_status {
+  active
+  waiting
+  closed
+}
+
+enum konsultasi_room_close_reason_type {
+  manual_timkes
+  manual_santri
+  auto_inactive
+}
+
+enum pengajuan_materi_status {
+  ditinjau
+  disetujui
+  ditolak
+}
+
+enum materi_sumber {
+  teori
+  pengalaman
+}
