@@ -15,6 +15,7 @@ import {
   Loader2,
   ChevronDown,
   Wallet,
+  BookOpen,
 } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileAvatar from '../../components/ProfileAvatar';
@@ -165,11 +166,12 @@ export default function OrangTuaDashboard() {
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-4">
               <h3 className="font-bold text-gray-800 mb-4 px-2">Menu Wali</h3>
-              <div className="grid grid-cols-4 gap-2 text-white">
+              <div className="grid grid-cols-5 gap-1.5 md:gap-2 text-white">
                 <MenuButton icon={<Wallet />} label="Keuangan" onClick={() => navigate("/orangtua/keuangan")} color="bg-green-500" />
                 <MenuButton icon={<Calendar />} label="Kegiatan" onClick={() => navigate("/orangtua/kegiatan")} color="bg-purple-500" />
                 <MenuButton icon={<AlertCircle />} label="Aduan" onClick={() => navigate("/orangtua/pengaduan")} color="bg-orange-500" />
                 <MenuButton icon={<Cross />} label="Scabies" onClick={() => navigate("/orangtua/kesehatan")} color="bg-teal-500" />
+                <MenuButton icon={<BookOpen />} label="Panduan" onClick={() => window.open("/docs/Panduan_SIM-Tren_Orang_Tua.pdf", "_blank")} color="bg-blue-500" />
               </div>
             </div>
             

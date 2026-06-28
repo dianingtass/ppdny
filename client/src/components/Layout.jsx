@@ -107,6 +107,12 @@ export default function GlobalLayout() {
       icon: Users,
       roles: ["pengurus", "admin", "pimpinan"],
     },
+    {
+      name: "Data Orang Tua",
+      path: "/data-orangtua",
+      icon: Users,
+      roles: ["pengurus", "admin"],
+    },
 
     {
       name: "Data Kelas",
@@ -256,6 +262,13 @@ export default function GlobalLayout() {
       path: "/faq",
       icon: Receipt,
       roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
+    },
+    {
+      name: "Buku Panduan",
+      path: "/docs/panduan",
+      icon: BookOpen,
+      roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
+      isExternal: true,
     }
   ];
 
@@ -366,7 +379,18 @@ export default function GlobalLayout() {
 
                 <button
                   onClick={() => {
-                    navigate(targetPath);
+                    if (item.isExternal) {
+                      const roleNameMap = {
+                        admin: "Admin",
+                        pimpinan: "Pimpinan",
+                        pengurus: "Pengurus",
+                        timkesehatan: "Tim_Kesehatan"
+                      };
+                      const mappedRole = roleNameMap[userRole] || "Admin";
+                      window.open(`/docs/Panduan_SIM-Tren_${mappedRole}.pdf`, "_blank");
+                    } else {
+                      navigate(targetPath);
+                    }
                     setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 font-medium
