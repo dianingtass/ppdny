@@ -1,27 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { X, Save, Loader2, Tag, FileText } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
 export default function InputJenisTagihanModal({ isOpen, onClose, isEditing, editData, onSubmit, saving }) {
-  const initialForm = {
-    jenis_tagihan: ""
-  };
   const { message, showAlert, clearAlert } = useAlert();
 
-  const [formData, setFormData] = useState(initialForm);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (isEditing && editData) {
-        setFormData({
-          jenis_tagihan: editData.jenis_tagihan || ""
-        });
-      } else {
-        setFormData(initialForm);
-      }
-    }
-  }, [isOpen, isEditing, editData]);
+  const [formData, setFormData] = useState(() => ({
+    jenis_tagihan: isEditing && editData ? (editData.jenis_tagihan || "") : "",
+    deskripsi: isEditing && editData ? (editData.deskripsi || "") : ""
+  }));
 
   if (!isOpen) return null;
 
@@ -56,15 +44,28 @@ export default function InputJenisTagihanModal({ isOpen, onClose, isEditing, edi
         <div className="p-6">
           <form id="jenisTagihanForm" onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Tagihan</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Nama Jenis Tagihan</label>
                 <div className="relative">
                     <input 
                         type="text" name="jenis_tagihan" required
-                        className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                        className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition text-sm"
                         value={formData.jenis_tagihan} onChange={handleChange}
                         placeholder="Contoh: SPP Bulanan, Uang Pangkal"
                     />
-                    <FileText className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <Tag className="absolute left-3 top-3.5 text-gray-400" size={16} />
+                </div>
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+                <div className="relative">
+                    <textarea 
+                        name="deskripsi" rows="3"
+                        className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none resize-none transition text-sm"
+                        value={formData.deskripsi} onChange={handleChange}
+                        placeholder="Deskripsi atau keterangan tagihan..."
+                    />
+                    <FileText className="absolute left-3 top-3.5 text-gray-400" size={16} />
                 </div>
             </div>
           </form>

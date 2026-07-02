@@ -6,6 +6,8 @@ const ctrl    = require('../../controllers/shared/masterDataController');
 router.use(requireRole('admin'));
 
 router.get('/',       ctrl.getRiwayatLayanan);
+router.get('/options', ctrl.getRiwayatLayananOptions);
+router.post('/',      ctrl.createRiwayatLayanan);
 router.put('/:id',    ctrl.updateStatusLayanan);
 
 module.exports = router;

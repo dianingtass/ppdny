@@ -47,7 +47,8 @@ exports.getKegiatan = async (req, res) => {
             orderBy: { tanggal: 'desc' },
             include: {
                 users: { select: { nama: true } },
-                kelas: { select: { kelas: true } }
+                kelas: { select: { kelas: true } },
+                kamar: { select: { kamar: true } }
             }
         });
 
@@ -55,6 +56,10 @@ exports.getKegiatan = async (req, res) => {
             const kegDate = new Date(k.tanggal);
             kegDate.setHours(0,0,0,0);
             const statusWaktu = kegDate >= today ? "Mendatang" : "Selesai";
+
+            let skala = "Global (Semua Santri)";
+            if (k.kelas) skala = `Khusus Kelas ${k.kelas.kelas}`;
+            else if (k.kamar) skala = `Khusus Kamar ${k.kamar.kamar}`;
 
             return {
                 id: k.id,
@@ -66,8 +71,9 @@ exports.getKegiatan = async (req, res) => {
                 nama_penanggung_jawab: k.users?.nama || "Admin Pondok",
                 status_waktu: statusWaktu,
                 
-                skala: k.kelas ? `Khusus ${k.kelas.kelas}` : "Global (Semua Santri)",
+                skala,
                 id_kelas: k.id_kelas,
+                id_kamar: k.id_kamar,
 
                 raw_tanggal: k.tanggal ? new Date(k.tanggal).toISOString().split('T')[0] : "",
                 raw_waktu_mulai: k.waktu_mulai ? new Date(k.waktu_mulai).toISOString().substring(11, 16) : "",

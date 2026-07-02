@@ -2,12 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
-import { ArrowLeft, User, Loader2, Plus, CheckCircle, Search, AlertTriangle, X } from 'lucide-react';
+import { ArrowLeft, User, Loader2, Plus, CheckCircle, AlertTriangle } from 'lucide-react';
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailPengaduanModal from '../../components/DetailPengaduanModal'; 
 import CreatePengaduanModal from '../../components/CreatePengaduanModal';
 import { getImageUrl } from '../../utils/imageUrl';
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
+
 
 const formatTime = (dateString) => {
   if (!dateString) return "";
@@ -19,6 +23,7 @@ export default function OrangTuaPengaduan() {
   const [loading, setLoading] = useState(true);
   const { message, showAlert, clearAlert } = useAlert();
   const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("Semua");
 
   const [selectedId, setSelectedId] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -60,10 +65,12 @@ export default function OrangTuaPengaduan() {
     }
   };
 
-  const filteredData = data.filter(item => 
-      item.judul.toLowerCase().includes(search.toLowerCase()) || 
-      item.pelapor?.nama.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredData = data.filter(item => {
+    const matchSearch = item.judul.toLowerCase().includes(search.toLowerCase()) || 
+      (item.pelapor?.nama || item.santri?.nama || "").toLowerCase().includes(search.toLowerCase());
+    const matchStatus = filterStatus === "Semua" || item.status === filterStatus;
+    return matchSearch && matchStatus;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 w-full overflow-x-hidden">
@@ -91,10 +98,28 @@ export default function OrangTuaPengaduan() {
             <Plus size={20} className="mr-2" /> Buat Laporan Baru
         </button>
 
-        <div className="relative">
-            <input type="text" placeholder="Cari laporan..." className="w-full bg-white pl-11 pr-4 py-3.5 rounded-xl shadow-sm border border-gray-100 text-gray-800 focus:ring-2 focus:ring-orange-500 outline-none transition" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Search className="absolute left-4 top-4.5 text-gray-400" size={20} />
-        </div>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari laporan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <FilterDropdown
+            activeCount={filterStatus !== "Semua" ? 1 : 0}
+            onReset={() => {
+              setFilterStatus("Semua");
+            }}
+          >
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Status Laporan</label>
+              <FilterSelect
+                placeholder="Semua Status"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                options={[
+                  { value: "Aktif", label: "Aktif" },
+                  { value: "Selesai", label: "Selesai" },
+                ]}
+              />
+            </div>
+          </FilterDropdown>
+      </div>
 
         <div className="space-y-4 pt-2">
           {loading ? (

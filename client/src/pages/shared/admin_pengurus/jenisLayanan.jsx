@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Search, Edit2, Trash2, Loader2, Clock, Info } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, Clock, Info } from "lucide-react";
 import InputJenisLayananModal from "../../../components/InputJenisLayananModal";
 import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
+import SearchBar from "../../../components/SearchBar";
 
 export default function JenisLayananPage({ rolePrefix }) {
   const [layananList, setLayananList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(layananList);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -89,11 +89,8 @@ export default function JenisLayananPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-green-500 transition-all outline-none">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input type="text" placeholder="Cari nama layanan..." className="w-full pl-10 pr-4 py-2.5 outline-none bg-transparent" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar placeholder="Cari nama layanan..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       {loading ? (
@@ -158,7 +155,7 @@ export default function JenisLayananPage({ rolePrefix }) {
         </>
       )}
 
-      <InputJenisLayananModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} />
+      <InputJenisLayananModal key={isModalOpen ? (selectedData?.id || "new") : "closed"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} />
       <ConfirmDeleteModal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} onConfirm={confirmDelete} loading={isDeleting} itemName={deleteModal.name} />
     </div>
   );

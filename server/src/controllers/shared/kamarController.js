@@ -129,20 +129,22 @@ exports.getAssignKamar = async (req, res) => {
 exports.getOptions = async (req, res) => {
     try {
         const { gender } = req.query;
-        const santri = await prisma.users.findMany({
-            where: {
-                is_active: true,
-                user_role: { some: { id_role: 1 } },
-                ...(gender && { jenis_kelamin: gender }),
-                kamar_santri: { none: { is_active: true } },
-            },
-            select:  { id: true, nama: true, nip: true, jenis_kelamin: true },
-            orderBy: { nama: 'asc' },
-        });
-        const kamar = await prisma.kamar.findMany({
-            where:   { is_active: true, ...(gender && { gender }) },
-            orderBy: { kamar: 'asc' },
-        });
+        const [santri, kamar] = await Promise.all([
+            prisma.users.findMany({
+                where: {
+                    is_active: true,
+                    user_role: { some: { id_role: 1 } },
+                    ...(gender && { jenis_kelamin: gender }),
+                    kamar_santri: { none: { is_active: true } },
+                },
+                select:  { id: true, nama: true, nip: true, jenis_kelamin: true },
+                orderBy: { nama: 'asc' },
+            }),
+            prisma.kamar.findMany({
+                where:   { is_active: true, ...(gender && { gender }) },
+                orderBy: { kamar: 'asc' },
+            })
+        ]);
         return res.json({ success: true, santri, kamar });
     } catch (error) {
         console.error(error);

@@ -4,7 +4,7 @@ import { X, Save, Loader2, Users, Calendar, DollarSign, CheckSquare, Search } fr
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
-export default function InputTagihanModal({ isOpen, onClose, isEditing, editData, onSubmit }) {
+export default function InputTagihanModal({ isOpen, onClose, isEditing, editData, onSubmit, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({
     nama_tagihan: "", id_jenis_tagihan: "", nominal: "", tanggal_tagihan: "", batas_pembayaran: ""
   });
@@ -16,17 +16,12 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [jenisOptions, setJenisOptions] = useState([]);
 
-  // Clean code: Gunakan async/await dengan destructuring promise all
   useEffect(() => {
     const fetchOptions = async () => {
         try {
-            const [resJenis, resSantri] = await Promise.all([
-                api.get("/pengurus/keuangan/options"),
-                // Jika route asli Anda di /pengurus/keuangan/options mengembalikan {santri, jenis_tagihan},
-                // pastikan path ini sesuai backend Anda. Asumsi dari kode lama Anda:
-            ]);
-            setAllSantri(resJenis.data.santri || []);
-            setJenisOptions(resJenis.data.jenis_tagihan || []);
+            const res = await api.get(`/${rolePrefix}/keuangan/options`);
+            setAllSantri(res.data.santri || []);
+            setJenisOptions(res.data.jenis_tagihan || []);
         } catch (err) {
             console.error("Gagal load opsi tagihan:", err);
         }
@@ -53,7 +48,7 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
             setIsSelectAll(false);
         }
     }
-  }, [isOpen, isEditing, editData]);
+  }, [isOpen, isEditing, editData, rolePrefix]);
 
   if (!isOpen) return null;
 

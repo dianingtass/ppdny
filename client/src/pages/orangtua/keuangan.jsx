@@ -143,7 +143,10 @@ export default function KeuanganSantri() {
                   {data.tagihan_aktif.length > 0 ? (
                     data.tagihan_aktif.map((item) => (
                       <tr key={item.id} className="hover:bg-green-50/50 transition">
-                        <td className="p-4 pl-6 text-gray-800 font-medium">{item.nama_tagihan}</td>
+                        <td className="p-4 pl-6">
+                          <p className="text-gray-800 font-medium">{item.nama_tagihan}</p>
+                          {item.status === 'Perlu_Konfirmasi' && <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-bold">Menunggu Konfirmasi</span>}
+                        </td>
                         <td className="p-4 text-gray-600">{item.nominal}</td>
                         <td className="p-4 text-red-500 text-sm font-medium">{item.batas_pembayaran}</td>
                         <td className="p-4 pr-6 text-right">
@@ -162,7 +165,9 @@ export default function KeuanganSantri() {
                 <div key={item.id} className="border border-gray-200 rounded-xl p-4 flex flex-col gap-3">
                   <div className="flex justify-between items-start">
                     <h4 className="font-bold text-gray-800">{item.nama_tagihan}</h4>
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">Aktif</span>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.status === 'Perlu_Konfirmasi' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-600'}`}>
+                      {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : 'Belum Lunas'}
+                    </span>
                   </div>
                   <div className="text-gray-600 text-sm space-y-1">
                     <p className="flex justify-between"><span>Nominal:</span> <span className="font-semibold text-gray-800">{item.nominal}</span></p>

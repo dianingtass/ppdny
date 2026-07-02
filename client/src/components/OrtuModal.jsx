@@ -3,6 +3,8 @@ import { User, X, Search, Loader2, CheckCircle, Plus, AlertTriangle } from "luci
 import api from "../config/api";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import SearchBar from "./SearchBar";
+
 
 export default function OrtuModal({
   isOpen,
@@ -127,26 +129,7 @@ export default function OrtuModal({
           {/* STEP 1: SEARCH UI */}
           {!isEditing && formStep === 1 && (
             <div className="space-y-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Cari Nama atau No. HP..."
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-                <Search
-                  className="absolute left-3 top-3.5 text-gray-400"
-                  size={20}
-                />
-                {isSearchingUser && (
-                  <Loader2
-                    className="absolute right-3 top-3.5 text-green-500 animate-spin"
-                    size={20}
-                  />
-                )}
-              </div>
+              <SearchBar placeholder="Cari Nama atau No. HP..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} loading={isSearchingUser} autoFocus />
 
               {/* Hasil Search */}
               <div className="space-y-2 h-48 overflow-y-auto custom-scrollbar">

@@ -9,6 +9,8 @@ import AlertToast from "../../components/AlertToast";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import { useAlert } from "../../hooks/useAlert";
 import ProfileAvatar from '../../components/ProfileAvatar';
+import SearchBar from "../../components/SearchBar";
+
 
 // Field wajib data diri yang harus semua terisi agar tidak bisa diedit
 const REQUIRED_FIELDS = ['nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'email', 'no_hp', 'alamat'];
@@ -369,11 +371,7 @@ export default function SantriProfile() {
             <div className="p-6 overflow-y-auto">
               {formStep === 1 && (
                 <div className="space-y-4">
-                  <div className="relative">
-                    <input type="text" placeholder="Cari Nama atau No. HP..." className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoFocus />
-                    <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
-                    {isSearchingUser && <Loader2 className="absolute right-3 top-3.5 text-green-500 animate-spin" size={20} />}
-                  </div>
+                  <SearchBar placeholder="Cari Nama atau No. HP..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} loading={isSearchingUser} autoFocus />
                   <div className="space-y-2 h-48 overflow-y-auto">
                     {searchResults.length > 0 ? (
                       searchResults.map((user) => (

@@ -1,24 +1,43 @@
 import React, { useState, useEffect } from "react";
 import api from "../../config/api";
 import { 
-  Plus, Search, Eye, Trash2, User, Loader2, Mail, Phone, 
-  AlertTriangle, CheckCircle, X, MapPin, ChevronLeft, ChevronRight 
+  Eye, Loader2, Mail, Phone, MapPin 
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
-import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import { useAlert } from "../../hooks/useAlert";
 import InputSantriModal from "../../components/InputSantriModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import ProfileAvatar from '../../components/ProfileAvatar';
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 
 export default function DataSantri() {
   const [santriList, setSantriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  
+  const [selectedKelas, setSelectedKelas] = useState("");
+  const [selectedKamar, setSelectedKamar] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+
+  const kelasOptions = Array.from(
+    new Set(santriList.map((s) => s.kelas_aktif).filter((k) => k && k !== '-'))
+  ).map((k) => ({ value: k, label: k }));
+
+  const kamarOptions = Array.from(
+    new Set(santriList.map((s) => s.kamar_aktif).filter((km) => km && km !== '-'))
+  ).map((km) => ({ value: km, label: km }));
+
+  const filteredSantriList = santriList.filter((santri) => {
+    const matchKelas = !selectedKelas || santri.kelas_aktif === selectedKelas;
+    const matchKamar = !selectedKamar || santri.kamar_aktif === selectedKamar;
+    const matchGender = !selectedGender || santri.jenis_kelamin === selectedGender;
+    return matchKelas && matchKamar && matchGender;
+  });
+
   // Custom Hook Pagination
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(santriList);
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredSantriList);
 
   // State Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +45,6 @@ export default function DataSantri() {
   const [selectedData, setSelectedData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, loading: false });
 
   // 1. Fetch Data
   const fetchSantri = async () => {
@@ -50,12 +68,9 @@ export default function DataSantri() {
     return () => clearTimeout(delayDebounce);
   }, [search]);
 
-  // 2. Handlers Modal
-  const handleAdd = () => {
-    setIsEditing(false);
-    setSelectedData(null);
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    jump(1);
+  }, [selectedKelas, selectedKamar, selectedGender]);
 
   const handleEdit = (data) => {
     setIsEditing(true);
@@ -63,42 +78,18 @@ export default function DataSantri() {
     setIsModalOpen(true);
   };
 
-  // 3. Submit Handler
-  const handleSubmit = async (formData) => {
-    setIsSaving(true);
-    try {
-      if (isEditing) {
-        await api.put(`/pimpinan/santri/${selectedData.id}`, formData);
-        showAlert("success", "Data santri berhasil diperbarui");
-      } else {
-        await api.post("/pimpinan/santri", formData);
-        showAlert("success", "Santri baru berhasil ditambahkan");
-      }
-      setIsModalOpen(false);
-      fetchSantri();
-    } catch (err) {
-      console.error(err);
-      showAlert("error", err.response?.data?.message || "Terjadi kesalahan");
-    } finally {
-      setIsSaving(false);
-    }
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (selectedKelas) count++;
+    if (selectedKamar) count++;
+    if (selectedGender) count++;
+    return count;
   };
 
-  // 4. Delete Handler
-  const handleDelete = (id) => setDeleteModal({ isOpen: true, id, loading: false });
-
-  const confirmDelete = async () => {
-    setDeleteModal(prev => ({ ...prev, loading: true }));
-    try {
-      await api.delete(`/pimpinan/santri/${deleteModal.id}`);
-      showAlert("success", "Santri berhasil dinonaktifkan");
-      setDeleteModal({ isOpen: false, id: null, loading: false });
-      fetchSantri();
-    } catch (err) {
-      console.error(err);
-      showAlert("error", "Gagal menghapus data");
-      setDeleteModal(prev => ({ ...prev, loading: false }));
-    }
+  const resetFilters = () => {
+    setSelectedKelas("");
+    setSelectedKamar("");
+    setSelectedGender("");
   };
 
   return (
@@ -113,12 +104,52 @@ export default function DataSantri() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus:ring-2 focus:ring-green-500 outline-none">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input type="text" placeholder="Cari nama atau NIS..." className="w-full pl-10 pr-4 py-2.5 outline-none" value={search} onChange={(e) => setSearch(e.target.value)}/>
-        </div>
+      {/* Search Bar + Filters */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar
+          placeholder="Cari nama atau NIS..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          className="flex-1"
+        />
+        <FilterDropdown
+          activeCount={getActiveFilterCount()}
+          onReset={resetFilters}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Kelas</label>
+              <FilterSelect
+                placeholder="Semua Kelas"
+                value={selectedKelas}
+                onChange={(e) => setSelectedKelas(e.target.value)}
+                options={kelasOptions}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Kamar</label>
+              <FilterSelect
+                placeholder="Semua Kamar"
+                value={selectedKamar}
+                onChange={(e) => setSelectedKamar(e.target.value)}
+                options={kamarOptions}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Gender</label>
+              <FilterSelect
+                placeholder="Semua Gender"
+                value={selectedGender}
+                onChange={(e) => setSelectedGender(e.target.value)}
+                options={[
+                  { value: "Laki_laki", label: "Laki-laki" },
+                  { value: "Perempuan", label: "Perempuan" },
+                ]}
+              />
+            </div>
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (
@@ -162,7 +193,7 @@ export default function DataSantri() {
                         <td className="p-4 text-sm text-gray-600 max-w-xs truncate">{(item.jenis_kelamin==="Laki_laki"?"Laki-laki":"Perempuan")}</td>
                         <td className="p-4 text-center">
                           <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => handleEdit(item)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Edit"><Eye size={18} /></button>
+                            <button onClick={() => handleEdit(item)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Lihat"><Eye size={18} /></button>
                           </div>
                         </td>
                       </tr>
@@ -205,49 +236,29 @@ export default function DataSantri() {
                             <div className="flex items-center gap-2">
                                 <Mail size={14} className="text-gray-400"/> <span className="truncate">{item.email || "-"}</span>
                             </div>
-                            <div className="flex items-start gap-2">
-                                <MapPin size={14} className="text-gray-400 mt-0.5 flex-shrink-0"/> <span className="line-clamp-2">{item.alamat || "-"}</span>
-                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3 mt-1">
-                            <button onClick={() => handleEdit(item)} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition">
-                                <Eye size={16}/> Lihat
-                            </button>
-                        </div>
+                        <button onClick={() => handleEdit(item)} className="w-full py-2 bg-green-50 text-green-600 rounded-xl font-bold text-sm flex justify-center items-center gap-2 active:scale-95 transition">
+                            <Eye size={16}/> Lihat Profil
+                        </button>
                     </div>
                 ))
-            ) : (
-                <div className="text-center p-8 bg-white rounded-xl border border-gray-100 text-gray-500">Data tidak ditemukan</div>
-            )}
+            ) : <div className="text-center p-8 bg-white rounded-xl text-gray-500">Data santri kosong.</div>}
           </div>
 
-          {/* Pagination Controls */}
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={maxPage}
-            onNext={next}
-            onPrev={prev}
-          />
+          <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
         </>
       )}
 
-      {/* Modal Form */}
+      {/* Modal detail view only for Pimpinan */}
       <InputSantriModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        isEditing={isEditing}
-        editData={selectedData}
-        onSubmit={handleSubmit}
-        saving={isSaving}
-      />
-
-      <ConfirmDeleteModal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null, loading: false })}
-        onConfirm={confirmDelete}
-        loading={deleteModal.loading}
-        itemName="santri ini"
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        isEditing={false} 
+        editData={selectedData} 
+        onSubmit={() => {}} 
+        saving={false}
+        viewOnly={true}
       />
     </div>
   );

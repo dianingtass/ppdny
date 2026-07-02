@@ -189,8 +189,9 @@ export default function KeuanganSantri() {
                         key={item.id}
                         className="hover:bg-green-50/50 transition"
                       >
-                        <td className="p-4 pl-6 text-gray-800 font-medium">
-                          {item.nama_tagihan}
+                        <td className="p-4 pl-6">
+                          <p className="text-gray-800 font-medium">{item.nama_tagihan}</p>
+                          {item.status === 'Perlu_Konfirmasi' && <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-bold">Menunggu Konfirmasi</span>}
                         </td>
                         <td className="p-4 text-gray-600">{item.nominal}</td>
                         <td className="p-4 text-red-500 text-sm font-medium">
@@ -226,8 +227,8 @@ export default function KeuanganSantri() {
                     <h4 className="font-bold text-gray-800">
                       {item.nama_tagihan}
                     </h4>
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">
-                      Aktif
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.status === 'Perlu_Konfirmasi' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-600'}`}>
+                      {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : 'Belum Lunas'}
                     </span>
                   </div>
                   <div className="text-gray-600 text-sm space-y-1">

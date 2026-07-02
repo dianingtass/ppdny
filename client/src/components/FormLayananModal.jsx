@@ -4,27 +4,16 @@ import { X, Save, Loader2, Calendar, FileText, MapPin, Phone, Wrench } from 'luc
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
-// Deteksi jenis layanan berdasarkan nama
-const getLayananType = (namaLayanan) => {
-  const name = (namaLayanan || '').toLowerCase();
-  if (name.includes('izin bermalam') || name.includes('izin keluar') || name.includes('izin malam')) return 'izin_bermalam';
-  if (name.includes('perbaikan') || name.includes('pengadaan') || name.includes('fasilitas')) return 'fasilitas';
-  return 'umum';
+const getFieldIcon = (field) => {
+  const name = (field.name || '').toLowerCase();
+  const type = (field.type || '').toLowerCase();
+  
+  if (type === 'datetime-local' || name.includes('waktu') || name.includes('tanggal')) return Calendar;
+  if (name.includes('tujuan') || name.includes('lokasi')) return MapPin;
+  if (name.includes('kontak') || name.includes('telepon') || name.includes('hp')) return Phone;
+  if (name.includes('fasilitas') || name.includes('alat') || name.includes('barang')) return Wrench;
+  return FileText;
 };
-
-const FIELDS_IZIN_BERMALAM = [
-  { name: 'rencana_pergi', label: 'Rencana Pergi', type: 'datetime-local', icon: Calendar, required: true },
-  { name: 'rencana_pulang', label: 'Rencana Pulang', type: 'datetime-local', icon: Calendar, required: true },
-  { name: 'tujuan', label: 'Tujuan Kepergian', type: 'text', placeholder: 'Contoh: Rumah orang tua di Bandung', icon: MapPin, required: true },
-  { name: 'deskripsi', label: 'Deskripsi / Alasan Kepergian', type: 'textarea', placeholder: 'Jelaskan alasan atau urgensi kepergian...', icon: FileText, required: true },
-  { name: 'nama_kontak', label: 'Nama Kontak yang Bisa Dihubungi', type: 'text', placeholder: 'Contoh: Ayah - 08123456789', icon: Phone, required: true },
-];
-
-const FIELDS_FASILITAS = [
-  { name: 'nama_fasilitas', label: 'Nama Fasilitas', type: 'text', placeholder: 'Contoh: Kipas angin, Meja belajar, Toilet...', icon: Wrench, required: true },
-  { name: 'lokasi_kebutuhan', label: 'Lokasi Kebutuhan', type: 'text', placeholder: 'Contoh: Kamar A3, Kelas Awwaliyah 1...', icon: MapPin, required: true },
-  { name: 'deskripsi', label: 'Jelaskan Kerusakan / Alasan Kebutuhan', type: 'textarea', placeholder: 'Deskripsikan kondisi kerusakan atau mengapa fasilitas ini dibutuhkan...', icon: FileText, required: true },
-];
 
 const FIELDS_UMUM = [
   { name: 'deskripsi', label: 'Keterangan / Keperluan', type: 'textarea', placeholder: 'Jelaskan keperluan Anda...', icon: FileText, required: true },
@@ -35,9 +24,15 @@ export default function FormLayananModal({ isOpen, onClose, layanan, onSuccess }
   const [formData, setFormData] = useState({});
   const { message, showAlert, clearAlert } = useAlert();
 
-  const layananType = getLayananType(layanan?.nama_layanan);
-  const fields = layananType === 'izin_bermalam' ? FIELDS_IZIN_BERMALAM
-    : layananType === 'fasilitas' ? FIELDS_FASILITAS
+  const fields = (layanan && layanan.formulir_layanan && layanan.formulir_layanan.length > 0)
+    ? layanan.formulir_layanan.map(f => ({
+        name: f.name,
+        label: f.label,
+        type: f.type,
+        placeholder: f.placeholder || '',
+        required: !!f.required,
+        icon: getFieldIcon(f)
+      }))
     : FIELDS_UMUM;
 
   useEffect(() => {
@@ -75,6 +70,7 @@ export default function FormLayananModal({ isOpen, onClose, layanan, onSuccess }
         onClose();
       }
     } catch (err) {
+      console.error(err);
       showAlert('error', 'Gagal mengirim pengajuan');
     } finally {
       setLoading(false);

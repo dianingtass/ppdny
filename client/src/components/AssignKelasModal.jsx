@@ -4,15 +4,17 @@ import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import { X, Save, Loader2, School, User } from "lucide-react";
 
-export default function ModalAssignKelas({ isOpen, onClose, isEditing, editData, onSubmit, saving, preSelectedKelas }) {
+export default function ModalAssignKelas({ isOpen, onClose, isEditing, editData, onSubmit, saving, preSelectedKelas, rolePrefix = "pengurus", refreshTrigger }) {
   const [formData, setFormData] = useState({ id_santri: "", id_kelas: preSelectedKelas ? preSelectedKelas.id : "" });
   const [santriOptions, setSantriOptions] = useState([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [loadingOptions, setLoadingOptions] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
 
   useEffect(() => {
     if (isOpen) {
-        fetchSantriOptions();
+        if (santriOptions.length === 0) {
+            fetchSantriOptions();
+        }
         if (isEditing && editData) {
             setFormData({ id_santri: editData.users.id, id_kelas: editData.kelas.id });
         } else {
@@ -21,11 +23,15 @@ export default function ModalAssignKelas({ isOpen, onClose, isEditing, editData,
     }
   }, [isOpen, isEditing, editData, preSelectedKelas]);
 
+  useEffect(() => {
+    setSantriOptions([]);
+  }, [refreshTrigger]);
+
   const fetchSantriOptions = async () => {
     setLoadingOptions(true);
     try {
-        const res = await api.get("/pengurus/penempatan-kelas/options");
-        setSantriOptions(res.data.santri);
+        const res = await api.get(`/${rolePrefix}/penempatan-kelas/options`);
+        setSantriOptions(res.data.santri || []);
     } catch (err) {
         console.error(err);
     } finally {

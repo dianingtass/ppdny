@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import api from "../config/api"; // MENGGUNAKAN API GLOBAL
-import { X, User, Plus, Loader2, Search, Trash2, AlertTriangle } from "lucide-react";
+import { X, User, Plus, Loader2, Trash2, AlertTriangle } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import ProfileAvatar from './ProfileAvatar';
+import SearchBar from "./SearchBar";
 
-export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignClick, refreshTrigger }) {
+
+export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignClick, refreshTrigger, rolePrefix = "pengurus" }) {
   const [santriList, setSantriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -24,7 +26,7 @@ export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignC
     setLoading(true);
     try {
       // Clean code: Gunakan destructuring dan rute proxy API
-      const { data } = await api.get(`/pengurus/kelas/${kelasData.id}/santri`);
+      const { data } = await api.get(`/${rolePrefix}/kelas/${kelasData.id}/santri`);
       setSantriList(data.data || []);
     } catch (err) {
       console.error("Gagal memuat data santri kelas", err);
@@ -36,11 +38,13 @@ export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignC
   const confirmDelete = async () => {
     setIsRemoving(true);
     try {
-      await api.delete(`/pengurus/penempatan-kelas/${deleteConfirm.id}`);
+      await api.delete(`/${rolePrefix}/kelas/${kelasData.id}/santri/${deleteConfirm.id}`);
+      showAlert("success", "Santri berhasil dikeluarkan dari kelas");
       setDeleteConfirm(null);
       fetchSantri();
     } catch (err) {
       console.error(err);
+      showAlert("error", err.response?.data?.message || "Gagal mengeluarkan santri");
     } finally {
       setIsRemoving(false);
     }
@@ -63,7 +67,7 @@ export default function KelasSantriModal({ isOpen, onClose, kelasData, onAssignC
           <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition text-gray-400"><X size={20} /></button>
         </div>
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3 bg-white">
-          <div className="relative flex-1"><Search className="absolute left-3 top-2.5 text-gray-400" size={18} /><input type="text" placeholder="Cari santri..." className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+          <SearchBar placeholder="Cari santri..." value={search} onChange={(e) => setSearch(e.target.value)} />
           <button onClick={() => onAssignClick(kelasData)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-green-100"><Plus size={18} /> Tambah Santri</button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 [scrollbar-width:none]">

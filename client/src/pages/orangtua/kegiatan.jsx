@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { 
-  ArrowLeft, Loader2, Search, Calendar, Clock, MapPin, ChevronDown
+  ArrowLeft, Loader2, Calendar, Clock, MapPin
 } from "lucide-react";
 import DetailKegiatanModal from "../../components/DetailKegiatanModal";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 
 export default function OrangTuaKegiatan() {
   const [loading, setLoading] = useState(true);
@@ -75,30 +78,33 @@ export default function OrangTuaKegiatan() {
       {/* Content List */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-32 space-y-8 relative z-10 md:-mt-16">
         
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-                <input 
-                    type="text" 
-                    placeholder="Cari Kegiatan..." 
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-100 shadow-sm text-gray-800 focus:ring-2 focus:ring-green-300 outline-none bg-white"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
+        {/* Search + Filter */}
+        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+          <SearchBar
+            placeholder="Cari Kegiatan..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            className="flex-1"
+          />
+          <FilterDropdown
+            activeCount={filterType !== "Semua" ? 1 : 0}
+            onReset={() => setFilterType("Semua")}
+          >
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Waktu Kegiatan</label>
+              <FilterSelect
+                placeholder="Semua Waktu"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                options={[
+                  { value: "Semua", label: "Semua Waktu" },
+                  { value: "Mendatang", label: "Akan Datang" },
+                  { value: "Selesai", label: "Selesai" },
+                ]}
+              />
             </div>
-            
-            <div className="relative">
-                <select 
-                    className="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-100 shadow-sm text-gray-800 appearance-none focus:ring-2 focus:ring-green-300 outline-none cursor-pointer bg-white"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                >
-                    <option value="Semua">Semua Waktu</option>
-                    <option value="Mendatang">Akan Datang</option>
-                    <option value="Selesai">Selesai</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-3.5 text-gray-400 pointer-events-none" size={20} />
-            </div>
+          </FilterDropdown>
         </div>
 
         {kegiatans.length > 0 ? (

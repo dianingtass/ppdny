@@ -26,7 +26,7 @@ export default function DetailPembayaranModal({ isOpen, onClose, data, userRole 
     if (isReadOnly) return;
     setSaving(true);
     try {
-      await api.put(`/pengurus/keuangan/pembayaran/${data.id}/verifikasi`, {
+      await api.put(`/${userRole}/keuangan/pembayaran/${data.id}/verifikasi`, {
         status: statusVerifikasi,
         nominal: nominalKonfirmasi
       });

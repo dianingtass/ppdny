@@ -38,7 +38,7 @@ exports.getSantriByKelas = async (req, res) => {
 exports.getWaliOptions = async (req, res) => {
     try {
         const wali = await prisma.users.findMany({
-            where:   { is_active: true, user_role: { some: { role: { role: 'Ustadz' } } } },
+            where:   { is_active: true, user_role: { some: { role: { role: 'ustadz' } } } },
             select:  { id: true, nama: true, nip: true },
             orderBy: { nama: 'asc' },
         });
@@ -114,12 +114,14 @@ exports.getAssignKelas = async (req, res) => {
 
 exports.getOptions = async (req, res) => {
     try {
-        const santri = await prisma.users.findMany({
-            where: { is_active: true, user_role: { some: { id_role: 1 } }, kelas_santri: { none: { is_active: true } } },
-            select: { id: true, nama: true, nip: true },
-            orderBy: { nama: 'asc' },
-        });
-        const kelas = await prisma.kelas.findMany({ where: { is_active: true }, orderBy: { kelas: 'asc' } });
+        const [santri, kelas] = await Promise.all([
+            prisma.users.findMany({
+                where: { is_active: true, user_role: { some: { id_role: 1 } }, kelas_santri: { none: { is_active: true } } },
+                select: { id: true, nama: true, nip: true },
+                orderBy: { nama: 'asc' },
+            }),
+            prisma.kelas.findMany({ where: { is_active: true }, orderBy: { kelas: 'asc' } })
+        ]);
         return res.json({ success: true, santri, kelas });
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Gagal memuat options.' });

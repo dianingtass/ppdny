@@ -12,18 +12,22 @@ export default function AssignKamarModal({
   onSubmit,
   saving,
   preSelectedKamar,
+  rolePrefix = "pengurus",
+  refreshTrigger,
 }) {
   const [formData, setFormData] = useState({
     id_santri: "",
     id_kamar: preSelectedKamar ? preSelectedKamar.id : "",
   });
   const [santriOptions, setSantriOptions] = useState([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [loadingOptions, setLoadingOptions] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
 
   useEffect(() => {
     if (isOpen) {
-      fetchSantriOptions();
+      if (santriOptions.length === 0) {
+        fetchSantriOptions();
+      }
       if (isEditing && editData) {
         setFormData({
           id_santri: editData.users.id,
@@ -38,15 +42,19 @@ export default function AssignKamarModal({
     }
   }, [isOpen, isEditing, editData, preSelectedKamar]);
 
+  useEffect(() => {
+    setSantriOptions([]);
+  }, [refreshTrigger]);
+
   const fetchSantriOptions = async () => {
     setLoadingOptions(true);
     try {
       const targetGender =
         editData?.kamar?.gender || preSelectedKamar?.gender || "Laki_laki";
       const res = await api.get(
-        `/pengurus/penempatan-kamar/options?gender=${targetGender}`,
+        `/${rolePrefix}/penempatan-kamar/options?gender=${targetGender}`,
       );
-      setSantriOptions(res.data.santri);
+      setSantriOptions(res.data.santri || []);
     } catch (err) {
       console.error(err);
     } finally {

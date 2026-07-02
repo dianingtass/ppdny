@@ -9,8 +9,34 @@ const formatDate = (date) => {
 
 exports.getDaftarPengaduan = async (req, res) => {
   try {
+    const { rolePelapor, startDate, endDate } = req.query;
+
+    const where = { is_active: true };
+
+    // Filter berdasarkan role pelapor
+    if (rolePelapor === "ustadz") {
+      where.users_pengaduan_id_pelaporTousers = {
+        user_role: { some: { id_role: 3, is_active: true } }
+      };
+    } else if (rolePelapor === "orangtua") {
+      where.users_pengaduan_id_pelaporTousers = {
+        user_role: { some: { id_role: 4, is_active: true } }
+      };
+    }
+
+    // Filter rentang tanggal
+    if (startDate || endDate) {
+      where.waktu_aduan = {};
+      if (startDate) where.waktu_aduan.gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.waktu_aduan.lte = end;
+      }
+    }
+
     const pengaduan = await prisma.pengaduan.findMany({
-      where: { is_active: true }, 
+      where,
       orderBy: [ {status: "asc"}, {waktu_aduan: "desc"} ],
       include: {
         users_pengaduan_id_santriTousers: {

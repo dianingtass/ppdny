@@ -69,7 +69,7 @@ exports.getKeuanganDashboard = async (req, res) => {
 
     // 3. Pisahkan Tagihan Aktif vs Lunas
     const tagihanAktif = allTagihan
-      .filter((t) => t.status === "Aktif")
+      .filter((t) => t.status === "Aktif" || t.status === "Perlu_Konfirmasi")
       .map(mapTagihanData);
 
     const riwayatLunas = allTagihan
@@ -135,16 +135,24 @@ exports.uploadPembayaran = async (req, res) => {
         .json({ success: false, message: "Tagihan tidak ditemukan." });
     }
 
-    // Simpan ke Tabel Pembayaran
-    await prisma.pembayaran.create({
-      data: {
-        id_tagihan: parseInt(id_tagihan),
-        tanggal_bayar: new Date(),
-        nominal: tagihan.nominal,
-        bukti_bayar: req.file.secure_url || req.file.path,
-        metode_bayar: "Transfer",
-        status: "Pending",
-      },
+    // Simpan ke Tabel Pembayaran & Update status tagihan
+    await prisma.$transaction(async (tx) => {
+        await tx.pembayaran.create({
+          data: {
+            id_tagihan: parseInt(id_tagihan),
+            tanggal_bayar: new Date(),
+            nominal: tagihan.nominal,
+            bukti_bayar: req.file.secure_url || req.file.path,
+            metode_bayar: "Transfer",
+            status: "Pending",
+          },
+        });
+
+        // Set status tagihan ke Perlu_Konfirmasi
+        await tx.tagihan.update({
+          where: { id: tagihan.id },
+          data: { status: 'Perlu_Konfirmasi' }
+        });
     });
 
     res.json({

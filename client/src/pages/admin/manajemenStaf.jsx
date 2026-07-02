@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import api from "../../config/api";
 import {
-  Search,
   Plus,
   Edit2,
   Trash2,
   Loader2,
   AlertTriangle,
   CheckCircle,
-  X,
   Mail,
   Phone,
 } from "lucide-react";
@@ -20,6 +18,8 @@ import Pagination from "../../components/pagination/Pagination";
 import InputStafModal from "../../components/InputStafModal";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
 import ProfileAvatar from '../../components/ProfileAvatar';
+import SearchBar from "../../components/SearchBar";
+
 
 export default function ManajemenStaf() {
   const [dataList, setDataList] = useState([]);
@@ -193,21 +193,7 @@ export default function ManajemenStaf() {
       </button>
 
       <div className="space-y-3">
-        <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-green-500 transition-all outline-none">
-          <div className="relative flex-1 flex items-center">
-            <Search className="absolute left-3 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Cari berdasarkan nama atau NIP staf..."
-              className="w-full pl-10 pr-10 py-2.5 outline-none bg-transparent text-gray-700"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 text-gray-400 hover:text-gray-600 transition" title="Hapus pencarian"><X size={18} /></button>
-            )}
-          </div>
-        </div>
+        <SearchBar placeholder="Cari berdasarkan nama atau NIP staf..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} />
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
           {["Semua", "Admin", "Pimpinan", "Tim Kesehatan", "Pengurus"].map((roleName) => (

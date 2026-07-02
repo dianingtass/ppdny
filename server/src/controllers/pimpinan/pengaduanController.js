@@ -13,13 +13,34 @@ const formatDate = (date) => {
 // 1. GET: Daftar Pengaduan (Semua Pengaduan Aktif)
 exports.getDaftarPengaduan = async (req, res) => {
   try {
-    // req.user.id dihapus karena kita mau ambil semua data, bukan difilter per user
+    const { rolePelapor, startDate, endDate } = req.query;
+
+    const where = { is_active: true };
+
+    if (rolePelapor === "ustadz") {
+      where.users_pengaduan_id_pelaporTousers = {
+        user_role: { some: { id_role: 3, is_active: true } }
+      };
+    } else if (rolePelapor === "orangtua") {
+      where.users_pengaduan_id_pelaporTousers = {
+        user_role: { some: { id_role: 4, is_active: true } }
+      };
+    }
+
+    if (startDate || endDate) {
+      where.waktu_aduan = {};
+      if (startDate) where.waktu_aduan.gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.waktu_aduan.lte = end;
+      }
+    }
 
     const pengaduan = await prisma.pengaduan.findMany({
-      where: { is_active: true }, // Hanya memfilter status aktif saja
+      where,
       orderBy: [ {status: "asc"}, {waktu_aduan: "desc"} ],
       include: {
-        // Data santri yang dilaporkan
         users_pengaduan_id_santriTousers: {
           select: {
             nama: true,
@@ -29,9 +50,7 @@ exports.getDaftarPengaduan = async (req, res) => {
           },
         },
         users_pengaduan_id_pelaporTousers: {
-          select: {
-            nama: true,
-          }
+          select: { nama: true }
         },
         _count: { select: { tanggapan_aduan: { where: { is_active: true } } } },
       },
@@ -49,7 +68,6 @@ exports.getDaftarPengaduan = async (req, res) => {
         foto_profil: item.users_pengaduan_id_santriTousers?.foto_profil || null,
         kelas: item.users_pengaduan_id_santriTousers?.kelas_santri[0]?.kelas?.kelas || "-",
       },
-      // Lempar nama pelapor ke frontend
       pelapor: item.users_pengaduan_id_pelaporTousers?.nama || "Tidak diketahui",
       jumlah_tanggapan: item._count.tanggapan_aduan,
     }));
@@ -57,9 +75,7 @@ exports.getDaftarPengaduan = async (req, res) => {
     res.json({ success: true, data: formattedData });
   } catch (error) {
     console.error("Error get pengaduan:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Gagal mengambil data pengaduan" });
+    res.status(500).json({ success: false, message: "Gagal mengambil data pengaduan" });
   }
 };
 

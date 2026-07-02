@@ -1,15 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Search, FileText } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import api from "../../../config/api";
 import { formatObservasiWaktu, getObservasiBadgeClass } from "../../../components/UtilsObservasi";
 import ProfileAvatar from '../../../components/ProfileAvatar';
+import SearchBar from "../../../components/SearchBar";
+import FilterSelect from "../../../components/FilterSelect";
+import FilterDropdown from "../../../components/FilterDropdown";
+
+const WAKTU_OPTIONS = [
+  { value: "Pagi", label: "Pagi" },
+  { value: "Siang", label: "Siang" },
+  { value: "Sore", label: "Sore" },
+  { value: "Malam", label: "Malam" },
+];
 
 export default function DaftarSantriObservasiPage({ rolePrefix }) {
   const [santriList, setSantriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [kategoriSkor, setKategoriSkor] = useState("");
+  const [waktu, setWaktu] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -18,7 +32,6 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
 
   const formatLatestObservasiDateTime = (latestObservasi) => {
     if (!latestObservasi?.tanggal) return "-";
-
     const tanggal = new Date(latestObservasi.tanggal).toLocaleDateString("id-ID");
     return `${tanggal} - ${formatObservasiWaktu(latestObservasi.waktu)}`;
   };
@@ -30,14 +43,14 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, kategoriSkor, waktu, startDate, endDate]);
 
   useEffect(() => {
     const fetchSantri = async () => {
       setLoading(true);
       try {
         const res = await api.get(`/${rolePrefix}/observasi/santri`, {
-          params: { search: debouncedSearch, page, limit }
+          params: { search: debouncedSearch, page, limit, kategoriSkor, waktu, startDate, endDate }
         });
         setSantriList(res.data.data || []);
         setTotalPages(Math.max(1, Math.ceil((res.data.pagination?.total || 0) / limit)));
@@ -49,7 +62,9 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
     };
 
     fetchSantri();
-  }, [debouncedSearch, page, rolePrefix]);
+  }, [debouncedSearch, page, rolePrefix, kategoriSkor, waktu, startDate, endDate]);
+
+  const activeFilterCount = [kategoriSkor, waktu, startDate, endDate].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
@@ -58,17 +73,67 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
         <p className="text-gray-500 text-sm">Pilih santri untuk melihat riwayat observasi cuci tangan</p>
       </div>
 
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Cari nama atau NIS..."
-            className="w-full pl-10 pr-4 py-2.5 outline-none"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari nama atau NIS..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <FilterDropdown
+          activeCount={activeFilterCount}
+          onReset={() => {
+            setKategoriSkor("");
+            setWaktu("");
+            setStartDate("");
+            setEndDate("");
+            setPage(1);
+          }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Hasil Observasi Terakhir</label>
+              <FilterSelect
+                placeholder="Semua Hasil"
+                value={kategoriSkor}
+                onChange={(e) => setKategoriSkor(e.target.value)}
+                options={[
+                  { value: "Belum_Pernah_Observasi", label: "Belum Pernah Observasi" },
+                  { value: "Baik", label: "Baik (Skor ≥ 6)" },
+                  { value: "Cukup", label: "Cukup (Skor 4–5)" },
+                  { value: "Kurang", label: "Kurang (Skor < 4)" },
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Waktu Observasi</label>
+              <FilterSelect
+                placeholder="Semua Waktu"
+                value={waktu}
+                onChange={(e) => setWaktu(e.target.value)}
+                options={WAKTU_OPTIONS}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-gray-500">Rentang Tanggal</label>
+              <div className="grid grid-cols-1 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Dari Tanggal</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sampai Tanggal</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (
@@ -169,12 +234,15 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
                 </div>
               );
             })}
+            {santriList.length === 0 && (
+              <p className="text-center text-gray-500 py-8">Data santri tidak ditemukan.</p>
+            )}
           </div>
 
-          <Pagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-            onPageChange={setPage} 
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
             onNext={() => setPage(prev => Math.min(prev + 1, totalPages))}
             onPrev={() => setPage(prev => Math.max(prev - 1, 1))}
           />

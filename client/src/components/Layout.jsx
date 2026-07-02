@@ -134,6 +134,13 @@ export default function GlobalLayout() {
       roles: ["pengurus", "admin"],
     },
 
+    {
+      name: "Jenis Tagihan",
+      path: "/jenis-tagihan",
+      icon: Receipt,
+      roles: ["pengurus", "admin"],
+    },
+
     { category: "KESEHATAN", roles: ["timkesehatan", "admin", "pimpinan"] },
 
     {

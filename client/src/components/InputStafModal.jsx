@@ -116,7 +116,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
 
             {!isEditing && (
               <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl text-xs font-medium mt-4">
-                Info: Password default untuk akun baru adalah <span className="font-bold text-black">12345678</span>
+                Info: Password default untuk akun baru adalah <span className="font-bold text-black">password123</span>
               </div>
             )}
           </form>

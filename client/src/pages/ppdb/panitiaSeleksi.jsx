@@ -4,9 +4,12 @@ import SeleksiModal from "../../components/ppdb/SeleksiModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import { AuthContext } from "../../context/AuthContext";
-import { Search, Eye, Edit2, Award, Filter, AlertTriangle, CheckCircle, X, Loader2, Users, Clock, ClipboardCheck } from "lucide-react";
+import { Eye, Edit2, Award, AlertTriangle, CheckCircle, Loader2, Users, Clock, ClipboardCheck } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 
 const STATUS_SELEKSI_BADGE = {
   Belum_Diseleksi: "bg-gray-100 text-gray-600",
@@ -56,35 +59,60 @@ export default function PanitiaSeleksi() {
   }, [filterTahun, filterSeleksi, search, jump]);
 
   useEffect(() => {
-    api.get("/ppdb/admin/tahun").then((r) => setTahunList(r.data.data));
-  }, []);
+    fetchData();
+  }, [filterTahun, filterSeleksi]);
 
   useEffect(() => {
-    const delay = setTimeout(fetchData, 500);
-    return () => clearTimeout(delay);
-  }, [fetchData]);
+    const delayDebounce = setTimeout(() => {
+      fetchData();
+    }, 500);
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  useEffect(() => {
+    const fetchTahun = async () => {
+      try {
+        const res = await api.get("/ppdb/public/gelombang");
+        if (res.data.success) {
+          setTahunList(res.data.data);
+          const active = res.data.data.find((t) => t.is_active);
+          if (active) setFilterTahun(active.id);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchTahun();
+  }, []);
+
+  const openSeleksi = (item) => setSelectedPendaftar(item);
 
   const executePublish = async () => {
     setIsPublishing(true);
     try {
-      await api.post(`/ppdb/panitia/pengumuman/${filterTahun}`);
-      showAlert("success", "Pengumuman berhasil dipublikasikan");
-      setConfirmPublish(false);
-      fetchData();
+      const res = await api.post("/ppdb/panitia/publish", { id_tahun: filterTahun });
+      if (res.data.success) {
+        showAlert("success", res.data.message || "Pengumuman berhasil dipublish!");
+        setConfirmPublish(false);
+        fetchData();
+      }
     } catch (err) {
-      showAlert("error", err.response?.data?.message || "Gagal mempublikasikan");
+      showAlert("error", err.response?.data?.message || "Gagal mempublish pengumuman");
     } finally {
       setIsPublishing(false);
     }
   };
 
-  const openSeleksi = async (p) => {
-    try {
-      const res = await api.get(`/ppdb/panitia/seleksi/${p.id}`);
-      setSelectedPendaftar(res.data.data);
-    } catch (err) {
-      showAlert("error", "Gagal memuat detail seleksi");
-    }
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (filterTahun) count++;
+    if (filterSeleksi) count++;
+    return count;
+  };
+
+  const resetFilters = () => {
+    setFilterTahun("");
+    setFilterSeleksi("");
   };
 
   return (
@@ -114,40 +142,44 @@ export default function PanitiaSeleksi() {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5 flex flex-wrap gap-3 items-center">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Cari nama / no. pendaftaran..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 min-w-[180px]">
-            <Filter size={16} className="text-gray-400" />
-            <select
-                value={filterTahun}
-                onChange={(e) => setFilterTahun(e.target.value)}
-                className="w-full py-2.5 bg-transparent text-sm focus:outline-none text-gray-700 font-medium"
-            >
-                <option value="">Semua Gelombang</option>
-                {tahunList.map((t) => (
-                <option key={t.id} value={t.id}>{t.nama_gelombang}</option>
-                ))}
-            </select>
-          </div>
-          <select
-            value={filterSeleksi}
-            onChange={(e) => setFilterSeleksi(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[160px] font-medium text-gray-700"
+        {/* Search + Filter Dropdown */}
+        <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-5">
+          <SearchBar
+            placeholder="Cari nama / no. pendaftaran..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            className="flex-1"
+          />
+          <FilterDropdown
+            activeCount={getActiveFilterCount()}
+            onReset={resetFilters}
           >
-            <option value="">Semua Status</option>
-            <option value="Belum_Diseleksi">Belum Diseleksi</option>
-            <option value="Sedang_Diseleksi">Sedang Diseleksi</option>
-            <option value="Selesai">Selesai</option>
-          </select>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
+                <FilterSelect
+                  value={filterTahun}
+                  onChange={(e) => setFilterTahun(e.target.value)}
+                  placeholder="Semua Gelombang"
+                  options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Seleksi</label>
+                <FilterSelect
+                  value={filterSeleksi}
+                  onChange={(e) => setFilterSeleksi(e.target.value)}
+                  placeholder="Semua Status"
+                  options={[
+                    { value: "Belum_Diseleksi", label: "Belum Diseleksi" },
+                    { value: "Sedang_Diseleksi", label: "Sedang Diseleksi" },
+                    { value: "Selesai", label: "Selesai" },
+                  ]}
+                />
+              </div>
+            </div>
+          </FilterDropdown>
         </div>
 
         {pendaftar.length > 0 && (
@@ -160,7 +192,7 @@ export default function PanitiaSeleksi() {
             ].map((c, i) => (
               <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
                 <div className={`w-11 h-11 ${c.bgColor} rounded-xl flex items-center justify-center text-white shadow-sm shrink-0`}>
-                  {c.icon}
+                   {c.icon}
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-400 mb-1 font-bold uppercase tracking-wider">{c.label}</p>

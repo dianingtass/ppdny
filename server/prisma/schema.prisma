@@ -129,17 +129,34 @@ model item_kebersihan {
 }
 
 model jenis_layanan {
-  id              Int               @id @default(autoincrement())
-  nama_layanan    String            @db.VarChar(100)
-  deskripsi       String?           @db.Text
-  estimasi        String?           @db.VarChar(50)
-  is_active       Boolean?          @default(true)
+  id              Int                @id @default(autoincrement())
+  nama_layanan    String             @db.VarChar(100)
+  deskripsi       String?            @db.Text
+  estimasi        String?            @db.VarChar(50)
+  is_active       Boolean?           @default(true)
   riwayat_layanan riwayat_layanan[]
+  formulir_layanan formulir_layanan[]
 }
+
+model formulir_layanan {
+  id            Int           @id @default(autoincrement())
+  id_layanan    Int
+  name          String        @db.VarChar(100)
+  label         String        @db.VarChar(255)
+  type          String        @db.VarChar(50)
+  placeholder   String?       @db.VarChar(255)
+  required      Boolean       @default(true)
+  is_active     Boolean       @default(true)
+  jenis_layanan jenis_layanan @relation(fields: [id_layanan], references: [id], onDelete: Cascade)
+
+  @@index([id_layanan])
+}
+
 
 model jenis_tagihan {
   id            Int       @id @default(autoincrement())
   jenis_tagihan String?   @db.VarChar(100)
+  deskripsi     String?   @db.Text
   is_active     Boolean?
   tagihan       tagihan[]
 }
@@ -475,10 +492,11 @@ model riwayat_layanan_detail {
 }
 
 model role {
-  id        Int         @id @default(autoincrement())
-  role      String?     @db.VarChar(100)
-  is_active String?     @default("1") @db.VarChar(100)
-  user_role user_role[]
+  id            Int         @id @default(autoincrement())
+  role          String?     @db.VarChar(100)
+  is_active     String?     @default("1") @db.VarChar(100)
+  guidebook_url String?     @db.VarChar(1000)
+  user_role     user_role[]
 }
 
 model screening {
@@ -605,13 +623,19 @@ model users {
   user_role                                        user_role[]
 }
 
+enum faq_kategori {
+  Umum
+  Kesehatan
+}
+
 model faq {
-  id_faq     Int       @id @default(autoincrement())
-  pertanyaan String    @db.Text
-  jawaban    String    @db.Text
+  id_faq     Int          @id @default(autoincrement())
+  pertanyaan String       @db.Text
+  jawaban    String       @db.Text
+  kategori   faq_kategori @default(Umum)
   urutan     Int
-  is_active  Boolean
-  created_at DateTime? @db.DateTime(0)
+  is_active  Boolean      @default(true)
+  created_at DateTime?    @db.DateTime(0)
 }
 
 model materi_comment {
@@ -851,6 +875,7 @@ enum screening_diagnosa {
 enum tagihan_status {
   Aktif
   Lunas
+  Perlu_Konfirmasi @map("Perlu Konfirmasi")
 }
 
 enum ppdb_seleksi_status_seleksi {

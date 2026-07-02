@@ -25,7 +25,7 @@ const safeParseArray = (value) => {
 const createScreeningController = ({ writableRoles = ['timkesehatan'] } = {}) => {
 const getSantriList = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 10 } = req.query;
+    const { search = "", page = 1, limit = 10, diagnosa, startDate, endDate } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 
@@ -41,6 +41,33 @@ const getSantriList = async (req, res) => {
         { nama: { contains: search } },
         { nip: { contains: search } }
       ];
+    }
+
+    const screeningFilter = {};
+    if (diagnosa === "Belum_Pernah_Screening") {
+      whereCondition.screening_screening_id_santriTousers = {
+        none: {}
+      };
+    } else {
+      if (diagnosa) {
+        screeningFilter.diagnosa = diagnosa;
+      }
+      if (startDate || endDate) {
+        screeningFilter.tanggal = {};
+        if (startDate) {
+          screeningFilter.tanggal.gte = new Date(startDate);
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          screeningFilter.tanggal.lte = end;
+        }
+      }
+      if (Object.keys(screeningFilter).length > 0) {
+        whereCondition.screening_screening_id_santriTousers = {
+          some: screeningFilter
+        };
+      }
     }
 
     const [data, total] = await prisma.$transaction([

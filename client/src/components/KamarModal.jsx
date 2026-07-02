@@ -4,7 +4,7 @@ import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import api from "../config/api";
 
-export default function KamarModal({ isOpen, onClose, isEditing, editData, onSubmit, saving }) {
+export default function KamarModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({ kamar: "", kapasitas: "", gender: "Laki_laki", lokasi: "", id_wali: "" });
   const [waliOptions, setWaliOptions] = useState([]);
   const { message, showAlert, clearAlert } = useAlert();
@@ -29,7 +29,7 @@ export default function KamarModal({ isOpen, onClose, isEditing, editData, onSub
   const fetchWali = async () => {
     try {
       // Gunakan endpoint wali-options yang sudah ada di kelasController (reuse)
-      const { data } = await api.get("/pengurus/kamar/wali-options");
+      const { data } = await api.get(`/${rolePrefix}/kamar/wali-options`);
       if (data.success) setWaliOptions(data.data);
     } catch (err) {
       console.error("Gagal load wali kamar", err);

@@ -51,7 +51,7 @@ exports.register = async (req, res) => {
     try {
         const existingUser = await prisma.users.findFirst({ where: { nip } });
         if (existingUser) {
-            return res.status(400).json({ message: 'NIP sudah terdaftar.' });
+            return res.status(400).json({ message: 'NIP/NIS sudah terdaftar.' });
         }
 
         const santriRole = await prisma.role.findFirst({ where: { role: 'Santri' } });

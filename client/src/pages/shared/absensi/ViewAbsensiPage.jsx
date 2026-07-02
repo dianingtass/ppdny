@@ -236,50 +236,18 @@ export default function ViewAbsensi({ rolePrefix }){
         Download PDF
       </button>
 
+      <style dangerouslySetInnerHTML={{__html:`
+.paper-wrapper{width:100%;display:flex;justify-content:center;}
+.paper{transform-origin:top center;}
+#paper table,#paper th,#paper td{border:0.5px solid #d1d5db;}
+@media(max-width:1024px){.paper{transform:scale(0.85);}}
+@media(max-width:768px){.paper{transform:scale(0.7);}}
+@media(max-width:480px){.paper{transform:scale(0.55);}}
+@media print{.paper{transform:scale(1);}}
+`}} />
+
     </div>
   )
 }
 
-<style>
-{`
-.paper-wrapper{
-  width:100%;
-  display:flex;
-  justify-content:center;
-}
 
-.paper{
-  transform-origin:top center;
-}
-
-#paper table,
-#paper th,
-#paper td{
-  border:0.5px solid #d1d5db;
-}
-
-@media(max-width:1024px){
-  .paper{
-    transform:scale(0.85);
-  }
-}
-
-@media(max-width:768px){
-  .paper{
-    transform:scale(0.7);
-  }
-}
-
-@media(max-width:480px){
-  .paper{
-    transform:scale(0.55);
-  }
-}
-
-@media print{
-  .paper{
-    transform:scale(1);
-  }
-}
-`}
-</style>

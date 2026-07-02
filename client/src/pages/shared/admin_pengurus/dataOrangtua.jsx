@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Search, Edit2, Trash2, Loader2, Phone, Users, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, Phone, ExternalLink } from "lucide-react";
 import InputOrtuModal from "../../../components/InputOrtuModal";
 import ListAnakModal from "../../../components/ListAnakModal";
 import AssignRelasiModal from "../../../components/AssignRelasiModal";
@@ -9,14 +9,24 @@ import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
+import SearchBar from "../../../components/SearchBar";
+import FilterSelect from "../../../components/FilterSelect";
+import FilterDropdown from "../../../components/FilterDropdown";
 
 export default function DataOrangtuaPage({ rolePrefix }) {
   const [ortuList, setOrtuList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [refreshListKey, setRefreshListKey] = useState(0);
+  const [selectedHubungan, setSelectedHubungan] = useState("");
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(ortuList);
+  const filteredOrtuList = ortuList.filter((item) => {
+    if (!selectedHubungan) return true;
+    if (selectedHubungan === "Lainnya") return item.hubungan && item.hubungan !== "Ayah" && item.hubungan !== "Ibu";
+    return item.hubungan === selectedHubungan;
+  });
+
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredOrtuList);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,6 +56,10 @@ export default function DataOrangtuaPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search, refreshListKey]);
 
+  useEffect(() => {
+    jump(1);
+  }, [selectedHubungan]);
+
   const handleSubmitBasic = async (formData) => {
     setIsSaving(true);
     try {
@@ -59,42 +73,39 @@ export default function DataOrangtuaPage({ rolePrefix }) {
       setIsModalOpen(false);
       fetchOrtu();
     } catch {
-      showAlert("error", "Terjadi kesalahan");
+      showAlert("error", "Gagal menyimpan data");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleAssignSubmit = async (payload) => {
-    setIsSaving(true);
-    try {
-      await api.post(`/${rolePrefix}/orangtua/assign`, payload);
-      showAlert("success", "Berhasil menghubungkan data");
-      setAssignModal({ isOpen: false, data: null });
-      setRefreshListKey((prev) => prev + 1);
-      fetchOrtu();
-    } catch (err) {
-      showAlert("error", err.response?.data?.message || "Gagal menghubungkan data");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleDelete = (item) => {
-    setDeleteModal({ isOpen: true, id: item.id, name: `Wali ${item.nama}` });
-  };
+  const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: item.nama });
 
   const confirmDelete = async () => {
     setIsDeleting(true);
     try {
       await api.delete(`/${rolePrefix}/orangtua/${deleteModal.id}`);
-      showAlert("success", "Akun berhasil dinonaktifkan");
+      showAlert("success", "Akun wali dinonaktifkan");
       setDeleteModal({ isOpen: false, id: null, name: "" });
       fetchOrtu();
     } catch {
-      showAlert("error", "Gagal menghapus data");
+      showAlert("error", "Gagal menonaktifkan akun");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleAssignSubmit = async (formData) => {
+    setIsSaving(true);
+    try {
+      await api.post(`/${rolePrefix}/relasi-keluarga`, formData);
+      showAlert("success", "Relasi keluarga diperbarui");
+      setAssignModal({ isOpen: false, data: null });
+      setRefreshListKey((prev) => prev + 1);
+    } catch {
+      showAlert("error", "Gagal menyimpan relasi");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -109,11 +120,33 @@ export default function DataOrangtuaPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input type="text" placeholder="Cari nama atau No HP..." className="w-full pl-10 pr-4 py-2.5 outline-none" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
+      {/* Search + Filter */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar
+          placeholder="Cari nama atau No HP..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          className="flex-1"
+        />
+        <FilterDropdown
+          activeCount={selectedHubungan ? 1 : 0}
+          onReset={() => { setSelectedHubungan(""); jump(1); }}
+        >
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Status Wali</label>
+            <FilterSelect
+              placeholder="Semua Status"
+              value={selectedHubungan}
+              onChange={(e) => { setSelectedHubungan(e.target.value); jump(1); }}
+              options={[
+                { value: "Ayah", label: "Ayah" },
+                { value: "Ibu", label: "Ibu" },
+                { value: "Lainnya", label: "Lainnya" },
+              ]}
+            />
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (

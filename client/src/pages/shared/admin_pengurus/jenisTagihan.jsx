@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Search, Edit2, Trash2, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2 } from "lucide-react";
 import InputJenisTagihanModal from "../../../components/InputJenisTagihanModal";
 import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
+import SearchBar from "../../../components/SearchBar";
 
 export default function JenisTagihanPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
@@ -89,11 +90,8 @@ export default function JenisTagihanPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-green-500 transition-all outline-none">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input type="text" placeholder="Cari jenis tagihan..." className="w-full pl-10 pr-4 py-2.5 outline-none bg-transparent" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar placeholder="Cari jenis tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       {loading ? (
@@ -107,13 +105,14 @@ export default function JenisTagihanPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[60%]">Jenis Tagihan</th><th className="p-4 text-center w-[15%]">Aksi</th>
+                    <th className="p-4 w-[25%]">Jenis Tagihan</th><th className="p-4 w-[60%]">Deskripsi</th><th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {currentData.length > 0 ? currentData.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition">
                       <td className="p-4 font-semibold text-gray-800">{item.jenis_tagihan}</td>
+                      <td className="p-4 text-sm text-gray-600 max-w-md truncate">{item.deskripsi || "-"}</td>
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => handleEdit(item)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"><Edit2 size={18} /></button>
@@ -121,7 +120,7 @@ export default function JenisTagihanPage({ rolePrefix }) {
                         </div>
                       </td>
                     </tr>
-                  )) : <tr><td colSpan="2" className="p-8 text-center text-gray-500">Data jenis tagihan tidak ditemukan.</td></tr>}
+                  )) : <tr><td colSpan="3" className="p-8 text-center text-gray-500">Data jenis tagihan tidak ditemukan.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -137,18 +136,21 @@ export default function JenisTagihanPage({ rolePrefix }) {
                   </div>
                   <button onClick={() => handleDelete(item)} className="text-red-500 bg-red-50 p-2 rounded-lg"><Trash2 size={16} /></button>
                 </div>
+                <div className="border-t border-gray-100 pt-2">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Deskripsi</p>
+                  <p className="text-sm text-gray-600 line-clamp-2">{item.deskripsi || "-"}</p>
+                </div>
                 <button onClick={() => handleEdit(item)} className="mt-1 py-2 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex justify-center items-center gap-2 active:scale-95 transition">
                   <Edit2 size={16} /> Edit Jenis
                 </button>
               </div>
-            )) : <div className="text-center p-8 bg-white rounded-xl border border-gray-100 text-gray-500">Data tidak ditemukan</div>}
+            )) : <div className="text-center p-8 bg-white rounded-xl border border-gray-150 text-gray-500">Data tidak ditemukan</div>}
           </div>
 
           <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
         </>
       )}
-
-      <InputJenisTagihanModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} />
+      <InputJenisTagihanModal key={isModalOpen ? (selectedData?.id || "new") : "closed"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} />
       <ConfirmDeleteModal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} onConfirm={confirmDelete} loading={isDeleting} itemName={deleteModal.name} />
     </div>
   );

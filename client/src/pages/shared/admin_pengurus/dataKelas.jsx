@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Search, Edit2, Trash2, Users, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, Users, Loader2 } from "lucide-react";
 import KelasModal from "../../../components/KelasModal";
 import KelasSantriModal from "../../../components/KelasSantriModal";
 import AssignKelasModal from "../../../components/AssignKelasModal";
@@ -9,14 +9,23 @@ import AlertToast from "../../../components/AlertToast";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
+import SearchBar from "../../../components/SearchBar";
+import FilterSelect from "../../../components/FilterSelect";
+import FilterDropdown from "../../../components/FilterDropdown";
 
 export default function DataKelasPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [refreshListKey, setRefreshListKey] = useState(0);
+  const [selectedTahun, setSelectedTahun] = useState("");
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(dataList);
+  const tahunOptions = Array.from(
+    new Set(dataList.map((item) => item.tahun_ajaran).filter(Boolean))
+  ).map((yr) => ({ value: yr, label: yr }));
+
+  const filteredData = dataList.filter((item) => !selectedTahun || item.tahun_ajaran === selectedTahun);
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [modalKelas, setKelasModal] = useState({ isOpen: false, isEditing: false, data: null });
@@ -41,7 +50,15 @@ export default function DataKelasPage({ rolePrefix }) {
   useEffect(() => {
     const t = setTimeout(() => { fetchData(); jump(1); }, 500);
     return () => clearTimeout(t);
-  }, [search, refreshListKey]);
+  }, [search]);
+
+  useEffect(() => {
+    fetchData();
+  }, [refreshListKey]);
+
+  useEffect(() => {
+    jump(1);
+  }, [selectedTahun]);
 
   const handleSubmitKelas = async (formData) => {
     setIsSaving(true);
@@ -82,7 +99,7 @@ export default function DataKelasPage({ rolePrefix }) {
     setIsSaving(true);
     try {
       await api.post(`/${rolePrefix}/penempatan-kelas`, formData);
-      showAlert("success", "Santri berhasil dimasukkan");
+      showAlert("success", "Santri berhasil dimasukkan ke kelas");
       setModalAssign({ ...modalAssign, isOpen: false });
       setRefreshListKey((prev) => prev + 1);
     } catch {
@@ -103,11 +120,29 @@ export default function DataKelasPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus:ring-2 focus:ring-green-500 outline-none">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input type="text" placeholder="Cari Kelas..." className="w-full pl-10 pr-4 py-2.5 outline-none" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
+      {/* Search + Filter */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar
+          placeholder="Cari Kelas..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          className="flex-1"
+        />
+        <FilterDropdown
+          activeCount={selectedTahun ? 1 : 0}
+          onReset={() => setSelectedTahun("")}
+        >
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Tahun Ajaran</label>
+            <FilterSelect
+              placeholder="Semua Tahun"
+              value={selectedTahun}
+              onChange={(e) => setSelectedTahun(e.target.value)}
+              options={tahunOptions}
+            />
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (
@@ -119,7 +154,7 @@ export default function DataKelasPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                    <th className="p-4 w-[40%]">Nama Kelas</th><th className="p-4 w-[25%]">Tahun Ajaran</th><th className="p-4 w-[25%]">Wali Kelas</th><th className="p-4 text-center w-[10%]">Aksi</th>
+                    <th className="p-4 w-[30%]">Nama Kelas</th><th className="p-4 w-[25%]">Tahun Ajaran</th><th className="p-4 w-[35%]">Wali Kelas</th><th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -172,9 +207,9 @@ export default function DataKelasPage({ rolePrefix }) {
         </>
       )}
 
-      <KelasModal isOpen={modalKelas.isOpen} onClose={() => setKelasModal({ ...modalKelas, isOpen: false })} isEditing={modalKelas.isEditing} editData={modalKelas.data} onSubmit={handleSubmitKelas} saving={isSaving} />
-      <KelasSantriModal isOpen={modalListSantri.isOpen} onClose={() => setKelasSantriModal({ ...modalListSantri, isOpen: false })} kelasData={modalListSantri.data} onAssignClick={(kelasData) => setModalAssign({ isOpen: true, data: { kelas: kelasData } })} refreshTrigger={refreshListKey} />
-      <AssignKelasModal isOpen={modalAssign.isOpen} onClose={() => setModalAssign({ ...modalAssign, isOpen: false })} isEditing={false} preSelectedKelas={modalAssign.data?.kelas} onSubmit={handleAssignSubmit} saving={isSaving} />
+      <KelasModal isOpen={modalKelas.isOpen} onClose={() => setKelasModal({ ...modalKelas, isOpen: false })} isEditing={modalKelas.isEditing} editData={modalKelas.data} onSubmit={handleSubmitKelas} saving={isSaving} rolePrefix={rolePrefix} />
+      <KelasSantriModal isOpen={modalListSantri.isOpen} onClose={() => setKelasSantriModal({ ...modalListSantri, isOpen: false })} kelasData={modalListSantri.data} onAssignClick={(kelasData) => setModalAssign({ isOpen: true, data: { kelas: kelasData } })} refreshTrigger={refreshListKey} rolePrefix={rolePrefix} />
+      <AssignKelasModal isOpen={modalAssign.isOpen} onClose={() => setModalAssign({ ...modalAssign, isOpen: false })} isEditing={false} preSelectedKelas={modalAssign.data?.kelas} onSubmit={handleAssignSubmit} saving={isSaving} rolePrefix={rolePrefix} refreshTrigger={refreshListKey} />
       <ConfirmDeleteModal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} onConfirm={confirmDelete} loading={isDeleting} itemName={deleteModal.name} />
     </div>
   );

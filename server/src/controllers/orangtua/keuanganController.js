@@ -51,7 +51,7 @@ exports.getKeuanganDashboard = async (req, res) => {
       raw_date: t.batas_pembayaran,
     });
 
-    const tagihanAktif = allTagihan.filter((t) => t.status === "Aktif").map(mapTagihanData);
+    const tagihanAktif = allTagihan.filter((t) => t.status === "Aktif" || t.status === "Perlu_Konfirmasi").map(mapTagihanData);
     const riwayatLunas = allTagihan.filter((t) => t.status === "Lunas").map((t) => {
         const mapped = mapTagihanData(t);
         const lastPayDate = t.pembayaran.length > 0 ? t.pembayaran[t.pembayaran.length - 1].tanggal_bayar : t.updatedAt;
@@ -89,11 +89,19 @@ exports.uploadPembayaran = async (req, res) => {
       return res.status(404).json({ success: false, message: "Tagihan tidak valid atau bukan milik anak Anda." });
     }
 
-    await prisma.pembayaran.create({
-      data: {
-        id_tagihan: parseInt(id_tagihan), tanggal_bayar: new Date(), nominal: tagihan.nominal,
-        bukti_bayar: req.file.secure_url || req.file.path, metode_bayar: "Transfer", status: "Pending", 
-      },
+    await prisma.$transaction(async (tx) => {
+        await tx.pembayaran.create({
+          data: {
+            id_tagihan: parseInt(id_tagihan), tanggal_bayar: new Date(), nominal: tagihan.nominal,
+            bukti_bayar: req.file.secure_url || req.file.path, metode_bayar: "Transfer", status: "Pending", 
+          },
+        });
+
+        // Set status tagihan ke Perlu_Konfirmasi
+        await tx.tagihan.update({
+          where: { id: tagihan.id },
+          data: { status: 'Perlu_Konfirmasi' }
+        });
     });
 
     res.json({ success: true, message: "Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin." });

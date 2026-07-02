@@ -6,11 +6,15 @@ import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  Search, Filter, Plus, Eye, UserCheck,
+  Filter, Plus, Eye, UserCheck,
   Edit2, AlertTriangle, CheckCircle, X, Loader2
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
+
 
 const STATUS_OPTIONS = [
   { value: "", label: "Semua Status" },
@@ -140,39 +144,44 @@ export default function AdminPendaftar() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-wrap gap-3 items-center">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Cari nama / no. pendaftaran..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 min-w-[180px]">
-            <Filter size={16} className="text-gray-400" />
-            <select
-                value={filterTahun}
-                onChange={(e) => setFilterTahun(e.target.value)}
-                className="w-full py-2.5 bg-transparent text-sm focus:outline-none text-gray-700 font-medium"
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari nama / no. pendaftaran..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <FilterDropdown
+              activeCount={(filterStatus && filterStatus !== "Semua" ? 1 : 0) + (filterTahun ? 1 : 0)}
+              onReset={() => {
+                setFilterStatus("Semua");
+                setFilterTahun("");
+              }}
             >
-                <option value="">Semua Gelombang</option>
-                {tahunList.map((t) => (
-                <option key={t.id} value={t.id}>{t.nama_gelombang}</option>
-                ))}
-            </select>
-          </div>
-          <div className="px-3 py-2 border border-gray-200 bg-gray-50 rounded-xl">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="text-sm focus:outline-none min-w-[160px] font-medium text-gray-700"
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pendaftaran</label>
+                  <FilterSelect
+                    placeholder="Semua Status"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                    options={[
+                      { value: "Mendaftar", label: "Mendaftar" },
+                      { value: "Verifikasi", label: "Verifikasi" },
+                      { value: "Seleksi", label: "Seleksi" },
+                      { value: "Lulus", label: "Lulus" },
+                      { value: "Diterima", label: "Diterima" },
+                      { value: "Ditolak", label: "Ditolak" },
+                      { value: "Mengundurkan Diri", label: "Mengundurkan Diri" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
+                  <FilterSelect
+                    value={filterTahun}
+                    onChange={(e) => setFilterTahun(e.target.value)}
+                    placeholder="Semua Gelombang"
+                    options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
+                  />
+                </div>
+              </div>
+            </FilterDropdown>
           </div>
         </div>
 

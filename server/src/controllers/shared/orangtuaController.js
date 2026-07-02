@@ -25,12 +25,18 @@ exports.getOrangTua = async (req, res) => {
                 _count: {
                     select: { orangtua_orangtua_id_orangtuaTousers: { where: { is_active: true } } },
                 },
+                orangtua_orangtua_id_orangtuaTousers: {
+                    where: { is_active: true },
+                    select: { hubungan: true },
+                    take: 1,
+                },
             },
         });
 
         const formattedData = ortuList.map(ortu => ({
             ...ortu,
             jumlah_anak: ortu._count.orangtua_orangtua_id_orangtuaTousers,
+            hubungan: ortu.orangtua_orangtua_id_orangtuaTousers?.[0]?.hubungan || null,
         }));
 
         return res.json({ success: true, data: formattedData });
@@ -95,6 +101,15 @@ exports.searchUser = async (req, res) => {
 exports.createOrangTua = async (req, res) => {
     const { nama, email, no_hp, alamat, jenis_kelamin } = req.body;
     try {
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
+        }
+
         const hashedPassword = await bcrypt.hash(no_hp || '12345678', 10);
 
         const newOrtu = await prisma.users.create({
@@ -116,6 +131,15 @@ exports.updateOrangTua = async (req, res) => {
     const { id } = req.params;
     const { nama, email, no_hp, alamat, jenis_kelamin } = req.body;
     try {
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, id: { not: parseInt(id) }, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
+        }
+
         await prisma.users.update({
             where: { id: parseInt(id) },
             data:  { nama, email, no_hp, alamat, jenis_kelamin },

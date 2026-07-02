@@ -24,8 +24,19 @@ export default function ListPembayaranModal({ isOpen, onClose, idTagihan, userRo
   const fetchPembayaran = async () => {
     setLoading(true);
     try {
-        const res = await api.get(`/pengurus/keuangan/pembayaran/${idTagihan}`);
-        setList(res.data.data);
+        let endpoint = '';
+        if (userRole === 'pimpinan') {
+            endpoint = `/pimpinan/keuangan/pembayaran/${idTagihan}`;
+        } else {
+            endpoint = `/${userRole}/keuangan/${idTagihan}/pembayaran`;
+        }
+        const res = await api.get(endpoint);
+        const sortedData = (res.data.data || []).sort((a, b) => {
+            const dateDiff = new Date(b.tanggal_bayar) - new Date(a.tanggal_bayar);
+            if (dateDiff !== 0) return dateDiff;
+            return b.id - a.id;
+        });
+        setList(sortedData);
         setTagihanInfo(res.data.tagihanInfo);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -38,11 +49,12 @@ export default function ListPembayaranModal({ isOpen, onClose, idTagihan, userRo
   const confirmUpdateStatus = async () => {
       setConfirmStatus(prev => ({ ...prev, loading: true }));
       try {
-          await api.put(`/pengurus/keuangan/tagihan/${idTagihan}/status`, { status: confirmStatus.newStatus });
+          await api.put(`/${userRole}/keuangan/${idTagihan}/status`, { status: confirmStatus.newStatus });
           setTagihanInfo(prev => ({ ...prev, status: confirmStatus.newStatus }));
           showAlert("success", "Status berhasil diperbarui");
           setConfirmStatus({ isOpen: false, newStatus: null, loading: false });
       } catch (err) {
+          console.error("Gagal update status tagihan:", err);
           showAlert("error", "Gagal update status");
           setConfirmStatus(prev => ({ ...prev, loading: false }));
       }
@@ -62,10 +74,41 @@ export default function ListPembayaranModal({ isOpen, onClose, idTagihan, userRo
         </div>
         <div className="p-6 overflow-y-auto flex-1">
             {loading ? <div className="text-center py-10"><Loader2 className="animate-spin mx-auto text-green-500"/></div> : (
-                <table className="w-full text-left text-sm">
-                    <thead><tr className="bg-gray-50 text-gray-600"><th className="p-3">Tanggal</th><th className="p-3">Nominal</th><th className="p-3">Metode</th><th className="p-3">Status</th><th className="p-3 text-center">Aksi</th></tr></thead>
-                    <tbody className="divide-y">{list.length > 0 ? list.map(item => (<tr key={item.id}><td className="p-3">{new Date(item.tanggal_bayar).toLocaleDateString('id-ID')}</td><td className="p-3 font-semibold">Rp {item.nominal.toLocaleString('id-ID')}</td><td className="p-3">{item.metode_bayar}</td><td className="p-3"><span className={`px-2 py-1 rounded-full text-xs font-bold ${item.status === 'Berhasil' ? 'bg-green-100 text-green-700' : item.status === 'Gagal' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{item.status}</span></td><td className="p-3 text-center"><button onClick={() => openDetail(item)} className="text-green-600 p-1.5"><Eye size={16}/></button></td></tr>)) : <tr><td colSpan="5" className="p-8 text-center text-gray-500">Belum ada pembayaran.</td></tr>}</tbody>
-                </table>
+                <>
+                    {/* Unified Grid Cards (1 Column on Mobile, 2 Columns on Desktop) */}
+                    <div className="grid grid-cols-1 gap-4">
+                        {list.length > 0 ? list.map(item => (
+                            <div key={item.id} className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm flex flex-col justify-between space-y-3 hover:border-green-100 hover:shadow-md transition duration-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-500 font-medium">
+                                        {new Date(item.tanggal_bayar).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </span>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                        item.status === 'Berhasil' ? 'bg-green-100 text-green-700' : 
+                                        item.status === 'Gagal' ? 'bg-red-100 text-red-700' : 
+                                        'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                        {item.status}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-end border-t border-gray-50 pt-3">
+                                    <div>
+                                        <span className="text-[10px] text-gray-400 block uppercase font-bold tracking-wider">Nominal</span>
+                                        <span className="font-bold text-gray-800 text-base">Rp {item.nominal.toLocaleString('id-ID')}</span>
+                                        <span className="text-xs text-gray-500 block mt-0.5 font-medium">Metode: {item.metode_bayar}</span>
+                                    </div>
+                                    <button onClick={() => openDetail(item)} className="px-3.5 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-bold hover:bg-green-600 hover:text-white transition active:scale-95 flex items-center gap-1.5">
+                                        <Eye size={14}/> Detail
+                                    </button>
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="col-span-1 md:col-span-2 text-center p-8 bg-gray-50 rounded-2xl text-gray-500 text-sm">
+                                Belum ada riwayat pembayaran untuk tagihan ini.
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
         </div>
         <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl"><button onClick={onClose} className="px-4 py-2 bg-white border border-gray-300 rounded-xl">Tutup</button></div>

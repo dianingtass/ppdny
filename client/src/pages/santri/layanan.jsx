@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
-import { ArrowLeft, Search, Briefcase, History, Loader2, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { ArrowLeft, Search, Briefcase, History, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import DetailLayananModal from '../../components/DetailLayananModal'; 
 import FormLayananModal from '../../components/FormLayananModal';
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
+import SearchBar from "../../components/SearchBar";
+
 
 export default function LayananList() {
   const [layananList, setLayananList] = useState([]);
@@ -86,16 +88,7 @@ export default function LayananList() {
           </div>
 
           {/* Search Bar Floating */}
-          <div className="relative mt-6">
-            <input 
-                type="text" 
-                placeholder="Cari layanan (misal: Izin Bermalam)..."
-                className="w-full pl-12 pr-4 py-3.5 rounded-2xl text-gray-800 bg-white/95 backdrop-blur shadow-lg border-0 focus:ring-2 focus:ring-green-300 outline-none transition placeholder-gray-400"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
-          </div>
+          <SearchBar placeholder="Cari layanan (misal: Izin Bermalam)..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
       </div>
 

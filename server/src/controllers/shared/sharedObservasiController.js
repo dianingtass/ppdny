@@ -194,10 +194,29 @@ const createObservasiController = ({ writableRoles = [] }) => {
   return {
     async getSantriList(req, res) {
       try {
-        const { search = "", page = 1, limit = 10 } = req.query;
+        const { search = "", page = 1, limit = 10, kategoriSkor, waktu, startDate, endDate } = req.query;
         const skip = (Number(page) - 1) * Number(limit);
 
         const where = getActiveSantriWhere(search);
+
+        // Bangun filter observasi berdasarkan param yang dikirim
+        const observasiFilter = {};
+        if (waktu) observasiFilter.waktu = waktu;
+        if (startDate || endDate) {
+          observasiFilter.tanggal = {};
+          if (startDate) observasiFilter.tanggal.gte = new Date(startDate);
+          if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            observasiFilter.tanggal.lte = end;
+          }
+        }
+
+        if (kategoriSkor === "Belum_Pernah_Observasi") {
+          where.observasi_observasi_id_santriTousers = { none: {} };
+        } else if (Object.keys(observasiFilter).length > 0) {
+          where.observasi_observasi_id_santriTousers = { some: observasiFilter };
+        }
 
         const [data, total] = await prisma.$transaction([
           prisma.users.findMany({
@@ -233,6 +252,12 @@ const createObservasiController = ({ writableRoles = [] }) => {
         const mapped = data.map((item) => {
           const latest = item.observasi_observasi_id_santriTousers?.[0] || null;
           const totalSkor = latest?.detail_observasi?.reduce((sum, detail) => sum + (detail.jawaban ? 1 : 0), 0) || 0;
+          const latestKategori = latest ? getObservasiCategory(totalSkor) : null;
+
+          // Filter kategori skor secara post-query (karena butuh join kalkulasi)
+          if (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi" && latestKategori !== kategoriSkor) {
+            return null;
+          }
 
           return {
             ...item,
@@ -241,12 +266,12 @@ const createObservasiController = ({ writableRoles = [] }) => {
                   tanggal: latest.tanggal,
                   waktu: latest.waktu,
                   total_skor: totalSkor,
-                  kategori_skor: getObservasiCategory(totalSkor),
-                  skor_label: `${totalSkor} - ${getObservasiCategory(totalSkor)}`
+                  kategori_skor: latestKategori,
+                  skor_label: `${totalSkor} - ${latestKategori}`
                 }
               : null
           };
-        });
+        }).filter(Boolean);
 
         res.json({
           success: true,

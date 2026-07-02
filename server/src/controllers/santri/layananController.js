@@ -4,7 +4,8 @@ const prisma = require("../../config/prisma");
 exports.getDaftarLayanan = async (req, res) => {
     try {
         const layanan = await prisma.jenis_layanan.findMany({
-            where: { is_active: true }
+            where: { is_active: true },
+            include: { formulir_layanan: { where: { is_active: true } } }
         });
         res.json({ success: true, data: layanan });
     } catch (error) {

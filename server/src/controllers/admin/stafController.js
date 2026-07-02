@@ -57,7 +57,16 @@ exports.createStaff = async (req, res) => {
         }
     }
 
-    const hashedPassword = await bcrypt.hash("12345678", 10);
+    if (email && email.trim() !== "") {
+        const existingEmail = await prisma.users.findFirst({
+            where: { email: email, is_active: true }
+        });
+        if (existingEmail) {
+            return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+        }
+    }
+
+    const hashedPassword = await bcrypt.hash("password123", 10);
 
     const dbRoles = roles.map(r => {
       if (r.toLowerCase() === 'tim kesehatan') return 'timkesehatan';
@@ -107,6 +116,15 @@ exports.updateStaff = async (req, res) => {
                 success: false, 
                 message: "Gagal menyimpan: NIP tersebut sudah dipakai oleh staf/pengguna lain!" 
             });
+        }
+    }
+
+    if (email && email.trim() !== "") {
+        const existingEmail = await prisma.users.findFirst({
+            where: { email: email, id: { not: targetId }, is_active: true }
+        });
+        if (existingEmail) {
+            return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
         }
     }
 
@@ -207,13 +225,13 @@ exports.toggleStaffStatus = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { id } = req.params;
-    const hashedPassword = await bcrypt.hash("12345678", 10);
+    const hashedPassword = await bcrypt.hash("password123", 10);
     
     await prisma.users.update({
       where: { id: parseInt(id) },
       data: { password: hashedPassword }
     });
-    res.json({ success: true, message: "Password berhasil direset ke '12345678'" });
+    res.json({ success: true, message: "Password berhasil direset ke 'password123'" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Gagal mereset password" });
   }

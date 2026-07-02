@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Search, Mail, Phone, FileText, MapPin } from "lucide-react";
+import { Loader2, FileText, Calendar } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import api from "../../../config/api";
 import ProfileAvatar from '../../../components/ProfileAvatar';
+import SearchBar from "../../../components/SearchBar";
+import FilterSelect from "../../../components/FilterSelect";
+import FilterDropdown from "../../../components/FilterDropdown";
 
 export default function DaftarSantriScreeningPage({ rolePrefix }) {
   const [santriList, setSantriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedRisiko, setSelectedRisiko] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -27,7 +35,14 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
     setLoading(true);
     try {
       const res = await api.get(`/${rolePrefix}/screening/santri`, {
-        params: { search: debouncedSearch, page, limit }
+        params: {
+          search: debouncedSearch,
+          diagnosa: selectedRisiko,
+          startDate,
+          endDate,
+          page,
+          limit
+        }
       });
 
       setSantriList(res.data.data);
@@ -44,11 +59,11 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
 
   useEffect(() => {
     fetchSantri();
-  }, [debouncedSearch, page]);
+  }, [debouncedSearch, page, selectedRisiko, startDate, endDate]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, selectedRisiko, startDate, endDate]);
 
   const getDiagnosaStyle = (diagnosa) => {
     if (!diagnosa) return "text-gray-500";
@@ -82,17 +97,58 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
       </div>
 
       {/* Search */}
-      <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Cari nama atau NIS..."
-            className="w-full pl-10 pr-4 py-2.5 outline-none"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari nama atau NIS..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <FilterDropdown
+          activeCount={(selectedRisiko ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)}
+          onReset={() => {
+            setSelectedRisiko("");
+            setStartDate("");
+            setEndDate("");
+            setPage(1);
+          }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Hasil Diagnosa Terakhir</label>
+              <FilterSelect
+                placeholder="Semua Hasil"
+                value={selectedRisiko}
+                onChange={(e) => { setSelectedRisiko(e.target.value); setPage(1); }}
+                options={[
+                  { value: "Belum_Pernah_Screening", label: "Belum Pernah Screening" },
+                  { value: "Bukan_Scabies", label: "Bukan Scabies" },
+                  { value: "Kemungkinan_Scabies", label: "Kemungkinan Scabies" },
+                  { value: "Scabies", label: "Scabies" },
+                  { value: "Perlu_Evaluasi_Lebih_Lanjut", label: "Perlu Evaluasi" },
+                ]}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-gray-500">Rentang Tanggal</label>
+              <div className="grid grid-cols-1 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Dari Tanggal</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+                    className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sampai Tanggal</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+                    className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (

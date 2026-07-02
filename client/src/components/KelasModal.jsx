@@ -4,7 +4,7 @@ import { X, Save, Loader2, BookOpen, User } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
-export default function ModalKelas({ isOpen, onClose, isEditing, editData, onSubmit, saving }) {
+export default function ModalKelas({ isOpen, onClose, isEditing, editData, onSubmit, saving, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({ kelas: "", tahun_ajaran: "", id_wali: "" });
   const [waliOptions, setWaliOptions] = useState([]);
   const { message, showAlert, clearAlert } = useAlert();
@@ -13,7 +13,7 @@ export default function ModalKelas({ isOpen, onClose, isEditing, editData, onSub
   useEffect(() => {
     const fetchWali = async () => {
       try {
-        const { data } = await api.get("/pengurus/kelas/wali");
+        const { data } = await api.get(`/${rolePrefix}/kelas/wali-options`);
         if (data.success) setWaliOptions(data.data);
       } catch (err) {
         console.error("Gagal load wali kelas", err);

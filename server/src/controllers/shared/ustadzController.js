@@ -41,6 +41,15 @@ exports.createUstadz = async (req, res) => {
             if (existing) return res.status(400).json({ message: 'NIP sudah terdaftar.' });
         }
 
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
+        }
+
         // Default password wajib minimal 8 karakter
         const defaultPass    = '12345678';
         const hashedPassword = await bcrypt.hash(password || defaultPass, 10);
@@ -70,6 +79,15 @@ exports.updateUstadz = async (req, res) => {
     const { nip, nama, email, no_hp, jenis_kelamin, alamat, password } = req.body;
 
     try {
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, id: { not: parseInt(id) }, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
+        }
+
         const updateData = {
             nip: nip || null, nama,
             email: email || null,

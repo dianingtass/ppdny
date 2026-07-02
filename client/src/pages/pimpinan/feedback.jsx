@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import api from "../../config/api";
 import {
-  Search,
   Eye,
   Loader2,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Star,
-  MessageSquare
+  Star
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailFeedbackModal from "../../components/DetailFeedbackModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 
 export default function FeedbackView() {
   const [dataList, setDataList] = useState([]);
@@ -24,6 +22,7 @@ export default function FeedbackView() {
   // Search & Filter state
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("Semua");
+  const [selectedRating, setSelectedRating] = useState("");
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +31,6 @@ export default function FeedbackView() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Sesuaikan URL dengan routing yang kamu buat
       const res = await api.get("/pimpinan/feedback");
       if (res.data.success) {
           setDataList(res.data.data);
@@ -49,11 +47,13 @@ export default function FeedbackView() {
     fetchData();
   }, []);
 
-  // LOGIKA FILTER GABUNGAN (SEARCH + CHIP TIPE)
+  // LOGIKA FILTER GABUNGAN (SEARCH + TYPE + RATING)
   const filteredData = dataList.filter(item => {
-      const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase());
-      const matchType = filterType === "Semua" || item.tipe === filterType;
-      return matchSearch && matchType;
+    const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase());
+    const matchType = filterType === "Semua" || item.tipe === filterType;
+    const itemRating = Math.round(item.rating_rata_rata || 0);
+    const matchRating = !selectedRating || itemRating === parseInt(selectedRating);
+    return matchSearch && matchType && matchRating;
   });
 
   // Custom Hook Pagination 
@@ -62,11 +62,23 @@ export default function FeedbackView() {
   // Reset pagination ke halaman 1 setiap kali filter atau search berubah
   useEffect(() => {
       jump(1);
-  }, [filterType, search, dataList]);
+  }, [filterType, selectedRating, search, dataList]);
 
   const handleOpenDetail = (item) => {
       setSelectedItem({ id: item.id, tipe: item.tipe });
       setIsModalOpen(true);
+  };
+
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (filterType !== "Semua") count++;
+    if (selectedRating) count++;
+    return count;
+  };
+
+  const resetFilters = () => {
+    setFilterType("Semua");
+    setSelectedRating("");
   };
 
   return (
@@ -83,45 +95,51 @@ export default function FeedbackView() {
         </div>
       </div>
 
-      {/* Kontainer Search & Filter Chip */}
-      <div className="space-y-3">
-        <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus:ring-2 focus:ring-green-500 outline-none">
-            <div className="relative flex-1 flex items-center">
-                <Search className="absolute left-3 text-gray-400" size={18} />
-                <input
-                    type="text"
-                    placeholder="Cari berdasarkan nama kegiatan atau layanan..."
-                    className="w-full pl-10 pr-4 py-2.5 outline-none"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                {search && (
-                    <button
-                        onClick={() => setSearch("")}
-                        className="absolute right-3 text-gray-400 hover:text-gray-600 transition"
-                    >
-                        <X size={18} />
-                    </button>
-                )}
+      {/* Kontainer Search & Filter Dropdown */}
+      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <SearchBar
+          placeholder="Cari berdasarkan nama kegiatan atau layanan..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          className="flex-1"
+        />
+        <FilterDropdown
+          activeCount={getActiveFilterCount()}
+          onReset={resetFilters}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Tipe Feedback</label>
+              <FilterSelect
+                placeholder="Semua Tipe"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                options={[
+                  { value: "Semua", label: "Semua Tipe" },
+                  { value: "Kegiatan", label: "Kegiatan" },
+                  { value: "Layanan", label: "Layanan" },
+                ]}
+              />
             </div>
-        </div>
-
-        {/* --- CHIP FILTERS --- */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-            {['Semua', 'Kegiatan', 'Layanan'].map((tipe) => (
-                <button
-                    key={tipe}
-                    onClick={() => setFilterType(tipe)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
-                        filterType === tipe 
-                        ? 'bg-green-600 text-white border-green-600 shadow-md' 
-                        : 'bg-white text-gray-600 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
-                    }`}
-                >
-                    {tipe}
-                </button>
-            ))}
-        </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Rating Minimum</label>
+              <FilterSelect
+                placeholder="Semua Rating"
+                value={selectedRating}
+                onChange={(e) => setSelectedRating(e.target.value)}
+                options={[
+                  { value: "", label: "Semua Bintang" },
+                  { value: "5", label: "★★★★★ (5)" },
+                  { value: "4", label: "★★★★☆ (4)" },
+                  { value: "3", label: "★★★☆☆ (3)" },
+                  { value: "2", label: "★★☆☆☆ (2)" },
+                  { value: "1", label: "★☆☆☆☆ (1)" },
+                ]}
+              />
+            </div>
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (
@@ -156,22 +174,22 @@ export default function FeedbackView() {
                             {item.tipe}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-gray-600">
-                          {item.tanggal}
+                        <td className="p-4 text-sm text-gray-500">
+                          {new Date(item.tanggal_terakhir || item.created_at).toLocaleDateString("id-ID")}
                         </td>
                         <td className="p-4">
-                           <div className="flex items-center gap-2">
-                               <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                               <span className="font-bold text-gray-700">{item.avg_rating}</span>
-                               <span className="text-xs text-gray-400">({item.total_ulasan} ulasan)</span>
-                           </div>
+                          <div className="flex items-center gap-1.5 bg-yellow-50 px-2.5 py-1 rounded-xl border border-yellow-100 w-fit">
+                            <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                            <span className="text-sm font-black text-yellow-700">{(item.rating_rata_rata || 0).toFixed(1)}</span>
+                          </div>
                         </td>
-                        <td className="p-4 pr-6 text-center">
+                        <td className="p-4 text-center pr-6">
                           <button
                             onClick={() => handleOpenDetail(item)}
-                            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 rounded-lg text-sm font-medium transition"
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-xl transition border border-green-100 hover:border-green-300"
+                            title="Detail Ulasan"
                           >
-                            <MessageSquare size={16} /> Lihat
+                            <Eye size={18} />
                           </button>
                         </td>
                       </tr>
@@ -179,7 +197,7 @@ export default function FeedbackView() {
                   ) : (
                     <tr>
                       <td colSpan="5" className="p-8 text-center text-gray-500">
-                        Tidak ada ulasan yang cocok dengan filter.
+                        Tidak ada ulasan feedback ditemukan.
                       </td>
                     </tr>
                   )}
@@ -188,64 +206,65 @@ export default function FeedbackView() {
             </div>
           </div>
 
-          {/* VIEW 2: CARD (Mobile Only) */}
+          {/* VIEW 2: CARDS (Mobile Only) */}
           <div className="block md:hidden space-y-4">
             {currentData.length > 0 ? (
               currentData.map((item) => (
-                <div key={`${item.tipe}-${item.id}`} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-gray-800 text-sm line-clamp-2 leading-tight">
-                      {item.judul}
-                    </h3>
-                    <span className={`flex-shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${item.tipe === 'Kegiatan' ? 'bg-purple-100 text-purple-700' : 'bg-teal-100 text-teal-700'}`}>
-                      {item.tipe}
-                    </span>
-                  </div>
-
-                  <div className="text-xs text-gray-500">
-                    Diselenggarakan: {item.tanggal}
-                  </div>
-
-                  <div className="flex items-center justify-between mt-1 pt-3 border-t border-gray-50">
-                    <div className="flex items-center gap-1.5">
-                       <Star size={18} className="text-yellow-400 fill-yellow-400" />
-                       <span className="font-black text-gray-800 text-lg leading-none">{item.avg_rating}</span>
-                       <span className="text-xs text-gray-400 ml-1">({item.total_ulasan} ulasan)</span>
+                <div
+                  key={`${item.tipe}-${item.id}`}
+                  className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-gray-800 text-lg leading-tight">
+                        {item.judul}
+                      </h3>
+                      <span className={`inline-block mt-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${item.tipe === 'Kegiatan' ? 'bg-purple-100 text-purple-700' : 'bg-teal-100 text-teal-700'}`}>
+                        {item.tipe}
+                      </span>
                     </div>
-                    <button
-                      onClick={() => handleOpenDetail(item)}
-                      className="p-2 bg-green-50 text-green-600 rounded-lg"
-                    >
-                      <MessageSquare size={18} />
-                    </button>
+                    <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-lg border border-yellow-100">
+                      <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                      <span className="text-xs font-bold text-yellow-700">
+                        {(item.rating_rata_rata || 0).toFixed(1)}
+                      </span>
+                    </div>
                   </div>
+
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span>Terakhir update: {new Date(item.tanggal_terakhir || item.created_at).toLocaleDateString("id-ID")}</span>
+                  </div>
+
+                  <button
+                    onClick={() => handleOpenDetail(item)}
+                    className="w-full py-2.5 bg-green-50 text-green-600 rounded-xl font-bold text-sm flex justify-center items-center gap-2 active:scale-95 transition"
+                  >
+                    <Eye size={16} /> Lihat Detail Ulasan
+                  </button>
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 bg-white rounded-xl border border-dashed border-gray-200 text-gray-500">
-                Tidak ada ulasan yang cocok dengan filter.
+              <div className="text-center p-8 bg-white rounded-xl text-gray-500">
+                Ulasan kosong.
               </div>
             )}
           </div>
 
-          {/* Pagination Controls */}
-          {maxPage > 0 && (
-            <Pagination
-                currentPage={currentPage}
-                totalPages={maxPage}
-                onNext={next}
-                onPrev={prev}
-            />
-          )}
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={maxPage}
+            onNext={next}
+            onPrev={prev}
+          />
         </>
       )}
 
-      {/* Modal Detail Feedback */}
-      <DetailFeedbackModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          targetItem={selectedItem} 
-          role="pimpinan"
+      {/* DETAIL MODAL */}
+      <DetailFeedbackModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        itemData={selectedItem}
       />
     </div>
   );

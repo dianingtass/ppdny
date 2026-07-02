@@ -72,25 +72,40 @@ exports.createSantri = async (req, res) => {
     try {
         const existingSantri = await prisma.users.findFirst({ where: { nip, is_active: true } });
         if (existingSantri) {
-            return res.status(400).json({ message: 'NIP sudah terdaftar.' });
+            return res.status(400).json({ message: 'NIS sudah terdaftar.' });
+        }
+
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
         }
 
         const hashedPassword = await bcrypt.hash(password || nip, 10);
 
-        const newSantri = await prisma.users.create({
-            data: {
-                nip, nama, email, no_hp, alamat, jenis_kelamin,
-                tempat_lahir,
-                tanggal_lahir:  new Date(tanggal_lahir),
-                password:       hashedPassword,
-                is_active:      true,
-                user_role: { create: { id_role: 1 } },
-            },
-        });
+        const createData = {
+            nip, nama, email, no_hp, alamat, jenis_kelamin,
+            tempat_lahir,
+            password:       hashedPassword,
+            is_active:      true,
+            user_role: { create: { id_role: 1 } },
+        };
+        
+        if (tanggal_lahir) {
+            createData.tanggal_lahir = new Date(tanggal_lahir);
+        }
+
+        const newSantri = await prisma.users.create({ data: createData });
 
         return res.json({ success: true, message: 'Santri berhasil ditambahkan.', data: newSantri });
     } catch (error) {
         console.error('createSantri error:', error);
+        if (error.code === 'P2002') {
+            return res.status(400).json({ success: false, message: 'NIP atau Kontak tersebut sudah digunakan.' });
+        }
         return res.status(500).json({ success: false, message: 'Gagal menambah santri.' });
     }
 };
@@ -100,7 +115,20 @@ exports.updateSantri = async (req, res) => {
     const { nip, nama, email, no_hp, alamat, jenis_kelamin, tempat_lahir, tanggal_lahir, password } = req.body;
 
     try {
-        const updateData = { nip, nama, email, no_hp, alamat, jenis_kelamin, tempat_lahir, tanggal_lahir: new Date(tanggal_lahir) };
+        if (email && email.trim() !== "") {
+            const existingEmail = await prisma.users.findFirst({
+                where: { email: email, id: { not: parseInt(id) }, is_active: true }
+            });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+            }
+        }
+
+        const updateData = { nip, nama, email, no_hp, alamat, jenis_kelamin, tempat_lahir };
+        
+        if (tanggal_lahir) {
+            updateData.tanggal_lahir = new Date(tanggal_lahir);
+        }
 
         if (password) {
             updateData.password = await bcrypt.hash(password, 10);
@@ -111,7 +139,10 @@ exports.updateSantri = async (req, res) => {
         return res.json({ success: true, message: 'Data santri berhasil diperbarui.' });
     } catch (error) {
         console.error('updateSantri error:', error);
-        return res.status(500).json({ success: false, message: 'Data santri harus terisi lengkap.' });
+        if (error.code === 'P2002') {
+            return res.status(400).json({ success: false, message: 'NIP atau Kontak tersebut sudah digunakan oleh santri lain.' });
+        }
+        return res.status(500).json({ success: false, message: 'Terjadi kesalahan sistem saat menyimpan data.' });
     }
 };
 

@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { 
-  ArrowLeft, Loader2, Search, Calendar, Clock, MapPin, ChevronDown, 
-  AlertTriangle, CheckCircle, X, Plus, Users, Globe, BedDouble
+  ArrowLeft, Loader2, Calendar, Clock, MapPin, ChevronDown, 
+  AlertTriangle, CheckCircle, Plus, Users, Globe, BedDouble
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
@@ -11,6 +11,10 @@ import { useAlert } from "../../hooks/useAlert";
 import DetailKegiatanModal from "../../components/DetailKegiatanModal";
 import CreateKegiatanModal from "../../components/CreateKegiatanModal";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
+
 
 export default function Kegiatan() {
   const [loading, setLoading] = useState(true);
@@ -162,10 +166,28 @@ export default function Kegiatan() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-32 space-y-6 relative z-10 md:-mt-12">
         
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:-mt-16">
-          <div className="relative">
-            <input type="text" placeholder="Cari Kegiatan..." className="w-full pl-10 pr-4 py-3 rounded-xl border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-green-300 outline-none bg-white" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
-          </div>
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari Kegiatan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <FilterDropdown
+            activeCount={filterType !== "Semua" ? 1 : 0}
+            onReset={() => {
+              setFilterType("Semua");
+            }}
+          >
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Waktu Kegiatan</label>
+              <FilterSelect
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                options={[
+                  { value: "Semua", label: "Semua Waktu" },
+                  { value: "Mendatang", label: "Akan Datang" },
+                  { value: "Selesai", label: "Selesai" },
+                ]}
+              />
+            </div>
+          </FilterDropdown>
+      </div>
           <div className="relative">
             <select className="w-full pl-4 pr-10 py-3 rounded-xl border-none shadow-sm text-gray-800 appearance-none focus:ring-2 focus:ring-green-300 outline-none cursor-pointer bg-white" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
               <option value="Semua">Semua Waktu</option>

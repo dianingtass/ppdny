@@ -10,13 +10,17 @@ dayjs.extend(timezone)
 
 const getKamarList = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 10 } = req.query;
+    const { search = "", page = 1, limit = 10, gender = "" } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 
     const whereCondition = {
       is_active: true
     };
+
+    if (gender) {
+      whereCondition.gender = gender;
+    }
 
     if (search.trim()) {
       whereCondition.kamar = {

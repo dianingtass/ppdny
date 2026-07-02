@@ -3,6 +3,9 @@ import api from "../../config/api";
 import {
   Search, Loader2, AlertTriangle, CheckCircle, X, Star, MessageSquare
 } from "lucide-react";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailFeedbackModal from "../../components/DetailFeedbackModal";
@@ -16,6 +19,7 @@ export default function Feedback() {
 
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("Semua");
+  const [selectedRating, setSelectedRating] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -31,6 +35,7 @@ export default function Feedback() {
         setDataList(res.data.data);
       }
     } catch (err) {
+      console.error("Gagal memuat feedback:", err);
       showAlert("error", "Gagal memuat daftar feedback");
     } finally {
       setLoading(false);
@@ -44,14 +49,16 @@ export default function Feedback() {
   const filteredData = dataList.filter(item => {
     const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase());
     const matchType = filterType === "Semua" || item.tipe === filterType;
-    return matchSearch && matchType;
+    const itemRating = Math.round(item.avg_rating || 0);
+    const matchRating = !selectedRating || itemRating === parseInt(selectedRating);
+    return matchSearch && matchType && matchRating;
   });
 
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData, 10);
 
   useEffect(() => {
     jump(1);
-  }, [filterType, search, dataList]);
+  }, [filterType, selectedRating, search, dataList]);
 
   const handleOpenDetail = (item) => {
     setSelectedItem({ id: item.id, tipe: item.tipe });
@@ -69,20 +76,43 @@ export default function Feedback() {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-green-500 outline-none">
-          <div className="relative flex-1 flex items-center">
-            <Search className="absolute left-3 text-gray-400" size={18} />
-            <input type="text" placeholder="Cari berdasarkan nama kegiatan atau layanan..." className="w-full pl-10 pr-4 py-1.5 outline-none bg-transparent" value={search} onChange={(e) => setSearch(e.target.value)} />
-            {search && <button onClick={() => setSearch("")} className="absolute right-3 text-gray-400 hover:text-gray-600 transition"><X size={18} /></button>}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <SearchBar placeholder="Cari berdasarkan nama kegiatan atau layanan..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} className="flex-1" />
+        
+        <FilterDropdown
+          activeCount={(filterType !== "Semua" ? 1 : 0) + (selectedRating ? 1 : 0)}
+          onReset={() => { setFilterType("Semua"); setSelectedRating(""); jump(1); }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Tipe Ulasan</label>
+              <FilterSelect
+                value={filterType}
+                onChange={(e) => { setFilterType(e.target.value || "Semua"); jump(1); }}
+                options={[
+                  { value: "Semua", label: "Semua Tipe" },
+                  { value: "Kegiatan", label: "Kegiatan" },
+                  { value: "Layanan", label: "Layanan" }
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Rating Bintang</label>
+              <FilterSelect
+                value={selectedRating}
+                onChange={(e) => { setSelectedRating(e.target.value); jump(1); }}
+                options={[
+                  { value: "", label: "Semua Bintang" },
+                  { value: "5", label: "★★★★★ (5)" },
+                  { value: "4", label: "★★★★☆ (4)" },
+                  { value: "3", label: "★★★☆☆ (3)" },
+                  { value: "2", label: "★★☆☆☆ (2)" },
+                  { value: "1", label: "★☆☆☆☆ (1)" }
+                ]}
+              />
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-          {['Semua', 'Kegiatan', 'Layanan'].map((tipe) => (
-            <button key={tipe} onClick={() => setFilterType(tipe)} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${filterType === tipe ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:bg-green-50 hover:text-green-600'}`}>{tipe}</button>
-          ))}
-        </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (

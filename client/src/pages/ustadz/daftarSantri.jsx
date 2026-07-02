@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { 
-  ArrowLeft, Loader2, Search, User, ShieldAlert
+  ArrowLeft, Loader2, User, ShieldAlert
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailSantriModal from "../../components/DetailSantriModal";
 import PengaduanSantriModal from "../../components/PengaduanSantriModal";
 import ProfileAvatar from '../../components/ProfileAvatar';
+import SearchBar from "../../components/SearchBar";
+
 
 export default function DaftarSantri() {
   const [loading, setLoading] = useState(true);
@@ -128,16 +130,7 @@ export default function DaftarSantri() {
             </button>
           </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Cari nama atau NIS santri..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-gray-800 focus:ring-2 focus:ring-green-500 outline-none bg-gray-50 focus:bg-white transition"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
-          </div>
+          <SearchBar placeholder="Cari nama atau NIS santri..." value={search} onChange={(e) => setSearch(e.target.value)} />
 
           {/* Sub-filter chips */}
           {subList && subList.length > 0 && (

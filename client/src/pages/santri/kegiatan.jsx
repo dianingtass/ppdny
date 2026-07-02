@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { 
-  ArrowLeft, Loader2, Search, Calendar, Clock, MapPin, ChevronDown, 
-  AlertTriangle, CheckCircle, X 
+  ArrowLeft, Loader2, Calendar, Clock, MapPin
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
@@ -11,6 +10,9 @@ import { useAlert } from "../../hooks/useAlert";
 // Import Modals
 import DetailKegiatanModal from "../../components/DetailKegiatanModal";
 import FeedbackModal from "../../components/FeedbackModal";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 
 export default function KegiatanSantri() {
   const [loading, setLoading] = useState(true);
@@ -64,8 +66,6 @@ export default function KegiatanSantri() {
   };
 
   const handleOpenFeedback = (item) => {
-    // Detail modal tetep open di belakang (opsional, bisa diclose juga)
-    // setIsDetailOpen(false); 
     setSelectedKegiatan(item);
     setIsFeedbackOpen(true);
   };
@@ -110,30 +110,33 @@ export default function KegiatanSantri() {
       {/* Content List */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-32 space-y-8 relative z-10 md:-mt-16">
         
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-                <input 
-                    type="text" 
-                    placeholder="Cari Kegiatan..." 
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-green-300 outline-none bg-white"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
+        {/* Search + Filter */}
+        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+          <SearchBar
+            placeholder="Cari Kegiatan..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            className="flex-1"
+          />
+          <FilterDropdown
+            activeCount={filterType !== "Semua" ? 1 : 0}
+            onReset={() => setFilterType("Semua")}
+          >
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Waktu Kegiatan</label>
+              <FilterSelect
+                placeholder="Semua Waktu"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                options={[
+                  { value: "Semua", label: "Semua Waktu" },
+                  { value: "Mendatang", label: "Akan Datang" },
+                  { value: "Selesai", label: "Selesai" },
+                ]}
+              />
             </div>
-            
-            <div className="relative">
-                <select 
-                    className="w-full pl-4 pr-10 py-3 rounded-xl border-none shadow-sm text-gray-800 appearance-none focus:ring-2 focus:ring-green-300 outline-none cursor-pointer bg-white"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                >
-                    <option value="Semua">Semua Waktu</option>
-                    <option value="Mendatang">Akan Datang</option>
-                    <option value="Selesai">Selesai</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-3.5 text-gray-400 pointer-events-none" size={20} />
-            </div>
+          </FilterDropdown>
         </div>
 
         <h2 className="text-lg font-bold text-gray-800 mb-4 hidden md:block">Kegiatan Mendatang & Riwayat</h2>
@@ -156,33 +159,37 @@ export default function KegiatanSantri() {
                             onClick={() => handleOpenDetail(item)}
                             className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
                         >
-                            Lihat Rincian
+                            Detail Kegiatan
                         </button>
                     </div>
                 </div>
             ))
         ) : (
-            <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-gray-100">
-                <p className="text-gray-500">Tidak ada kegiatan ditemukan.</p>
+            <div className="bg-white p-12 rounded-2xl text-center shadow-sm border border-gray-100 text-gray-500">
+                Belum ada kegiatan untuk saat ini.
             </div>
         )}
       </div>
 
-      {/* --- MODALS --- */}
-      <DetailKegiatanModal 
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        data={selectedKegiatan}
-        onFeedbackClick={handleOpenFeedback}
-      />
-
-      <FeedbackModal 
-        isOpen={isFeedbackOpen}
-        onClose={() => setIsFeedbackOpen(false)}
-        item={selectedKegiatan}
-        onSubmit={handleSubmitFeedback}
-        saving={isSaving}
-      />
+      {/* MODALS */}
+      {selectedKegiatan && (
+          <>
+              <DetailKegiatanModal 
+                  isOpen={isDetailOpen}
+                  onClose={() => setIsDetailOpen(false)}
+                  kegiatan={selectedKegiatan}
+                  onOpenFeedback={handleOpenFeedback}
+              />
+              
+              <FeedbackModal 
+                  isOpen={isFeedbackOpen}
+                  onClose={() => setIsFeedbackOpen(false)}
+                  kegiatan={selectedKegiatan}
+                  onSubmitFeedback={handleSubmitFeedback}
+                  saving={isSaving}
+              />
+          </>
+      )}
 
     </div>
   );

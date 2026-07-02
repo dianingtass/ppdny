@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function usePagination(data) {
   const itemsPerPage = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [data]);
+
 
   // Logic Potong Data
   const maxPage = Math.ceil(data.length / itemsPerPage);
@@ -29,7 +27,7 @@ export default function usePagination(data) {
 
   const jump = (page) => {
     const pageNumber = Math.max(1, page);
-    setCurrentPage(Math.min(pageNumber, maxPage));
+    setCurrentPage(maxPage > 0 ? Math.min(pageNumber, maxPage) : 1);
   };
 
   return { 

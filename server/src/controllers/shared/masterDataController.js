@@ -8,7 +8,11 @@ exports.getJenisLayanan = async (req, res) => {
         const whereCondition = { is_active: true };
         if (search) whereCondition.nama_layanan = { contains: search };
 
-        const layanan = await prisma.jenis_layanan.findMany({ where: whereCondition, orderBy: { nama_layanan: 'asc' } });
+        const layanan = await prisma.jenis_layanan.findMany({ 
+            where: whereCondition, 
+            include: { formulir_layanan: { where: { is_active: true } } },
+            orderBy: { nama_layanan: 'asc' } 
+        });
         return res.json({ success: true, data: layanan });
     } catch (error) {
         console.error(error);
@@ -17,9 +21,34 @@ exports.getJenisLayanan = async (req, res) => {
 };
 
 exports.createJenisLayanan = async (req, res) => {
-    const { nama_layanan, estimasi, deskripsi } = req.body;
+    const { nama_layanan, estimasi, deskripsi, formulir } = req.body;
     try {
-        await prisma.jenis_layanan.create({ data: { nama_layanan, estimasi, deskripsi, is_active: true } });
+        await prisma.$transaction(async (tx) => {
+            const newLayanan = await tx.jenis_layanan.create({
+                data: {
+                    nama_layanan,
+                    estimasi,
+                    deskripsi,
+                    is_active: true
+                }
+            });
+            
+            if (formulir && Array.isArray(formulir)) {
+                const fieldsData = formulir.map((field, idx) => ({
+                    id_layanan: newLayanan.id,
+                    name: field.name || `field_${idx}`,
+                    label: field.label || '',
+                    type: field.type || 'text',
+                    placeholder: field.placeholder || '',
+                    required: field.required !== undefined ? !!field.required : true,
+                    is_active: true
+                }));
+                
+                await tx.formulir_layanan.createMany({
+                    data: fieldsData
+                });
+            }
+        });
         return res.json({ success: true, message: 'Layanan berhasil ditambahkan.' });
     } catch (error) {
         console.error(error);
@@ -29,9 +58,34 @@ exports.createJenisLayanan = async (req, res) => {
 
 exports.updateJenisLayanan = async (req, res) => {
     const { id } = req.params;
-    const { nama_layanan, estimasi, deskripsi } = req.body;
+    const { nama_layanan, estimasi, deskripsi, formulir } = req.body;
     try {
-        await prisma.jenis_layanan.update({ where: { id: parseInt(id) }, data: { nama_layanan, estimasi, deskripsi } });
+        await prisma.$transaction(async (tx) => {
+            await tx.jenis_layanan.update({
+                where: { id: parseInt(id) },
+                data: { nama_layanan, estimasi, deskripsi }
+            });
+
+            if (formulir && Array.isArray(formulir)) {
+                await tx.formulir_layanan.deleteMany({
+                    where: { id_layanan: parseInt(id) }
+                });
+
+                const fieldsData = formulir.map((field, idx) => ({
+                    id_layanan: parseInt(id),
+                    name: field.name || `field_${idx}`,
+                    label: field.label || '',
+                    type: field.type || 'text',
+                    placeholder: field.placeholder || '',
+                    required: field.required !== undefined ? !!field.required : true,
+                    is_active: true
+                }));
+
+                await tx.formulir_layanan.createMany({
+                    data: fieldsData
+                });
+            }
+        });
         return res.json({ success: true, message: 'Layanan berhasil diperbarui.' });
     } catch (error) {
         console.error(error);
@@ -68,8 +122,8 @@ exports.getAllTagihan = async (req, res) => {
 
 exports.createTagihanJenis = async (req, res) => {
     try {
-        const { jenis_tagihan } = req.body;
-        const newData = await prisma.jenis_tagihan.create({ data: { jenis_tagihan, is_active: true } });
+        const { jenis_tagihan, deskripsi } = req.body;
+        const newData = await prisma.jenis_tagihan.create({ data: { jenis_tagihan, deskripsi, is_active: true } });
         return res.json({ success: true, message: 'Berhasil ditambahkan.', data: newData });
     } catch (err) {
         console.error('Error create jenis tagihan:', err);
@@ -80,8 +134,8 @@ exports.createTagihanJenis = async (req, res) => {
 exports.updateTagihanJenis = async (req, res) => {
     try {
         const { id } = req.params;
-        const { jenis_tagihan } = req.body;
-        const updatedData = await prisma.jenis_tagihan.update({ where: { id: parseInt(id) }, data: { jenis_tagihan } });
+        const { jenis_tagihan, deskripsi } = req.body;
+        const updatedData = await prisma.jenis_tagihan.update({ where: { id: parseInt(id) }, data: { jenis_tagihan, deskripsi } });
         return res.json({ success: true, message: 'Berhasil diperbarui.', data: updatedData });
     } catch (err) {
         console.error('Error update jenis tagihan:', err);
@@ -271,27 +325,96 @@ exports.verifyPembayaran = async (req, res) => {
         const updateData = { status };
         if (nominal_baru) updateData.nominal = parseFloat(nominal_baru);
 
-        await prisma.$transaction(async (tx) => {
-            const updatedPay = await tx.pembayaran.update({ where: { id: parseInt(id) }, data: updateData });
+        const updatedPay = await prisma.pembayaran.update({ where: { id: parseInt(id) }, data: updateData });
+        const tagihanId = updatedPay.id_tagihan;
 
-            if (status === 'Berhasil') {
-                const tagihanId = updatedPay.id_tagihan;
-                const sumResult = await tx.pembayaran.aggregate({
-                    where: { id_tagihan: tagihanId, status: 'Berhasil', is_active: true },
-                    _sum: { nominal: true }
-                });
-                const totalPaid = sumResult._sum.nominal || 0;
-
-                const tagihan = await tx.tagihan.findUnique({ where: { id: tagihanId } });
-                if (tagihan && totalPaid >= tagihan.nominal) {
-                    await tx.tagihan.update({ where: { id: tagihanId }, data: { status: 'Lunas' } });
-                }
-            }
+        const allPays = await prisma.pembayaran.findMany({
+            where: { id_tagihan: tagihanId, is_active: true }
         });
+
+        const totalPaid = allPays
+            .filter(p => p.status === 'Berhasil')
+            .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
+
+        const hasPending = allPays.some(p => p.status === 'Pending');
+
+        const tagihan = await prisma.tagihan.findUnique({ where: { id: tagihanId } });
+
+        if (tagihan) {
+            if (totalPaid >= tagihan.nominal) {
+                await prisma.tagihan.update({ where: { id: tagihanId }, data: { status: 'Lunas' } });
+            } else if (hasPending || (totalPaid > 0 && totalPaid < tagihan.nominal)) {
+                await prisma.tagihan.update({ where: { id: tagihanId }, data: { status: 'Perlu_Konfirmasi' } });
+            } else {
+                await prisma.tagihan.update({ where: { id: tagihanId }, data: { status: 'Aktif' } });
+            }
+        }
 
         return res.json({ success: true, message: 'Pembayaran berhasil diverifikasi.' });
     } catch (error) {
         console.error("verifyPembayaran error:", error);
         return res.status(500).json({ message: 'Gagal verifikasi pembayaran.' });
+    }
+};
+
+exports.getRiwayatLayananOptions = async (req, res) => {
+    try {
+        const santri = await prisma.users.findMany({
+            where: { is_active: true, user_role: { some: { id_role: 1, is_active: true } } },
+            select: { id: true, nama: true, nip: true },
+            orderBy: { nama: 'asc' }
+        });
+        const layanan = await prisma.jenis_layanan.findMany({
+            where: { is_active: true },
+            include: { formulir_layanan: { where: { is_active: true } } },
+            orderBy: { nama_layanan: 'asc' }
+        });
+        return res.json({ success: true, data: { santri, layanan } });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Gagal memuat opsi pengajuan.' });
+    }
+};
+
+exports.createRiwayatLayanan = async (req, res) => {
+    try {
+        const { id_santri, id_layanan, status_sesudah, catatan, form_data } = req.body;
+
+        if (!id_santri || !id_layanan) {
+            return res.status(400).json({ success: false, message: "Santri dan Jenis Layanan wajib diisi" });
+        }
+
+        const result = await prisma.$transaction(async (tx) => {
+            const riwayat = await tx.riwayat_layanan.create({
+                data: {
+                    id_santri: parseInt(id_santri),
+                    id_layanan: parseInt(id_layanan),
+                    waktu: new Date(),
+                    status_sebelum: 'Proses',
+                    status_sesudah: status_sesudah || 'Proses',
+                    catatan: catatan || ""
+                }
+            });
+
+            if (Array.isArray(form_data) && form_data.length > 0) {
+                const detailData = form_data.map(item => ({
+                    id_riwayat: riwayat.id,
+                    aspek: String(item.label || "-"),
+                    detail: String(item.value || "-"),
+                    is_active: true
+                }));
+
+                await tx.riwayat_layanan_detail.createMany({
+                    data: detailData
+                });
+            }
+
+            return riwayat;
+        });
+
+        return res.json({ success: true, message: "Pengajuan layanan berhasil disimpan", data: result });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Gagal menyimpan pengajuan", error_detail: error.message });
     }
 };

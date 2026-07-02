@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import api from "../../config/api";
-import { Search, Loader2, Activity, Clock, Filter, X } from "lucide-react";
+import { Loader2, Activity, Clock, Filter } from "lucide-react";
 import Pagination from "../../components/pagination/Pagination";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
+
 
 const formatDateTime = (dateString) => {
     if (!dateString) return "-";
@@ -80,6 +84,8 @@ export default function Log() {
     };
 
     return (
+
+
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between md:items-end gap-4">
                 <div className="flex justify-between items-center">
@@ -90,44 +96,42 @@ export default function Log() {
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 w-full pl-2 pr-4 py-2.5 rounded-xl shadow-sm border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-green-500 transition-all outline-none">
-                <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Cari (Nama, aksi, role, dll)..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 outline-none bg-transparent"
-                    />
-                    {search && (
-                        <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <X size={16} />
-                        </button>
-                    )}
-                </div>
-
-                <div className="flex gap-3">
-                    <div className="relative">
-                        <select value={filterAksi} onChange={(e) => setFilterAksi(e.target.value)} className="appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 cursor-pointer outline-none">
-                            <option value="Semua">Semua Aksi</option>
-                            <option value="CREATE">CREATE (Tambah)</option>
-                            <option value="UPDATE">UPDATE (Ubah)</option>
-                            <option value="DELETE">DELETE (Hapus)</option>
-                        </select>
-                        <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+                <SearchBar placeholder="Cari (Nama, aksi, role, dll)..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} className="flex-1" />
+                <FilterDropdown
+                  activeCount={(filterAksi !== "Semua" ? 1 : 0) + (filterRole !== "Semua" ? 1 : 0)}
+                  onReset={() => {
+                    setFilterAksi("Semua");
+                    setFilterRole("Semua");
+                  }}
+                >
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">Aksi</label>
+                      <FilterSelect
+                        value={filterAksi}
+                        onChange={(e) => setFilterAksi(e.target.value)}
+                        options={[
+                          { value: "Semua", label: "Semua Aksi" },
+                          { value: "CREATE", label: "CREATE (Tambah)" },
+                          { value: "UPDATE", label: "UPDATE (Ubah)" },
+                          { value: "DELETE", label: "DELETE (Hapus)" },
+                        ]}
+                      />
                     </div>
-
-                    <div className="relative">
-                        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 cursor-pointer capitalize outline-none">
-                            <option value="Semua">Semua Role</option>
-                            {availableRoles.map(role => (
-                                <option key={role} value={role} className="capitalize">{role}</option>
-                            ))}
-                        </select>
-                        <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">Role Pengguna</label>
+                      <FilterSelect
+                        value={filterRole}
+                        onChange={(e) => setFilterRole(e.target.value)}
+                        options={[
+                          { value: "Semua", label: "Semua Role" },
+                          ...availableRoles.map(role => ({ value: role, label: role.toUpperCase() }))
+                        ]}
+                      />
                     </div>
-                </div>
+                  </div>
+                </FilterDropdown>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[400px]">

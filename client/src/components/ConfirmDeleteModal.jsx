@@ -4,7 +4,7 @@ export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, loading
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-gray-100 flex items-start justify-between gap-3">

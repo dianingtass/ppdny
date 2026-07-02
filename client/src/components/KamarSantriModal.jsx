@@ -4,8 +4,10 @@ import { X, Plus, Loader2, Search, Trash2, AlertTriangle } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import ProfileAvatar from './ProfileAvatar';
+import SearchBar from "./SearchBar";
 
-export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignClick, refreshTrigger }) {
+
+export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignClick, refreshTrigger, rolePrefix = "pengurus" }) {
   const [santriList, setSantriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -23,7 +25,7 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
     setLoading(true);
     try {
       // Clean Code: Mengambil data tanpa parameter header token secara manual
-      const { data } = await api.get(`/pengurus/kamar/${kamarData.id}/santri`);
+      const { data } = await api.get(`/${rolePrefix}/kamar/${kamarData.id}/santri`);
       setSantriList(data.data || []);
     } catch (err) {
       console.error("Gagal load santri kamar", err);
@@ -39,13 +41,14 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
   const confirmDelete = async () => {
     setIsRemoving(true);
     try {
-      const { data } = await api.delete(`/pengurus/penempatan-kamar/${deleteConfirm.id}`);
+      const { data } = await api.delete(`/${rolePrefix}/kamar/${kamarData.id}/santri/${deleteConfirm.id}`);
       if (data.success) {
+        showAlert("success", "Santri berhasil dikeluarkan dari kamar");
         setDeleteConfirm(null);
         fetchSantri();
       }
     } catch (err) {
-      showAlert("error", "Gagal mengeluarkan santri");
+      showAlert("error", err.response?.data?.message || "Gagal mengeluarkan santri");
     } finally {
       setIsRemoving(false);
     }
@@ -68,7 +71,7 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
           <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition text-gray-400"><X size={20} /></button>
         </div>
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3 bg-white">
-          <div className="relative flex-1"><Search className="absolute left-3 top-2.5 text-gray-400" size={18} /><input type="text" placeholder="Cari penghuni..." className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+          <SearchBar placeholder="Cari penghuni..." value={search} onChange={(e) => setSearch(e.target.value)} />
           <button onClick={() => onAssignClick(kamarData)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-green-100"><Plus size={18} /> Tambah Santri</button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 [scrollbar-width:none]">

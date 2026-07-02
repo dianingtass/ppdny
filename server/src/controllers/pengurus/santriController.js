@@ -79,7 +79,7 @@ exports.createSantri = async (req, res) => {
         const existingSantri = await prisma.users.findFirst({
             where: { nip, is_active: true }
         });
-        if (existingSantri) return res.status(400).json({ message: "NIP sudah terdaftar" });
+        if (existingSantri) return res.status(400).json({ message: "NIS sudah terdaftar" });
 
         // Hash Password (Default NIP jika kosong)
         const hashedPassword = await bcrypt.hash(password || nip, 10);
