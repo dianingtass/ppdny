@@ -367,7 +367,13 @@ export default function FormPendaftaran() {
               ))}
             </div>
             <div className="mt-8 flex justify-end">
-              <button onClick={() => setStep(4)} className="px-8 py-3 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition">Selesai Berkas →</button>
+              <button 
+                disabled={uploadStatus["Bukti_Transfer_Pendaftaran"] !== "success"} 
+                onClick={() => setStep(4)} 
+                className="px-8 py-3 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition disabled:opacity-40"
+              >
+                Selesai Berkas →
+              </button>
             </div>
           </div>
         )}

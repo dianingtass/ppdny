@@ -3,16 +3,16 @@ import { X, Save, Loader2, User, Mail, Phone, MapPin, Briefcase } from "lucide-r
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
-export default function UstadzModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, userRole }) {
+export default function UstadzModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, userRole, viewOnly }) {
   const initialForm = { nip: "", nama: "", email: "", no_hp: "", jenis_kelamin: "", alamat: "", password: "" };
   const [formData, setFormData] = useState(initialForm);
   const { message, showAlert, clearAlert } = useAlert();
 
-  const isReadOnly = !["pengurus", "admin"].includes(userRole?.toLowerCase());
+  const isReadOnly = viewOnly || !["pengurus", "admin"].includes(userRole?.toLowerCase());
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditing && editData) {
+      if (editData) {
         setFormData({
           ...editData,
           nip: editData.nip || "",
@@ -26,7 +26,7 @@ export default function UstadzModal({ isOpen, onClose, isEditing, editData, onSu
         setFormData(initialForm);
       }
     }
-  }, [isOpen, isEditing, editData]);
+  }, [isOpen, isEditing, editData, viewOnly]);
 
   if (!isOpen) return null;
 

@@ -27,14 +27,14 @@ const FilterDropdown = ({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-2 px-5 py-4 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition shadow-sm text-sm font-semibold cursor-pointer ${
+        className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-4 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition shadow-sm text-sm font-semibold cursor-pointer ${
           activeCount > 0 ? 'border-green-500 text-green-600 bg-green-50/20' : ''
         }`}
         type="button"
         {...props}
       >
         <SlidersHorizontal size={18} />
-        <span>Filter</span>
+        <span className="hidden md:inline">Filter</span>
         {activeCount > 0 && (
           <span className="flex items-center justify-center bg-green-600 text-white text-[10px] w-5 h-5 rounded-full font-bold">
             {activeCount}

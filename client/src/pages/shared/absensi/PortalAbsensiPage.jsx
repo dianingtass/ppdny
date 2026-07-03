@@ -123,14 +123,16 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               </div>
             </div>
 
-            <button
-              onClick={() =>
-                navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
-              }
-              className="mt-4 w-full px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
-            >
-              Edit
-            </button>
+            {rolePrefix !== "pimpinan" && (
+              <button
+                onClick={() =>
+                  navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
+                }
+                className="mt-4 w-full px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+              >
+                Edit
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -218,21 +220,23 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                 Lihat Laporan
               </button>
 
-              <button
-                disabled={isTodayAbsensi}
-                onClick={() =>
-                  navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/create`)
-                }
-                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition
-                ${
-                  isTodayAbsensi
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 text-white"
-                }`}
-              >
-                <Plus size={20} className="mr-2"/>
-                Absensi Baru
-              </button>
+              {rolePrefix !== "pimpinan" && (
+                <button
+                  disabled={isTodayAbsensi}
+                  onClick={() =>
+                    navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/create`)
+                  }
+                  className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition
+                  ${
+                    isTodayAbsensi
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700 text-white"
+                  }`}
+                >
+                  <Plus size={20} className="mr-2"/>
+                  Absensi Baru
+                </button>
+              )}
             </div>
           </div>
 
@@ -249,7 +253,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                   <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                     <th className="p-4 pl-6 w-1/3">Tanggal</th>
                     <th className="p-4 w-1/3">Pemeriksa</th>
-                    <th className="p-4 pr-6 w-1/3 text-center">Aksi</th>
+                    {rolePrefix !== "pimpinan" && <th className="p-4 pr-6 w-1/3 text-center">Aksi</th>}
                   </tr>
                 </thead>
 
@@ -263,16 +267,18 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                       <td className="p-4">
                         {latest.users?.nama || "-"}
                       </td>
-                      <td className="text-center space-x-2">
-                        <button
-                          onClick={() =>
-                            navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${latest.id_heading}`)
-                          }
-                          className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
-                        >
-                          Edit
-                        </button>
-                      </td>
+                      {rolePrefix !== "pimpinan" && (
+                        <td className="text-center space-x-2">
+                          <button
+                            onClick={() =>
+                              navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${latest.id_heading}`)
+                            }
+                            className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ) : (
                     <tr>
@@ -304,7 +310,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                   <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                     <th className="p-4 pl-6 w-1/3">Tanggal</th>
                     <th className="p-4 w-1/3">Pemeriksa</th>
-                    <th className="p-4 pr-6 w-1/3 text-center">Aksi</th>
+                    {rolePrefix !== "pimpinan" && <th className="p-4 pr-6 w-1/3 text-center">Aksi</th>}
                   </tr>
                 </thead>
 
@@ -322,16 +328,18 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                         <td className="p-4">
                           {item.users?.nama || "-"}
                         </td>
-                        <td className="text-center space-x-2">
-                          <button
-                            onClick={() =>
-                              navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
-                            }
-                            className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
-                          >
-                            Edit
-                          </button>
-                        </td>
+                        {rolePrefix !== "pimpinan" && (
+                          <td className="text-center space-x-2">
+                            <button
+                              onClick={() =>
+                                navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
+                              }
+                              className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))
                   ) : (

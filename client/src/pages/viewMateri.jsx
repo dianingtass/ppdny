@@ -100,6 +100,117 @@ export default function MateriView() {
   const materiTeori      = filtered.filter((item) => item.sumber !== "pengalaman");
   const materiPengalaman = filtered.filter((item) => item.sumber === "pengalaman");
 
+  const isPimpinan = role === "pimpinan";
+
+  if (isPimpinan) {
+    return (
+      <div className="space-y-6 relative">
+        {/* Alert Toast */}
+        {alert.show && (
+          <AlertToast
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert({ show: false, message: "", type: "success" })}
+          />
+        )}
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Materi Scabies</h1>
+            <p className="text-gray-500 text-sm">Jendela Ilmu Pengetahuan Tentang Scabies</p>
+          </div>
+        </div>
+
+        {/* SEARCH + FILTER */}
+        <div className="flex gap-3 items-center w-full">
+          <SearchBar
+            placeholder="Cari berdasarkan judul materi..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            className="flex-1"
+          />
+          <FilterDropdown
+            activeCount={selectedSumber ? 1 : 0}
+            onReset={() => setSelectedSumber("")}
+          >
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Sumber Materi</label>
+              <FilterSelect
+                placeholder="Semua Sumber"
+                value={selectedSumber}
+                onChange={(e) => setSelectedSumber(e.target.value)}
+                options={[
+                  { value: "teori", label: "Berdasarkan Teori" },
+                  { value: "pengalaman", label: "Berdasarkan Pengalaman" },
+                ]}
+              />
+            </div>
+          </FilterDropdown>
+        </div>
+
+        {/* DAFTAR MATERI */}
+        <div className="pb-10">
+          {/* MATERI BERDASARKAN TEORI */}
+          {materiTeori.length > 0 && (
+            <div className="mb-10">
+              <div className="mb-4">
+                <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <span className="w-1 h-6 bg-green-500 rounded-full inline-block" />
+                  Materi Berdasarkan Teori
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {materiTeori.map((item) => (
+                  <CardMateri
+                    key={item.id}
+                    materi={item}
+                    detailBasePath={detailBasePath}
+                    fromPath={location.pathname}
+                    rootFrom={rootFrom}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* MATERI BERDASARKAN PENGALAMAN */}
+          {materiPengalaman.length > 0 && (
+            <div className="mb-10">
+              <div className="mb-4">
+                <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <span className="w-1 h-6 bg-blue-500 rounded-full inline-block" />
+                  Materi Berdasarkan Pengalaman
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {materiPengalaman.map((item) => (
+                  <CardMateri
+                    key={item.id}
+                    materi={item}
+                    detailBasePath={detailBasePath}
+                    fromPath={location.pathname}
+                    rootFrom={rootFrom}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Kalau semua filter kosong */}
+          {filtered.length === 0 && (
+            <p className="text-center text-gray-500 py-12 bg-white rounded-xl border border-gray-100 shadow-sm">
+              Materi tidak ditemukan.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // --- DEFAULT VIEW (SANTRI / PUBLIC) ---
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Alert Toast */}
@@ -154,7 +265,7 @@ export default function MateriView() {
 
       {/* SEARCH + FILTER */}
       <div className="max-w-6xl mx-auto -mt-16 mb-8 px-4">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <div className="flex gap-3 items-center w-full">
           <SearchBar
             placeholder="Cari berdasarkan judul materi..."
             value={search}

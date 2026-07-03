@@ -56,7 +56,7 @@ export default function DetailRiwayatModal({ isOpen, onClose, data, onProcess })
 
         <div className="p-5 border-t bg-gray-50 rounded-b-2xl flex justify-end gap-3">
           <button onClick={onClose} className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-bold">Tutup</button>
-          {canProcess && <button onClick={() => onProcess(data)} className="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-bold flex items-center gap-2 shadow-lg shadow-green-100"><Edit size={16}/> Proses Layanan</button>}
+          {canProcess && onProcess && <button onClick={() => onProcess(data)} className="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-bold flex items-center gap-2 shadow-lg shadow-green-100"><Edit size={16}/> Proses Layanan</button>}
         </div>
       </div>
     </div>

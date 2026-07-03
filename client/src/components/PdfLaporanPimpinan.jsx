@@ -97,7 +97,7 @@ export const PdfLaporanPimpinan = async (data, barChartRef, pieChartRef) => {
       margin: { left: margin.left + 5, right: margin.right },
       head: [['Keterangan', 'Nilai']],
       body: [
-        ['Pemasukan Bulanan', formatRupiah(data.keuangan.total_pendapatan)],
+        ['Pemasukan Bulan Ini', formatRupiah(data.keuangan.total_pendapatan)],
         ['Tunggakan SPP', `${data.keuangan.persentase_tunggakan}% Santri`]
       ],
       theme: 'grid',

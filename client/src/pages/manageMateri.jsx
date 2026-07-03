@@ -192,7 +192,7 @@ export default function MateriManage() {
       {activeTab === TAB_MATERI && (
         <>
           {/* Search + Filter */}
-          <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+          <div className="flex gap-3 items-center w-full">
             <SearchBar
               placeholder="Cari judul materi..."
               value={search}

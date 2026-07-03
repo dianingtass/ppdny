@@ -3,7 +3,7 @@ import { X, Save, Loader2, ShieldAlert, KeyRound } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
-export default function InputStafModal({ isOpen, onClose, isEditing, editData, onSubmit, onResetPassword, saving }) {
+export default function InputStafModal({ isOpen, onClose, isEditing, editData, onSubmit, onResetPassword, saving, viewOnly }) {
   const initialForm = {
     nip: "",
     nama: "",
@@ -16,10 +16,11 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
 
   const [formData, setFormData] = useState(initialForm);
   const availableRoles = ["Admin", "Pimpinan", "Tim Kesehatan", "Pengurus", "Ustadz"];
+  const isReadOnly = !!viewOnly;
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditing && editData) {
+      if ((isEditing || viewOnly) && editData) {
         setFormData({
           nip: editData.nip !== "-" ? editData.nip : "",
           nama: editData.nama || "",
@@ -32,7 +33,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
         setFormData(initialForm);
       }
     }
-  }, [isOpen, isEditing, editData]);
+  }, [isOpen, isEditing, editData, viewOnly]);
 
   if (!isOpen) return null;
 
@@ -41,6 +42,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
   };
 
   const handleRoleToggle = (roleName) => {
+    if (isReadOnly) return;
     setFormData(prev => ({
       ...prev,
       roles: prev.roles.includes(roleName) 
@@ -55,6 +57,8 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
     onSubmit(formData);
   };
 
+  const inputClass = "w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-50 disabled:text-gray-500";
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
@@ -62,7 +66,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
           <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
             <ShieldAlert className="text-green-600" size={20} />
-            {isEditing ? "Edit Akun & Otorisasi" : "Registrasi Staf Baru"}
+            {viewOnly ? "Detail Akun Staf" : isEditing ? "Edit Akun & Otorisasi" : "Registrasi Staf Baru"}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-red-500 transition">
             <X size={24} />
@@ -74,28 +78,28 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span className="text-red-500">*</span></label>
-                <input type="text" name="nama" required className="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" value={formData.nama} onChange={handleChange} placeholder="Nama Lengkap" />
+                <input type="text" name="nama" required disabled={isReadOnly} className={inputClass} value={formData.nama} onChange={handleChange} placeholder="Nama Lengkap" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">NIP</label>
-                <input type="text" name="nip" className="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" value={formData.nip} onChange={handleChange} placeholder="Nomor Induk Pegawai" />
+                <input type="text" name="nip" disabled={isReadOnly} className={inputClass} value={formData.nip} onChange={handleChange} placeholder="Nomor Induk Pegawai" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" className="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" value={formData.email} onChange={handleChange} placeholder="email@pesantren.com" />
+                <input type="email" name="email" disabled={isReadOnly} className={inputClass} value={formData.email} onChange={handleChange} placeholder="email@pesantren.com" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
-                <input type="text" name="no_hp" className="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" value={formData.no_hp} onChange={handleChange} placeholder="0812..." />
+                <input type="text" name="no_hp" disabled={isReadOnly} className={inputClass} value={formData.no_hp} onChange={handleChange} placeholder="0812..." />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin <span className="text-red-500">*</span></label>
-              <select name="jenis_kelamin" required className="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white" value={formData.jenis_kelamin} onChange={handleChange}>
+              <select name="jenis_kelamin" required disabled={isReadOnly} className={`${inputClass} bg-white`} value={formData.jenis_kelamin} onChange={handleChange}>
                 <option value="" disabled>Pilih Jenis Kelamin</option>
                 <option value="Laki_laki">Laki-laki</option>
                 <option value="Perempuan">Perempuan</option>
@@ -103,18 +107,18 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
             </div>
 
             <div className="pt-2 border-t border-gray-100">
-              <label className="block text-sm font-bold text-gray-800 mb-2">Penugasan Hak Akses (Bisa pilih lebih dari 1)</label>
+              <label className="block text-sm font-bold text-gray-800 mb-2">Penugasan Hak Akses</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {availableRoles.map((role) => (
-                  <label key={role} className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition ${formData.roles.includes(role) ? "bg-green-50 border-green-500 text-green-800 shadow-sm" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
-                    <input type="checkbox" className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500" checked={formData.roles.includes(role)} onChange={() => handleRoleToggle(role)} />
+                  <label key={role} className={`flex items-center gap-2 p-3 rounded-xl border transition ${isReadOnly ? 'cursor-default' : 'cursor-pointer hover:bg-gray-50'} ${formData.roles.includes(role) ? "bg-green-50 border-green-500 text-green-800 shadow-sm" : "bg-white border-gray-200 text-gray-600"}`}>
+                    <input type="checkbox" disabled={isReadOnly} className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500" checked={formData.roles.includes(role)} onChange={() => handleRoleToggle(role)} />
                     <span className="font-medium text-sm">{role}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {!isEditing && (
+            {!isEditing && !viewOnly && (
               <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl text-xs font-medium mt-4">
                 Info: Password default untuk akun baru adalah <span className="font-bold text-black">password123</span>
               </div>
@@ -123,19 +127,28 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
         </div>
 
         <div className="p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center">
-          {isEditing ? (
-            <button type="button" onClick={() => onResetPassword(editData.id)} className="px-4 py-2 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-semibold text-sm rounded-xl transition flex items-center">
-              <KeyRound size={16} className="mr-2" /> Reset Password
-            </button>
-          ) : <div />}
+          {viewOnly ? (
+            <>
+              <div />
+              <button onClick={onClose} type="button" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Tutup</button>
+            </>
+          ) : (
+            <>
+              {isEditing ? (
+                <button type="button" onClick={() => onResetPassword(editData.id)} className="px-4 py-2 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-semibold text-sm rounded-xl transition flex items-center">
+                  <KeyRound size={16} className="mr-2" /> Reset Password
+                </button>
+              ) : <div />}
 
-          <div className="flex gap-3">
-            <button onClick={onClose} type="button" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Batal</button>
-            <button form="stafForm" type="submit" disabled={saving} className="px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition flex items-center disabled:opacity-70 shadow-lg">
-              {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />}
-              {saving ? "Menyimpan..." : "Simpan Data"}
-            </button>
-          </div>
+              <div className="flex gap-3">
+                <button onClick={onClose} type="button" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Batal</button>
+                <button form="stafForm" type="submit" disabled={saving} className="px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition flex items-center disabled:opacity-70 shadow-lg">
+                  {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />}
+                  {saving ? "Menyimpan..." : "Simpan Data"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

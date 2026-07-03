@@ -230,14 +230,13 @@ export default function FaqPage() {
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gray-50/50 hover:bg-gray-50 transition"
                 >
                   <span className="text-left text-sm sm:text-base font-semibold text-gray-800 flex items-start gap-2">
-                    <CircleHelp className="text-green-600 mt-0.5 flex-shrink-0" size={18} />
                     <div className="space-y-1">
-                      <p>{item.pertanyaan}</p>
                       <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-md uppercase tracking-wider ${
                         item.kategori === 'Kesehatan' ? 'bg-teal-50 text-teal-600 border border-teal-100' : 'bg-blue-50 text-blue-600 border border-blue-100'
                       }`}>
                         {item.kategori}
                       </span>
+                      <p>{item.pertanyaan}</p>
                     </div>
                   </span>
                   
@@ -267,11 +266,17 @@ export default function FaqPage() {
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="px-4 py-4 text-sm text-gray-700 leading-relaxed bg-white border-t border-gray-100 whitespace-pre-wrap">
-                    {item.jawaban}
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                    isOpen ? "grid-rows-[1fr] border-t border-gray-100" : "grid-rows-[0fr]"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-4 py-4 text-sm text-gray-700 leading-relaxed bg-white whitespace-pre-wrap">
+                      {item.jawaban}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })

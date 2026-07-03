@@ -138,9 +138,16 @@ exports.getDashboardData = async (req, res) => {
     const scabiesCharts = buildScabiesCharts(latestScreenings);
 
     // B. KEUANGAN & PENDAPATAN
+    const startOfCurrentMonth = new Date();
+    startOfCurrentMonth.setDate(1);
+    startOfCurrentMonth.setHours(0, 0, 0, 0);
+
     const totalPendapatan = await prisma.pembayaran.aggregate({
       _sum: { nominal: true },
-      where: { status: 'Berhasil' }
+      where: { 
+        status: 'Berhasil',
+        tanggal_bayar: { gte: startOfCurrentMonth }
+      }
     });
 
     const tagihanRaw = await prisma.tagihan.groupBy({

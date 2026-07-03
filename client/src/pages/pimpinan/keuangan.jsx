@@ -59,22 +59,19 @@ export default function Keuangan() {
 
   // --- SEARCH DAN FILTER ---
   const filteredData = dataList.filter(item => {
-      const searchTerm = search.toLowerCase();
-      const matchSearch = 
-        (item.nama_tagihan?.toLowerCase() || "").includes(searchTerm) || 
-        (item.users?.nama?.toLowerCase() || "").includes(searchTerm);
-      
-      const currentStatus = item.status || "Aktif"; 
-      const matchStatus = filterStatus === "Semua" || currentStatus === filterStatus;
-
-      return matchSearch && matchStatus;
+    const matchSearch = 
+      (item.nama_tagihan?.toLowerCase() || "").includes(search.toLowerCase()) || 
+      (item.users?.nama?.toLowerCase() || "").includes(search.toLowerCase());
+    const matchStatus = filterStatus === "Semua" || item.status === filterStatus;
+    const matchJenis = !selectedJenis || item.jenis_tagihan?.jenis_tagihan === selectedJenis;
+    return matchSearch && matchStatus && matchJenis;
   });
 
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData, 10); // Asumsi 10 item per halaman
 
   useEffect(() => {
       jump(1);
-  }, [filterStatus, search, dataList]);
+  }, [filterStatus, selectedJenis, search, dataList]);
 
   const handleOpenListBayar = (id) => {
     setSelectedTagihanId(id);
@@ -112,61 +109,41 @@ export default function Keuangan() {
         </div>
       </div>
 
-      {/* Kontainer Search & Filter Chip */}
-      <div className="space-y-3">
-        {/* Toolbar Search */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
-        <SearchBar placeholder="Cari nama santri atau jenis tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} className="flex-1" />
+      <div className="flex gap-3 items-center w-full">
+        <SearchBar placeholder="Cari nama santri atau tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} className="flex-1" />
         <FilterDropdown
-            activeCount={(filterStatus !== "Semua" ? 1 : 0) + (selectedJenis ? 1 : 0)}
-            onReset={() => {
-              setFilterStatus("Semua");
-              setSelectedJenis("");
-              jump(1);
-            }}
-          >
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pembayaran</label>
-                <FilterSelect
-                  placeholder="Semua Status"
-                  value={filterStatus}
-                  onChange={(e) => { setFilterStatus(e.target.value || "Semua"); jump(1); }}
-                  options={[
-                    { value: "Lunas", label: "Lunas" },
-                    { value: "Belum Lunas", label: "Belum Lunas" },
-                  ]}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Jenis Tagihan</label>
-                <FilterSelect
-                  placeholder="Semua Jenis"
-                  value={selectedJenis}
-                  onChange={(e) => { setSelectedJenis(e.target.value); jump(1); }}
-                  options={jenisOptions}
-                />
-              </div>
+          activeCount={(filterStatus !== "Semua" ? 1 : 0) + (selectedJenis ? 1 : 0)}
+          onReset={() => {
+            setFilterStatus("Semua");
+            setSelectedJenis("");
+            jump(1);
+          }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pembayaran</label>
+              <FilterSelect
+                placeholder="Semua Status"
+                value={filterStatus}
+                onChange={(e) => { setFilterStatus(e.target.value || "Semua"); jump(1); }}
+                options={[
+                  { value: "Lunas", label: "Lunas" },
+                  { value: "Perlu_Konfirmasi", label: "Perlu Konfirmasi" },
+                  { value: "Aktif", label: "Belum Lunas (Aktif)" },
+                ]}
+              />
             </div>
-          </FilterDropdown>
-      </div>
-
-        {/* --- CHIP FILTERS --- */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-            {['Semua', 'Aktif', 'Lunas'].map((status) => (
-                <button
-                    key={status}
-                    onClick={() => setFilterStatus(status)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
-                        filterStatus === status 
-                        ? 'bg-green-600 text-white border-green-600 shadow-md' 
-                        : 'bg-white text-gray-600 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
-                    }`}
-                >
-                    {status}
-                </button>
-            ))}
-        </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Jenis Tagihan</label>
+              <FilterSelect
+                placeholder="Semua Jenis"
+                value={selectedJenis}
+                onChange={(e) => { setSelectedJenis(e.target.value); jump(1); }}
+                options={jenisOptions}
+              />
+            </div>
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (
@@ -193,43 +170,31 @@ export default function Keuangan() {
                 <tbody className="divide-y divide-gray-100">
                   {currentData.length > 0 ? (
                     currentData.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
+                      <tr key={item.id} className="hover:bg-gray-50 transition">
                         <td className="p-4">
-                          <p className="font-bold text-gray-800">
-                            {item.users?.nama || "Unknown"}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {item.users?.nip || "-"}
-                          </p>
+                          <p className="font-semibold text-gray-800">{item.users?.nama || "Unknown"}</p>
+                          <p className="text-xs text-gray-400">NIS: {item.users?.nip || "-"}</p>
                         </td>
                         <td className="p-4">
-                          <p className="text-gray-800">{item.nama_tagihan}</p>
-                          <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">
-                            {item.jenis_tagihan?.jenis_tagihan || "Umum"}
-                          </span>
+                          <p className="text-gray-800 font-semibold">{item.nama_tagihan}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{item.jenis_tagihan?.jenis_tagihan || "-"}</p>
                         </td>
-                        <td className="p-4 font-semibold text-gray-700">
-                          {formatRupiah(item.nominal)}
-                        </td>
+                        <td className="p-4 font-semibold text-gray-700">{formatRupiah(item.nominal)}</td>
                         <td className="p-4 text-sm text-gray-600">
-                          {formatDate(item.batas_pembayaran)}
+                          <div className="flex items-center gap-1.5"><Calendar size={14} className="text-gray-400"/>{formatDate(item.batas_pembayaran)}</div>
                         </td>
-                        <td className="p-4">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-bold ${item.status === "Lunas" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-                          >
-                            {item.status || "Aktif"}
+                        <td className="p-4 text-center">
+                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
+                            item.status === 'Lunas' ? 'bg-green-100 text-green-700' : 
+                            item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' : 
+                            'bg-red-100 text-red-700'
+                          }`}>
+                            {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : (item.status || "Aktif")}
                           </span>
                         </td>
                         <td className="p-4 text-center">
-                          <div className="flex justify-center gap-2">
-                            <button
-                              onClick={() => handleOpenListBayar(item.id)}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                              title="Riwayat Pembayaran"
-                            >
-                              <CreditCard size={18} />
-                            </button>
+                          <div className="flex items-center justify-center gap-2">
+                            <button onClick={() => handleOpenListBayar(item.id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Riwayat Pembayaran"><CreditCard size={18} /></button>
                           </div>
                         </td>
                       </tr>
@@ -250,68 +215,38 @@ export default function Keuangan() {
           <div className="block md:hidden space-y-4">
             {currentData.length > 0 ? (
               currentData.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3"
-                >
-                  {/* Header: Nama Santri & Status */}
+                <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                   <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center font-bold">
-                        {item.users?.nama?.charAt(0) || "?"}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-gray-800 text-sm">
-                          {item.users?.nama || "Unknown"}
-                        </h3>
-                        <p className="text-xs text-gray-500">
-                          {item.nama_tagihan}
-                        </p>
-                      </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800 text-base">{item.nama_tagihan}</h3>
+                      <p className="text-xs text-gray-400 mt-0.5">{item.jenis_tagihan?.jenis_tagihan || "-"}</p>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.status === "Lunas" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-                    >
-                      {item.status || "Aktif"}
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
+                      item.status === 'Lunas' ? 'bg-green-100 text-green-700' : 
+                      item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' : 
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : (item.status || "Aktif")}
                     </span>
                   </div>
-
                   <div className="border-t border-gray-100"></div>
-
-                  {/* Details */}
-                  <div className="grid grid-cols-2 gap-y-2 text-sm">
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Nominal</p>
-                      <p className="font-semibold text-gray-700">
-                        {formatRupiah(item.nominal)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-400 mb-0.5">
-                        Jatuh Tempo
-                      </p>
-                      <div className="flex items-center justify-end gap-1 text-gray-600">
-                        <Calendar size={12} />{" "}
-                        {formatDate(item.batas_pembayaran)}
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                    <div><span className="text-xs text-gray-400 block">Santri</span><span className="font-medium text-gray-800">{item.users?.nama || "Unknown"}</span></div>
+                    <div><span className="text-xs text-gray-400 block">Nominal</span><span className="font-semibold text-gray-800">{formatRupiah(item.nominal)}</span></div>
+                    <div className="col-span-2"><span className="text-xs text-gray-400 block">Jatuh Tempo</span><span className="flex items-center gap-1.5 mt-0.5"><Calendar size={14} className="text-gray-400"/>{formatDate(item.batas_pembayaran)}</span></div>
                   </div>
-
-                  {/* Actions */}
-                  <div className="grid grid-cols-1 gap-2 mt-2">
+                  <div className="grid grid-cols-1 gap-2 mt-1 pt-2 border-t border-gray-100">
                     <button
                       onClick={() => handleOpenListBayar(item.id)}
-                      className="py-2 bg-green-50 text-green-600 rounded-lg flex justify-center items-center"
+                      className="py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
                     >
-                      <CreditCard size={16} />
+                      <CreditCard size={14} /> Riwayat Pembayaran
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 bg-white rounded-xl border border-dashed border-gray-200 text-gray-500">
-                Tidak ada tagihan yang cocok dengan filter.
-              </div>
+              <div className="text-center p-8 bg-white rounded-xl text-gray-500">Tidak ada tagihan yang cocok dengan filter.</div>
             )}
           </div>
 

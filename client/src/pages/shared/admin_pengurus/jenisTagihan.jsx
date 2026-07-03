@@ -90,7 +90,7 @@ export default function JenisTagihanPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+      <div className="flex gap-3 items-center w-full">
         <SearchBar placeholder="Cari jenis tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
@@ -144,7 +144,7 @@ export default function JenisTagihanPage({ rolePrefix }) {
                   <Edit2 size={16} /> Edit Jenis
                 </button>
               </div>
-            )) : <div className="text-center p-8 bg-white rounded-xl border border-gray-150 text-gray-500">Data tidak ditemukan</div>}
+            )) : <div className="text-center p-8 bg-white rounded-xl border border-gray-200 text-gray-500">Data tidak ditemukan</div>}
           </div>
 
           <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />

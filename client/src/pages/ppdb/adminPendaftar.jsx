@@ -143,49 +143,47 @@ export default function AdminPendaftar() {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-wrap gap-3 items-center">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
-        <SearchBar placeholder="Cari nama / no. pendaftaran..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
-        <FilterDropdown
-              activeCount={(filterStatus && filterStatus !== "Semua" ? 1 : 0) + (filterTahun ? 1 : 0)}
-              onReset={() => {
-                setFilterStatus("Semua");
-                setFilterTahun("");
-              }}
-            >
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pendaftaran</label>
-                  <FilterSelect
-                    placeholder="Semua Status"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value || "Semua")}
-                    options={[
-                      { value: "Mendaftar", label: "Mendaftar" },
-                      { value: "Verifikasi", label: "Verifikasi" },
-                      { value: "Seleksi", label: "Seleksi" },
-                      { value: "Lulus", label: "Lulus" },
-                      { value: "Diterima", label: "Diterima" },
-                      { value: "Ditolak", label: "Ditolak" },
-                      { value: "Mengundurkan Diri", label: "Mengundurkan Diri" },
-                    ]}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
-                  <FilterSelect
-                    value={filterTahun}
-                    onChange={(e) => setFilterTahun(e.target.value)}
-                    placeholder="Semua Gelombang"
-                    options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
-                  />
-                </div>
+        <div className="flex gap-3 items-center w-full mb-6">
+          <SearchBar placeholder="Cari nama / no. pendaftaran..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+          <FilterDropdown
+            activeCount={(filterStatus && filterStatus !== "Semua" ? 1 : 0) + (filterTahun ? 1 : 0)}
+            onReset={() => {
+              setFilterStatus("Semua");
+              setFilterTahun("");
+            }}
+          >
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pendaftaran</label>
+                <FilterSelect
+                  placeholder="Semua Status"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                  options={[
+                    { value: "Mendaftar", label: "Mendaftar" },
+                    { value: "Verifikasi", label: "Verifikasi" },
+                    { value: "Seleksi", label: "Seleksi" },
+                    { value: "Lulus", label: "Lulus" },
+                    { value: "Diterima", label: "Diterima" },
+                    { value: "Ditolak", label: "Ditolak" },
+                    { value: "Mengundurkan Diri", label: "Mengundurkan Diri" },
+                  ]}
+                />
               </div>
-            </FilterDropdown>
-          </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
+                <FilterSelect
+                  value={filterTahun}
+                  onChange={(e) => setFilterTahun(e.target.value)}
+                  placeholder="Semua Gelombang"
+                  options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
+                />
+              </div>
+            </div>
+          </FilterDropdown>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto [scrollbar-width:none]">
             <table className="w-full text-sm text-left">
               <thead>
@@ -263,6 +261,84 @@ export default function AdminPendaftar() {
             </table>
           </div>
         </div>
+
+        <div className="block md:hidden space-y-4">
+          {currentData.length === 0 ? (
+            <div className="text-center p-8 bg-white rounded-xl text-gray-500">Tidak ada data pendaftar</div>
+          ) : (
+            currentData.map((p) => {
+              const docsOk = p.ppdb_dokumen?.filter((d) => d.status_verif === "Terverifikasi").length || 0;
+              const docsTotal = p.ppdb_dokumen?.length || 0;
+              return (
+                <div key={p.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-gray-800 text-base leading-tight truncate">{p.nama_lengkap}</h3>
+                      <p className="text-xs text-gray-400 mt-1">
+                        No: <span className="font-mono font-semibold text-gray-500">{p.no_pendaftaran}</span> | {p.jenis_kelamin === "Laki_laki" ? "L" : "P"}
+                      </p>
+                    </div>
+                    {isPimpinan ? (
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] uppercase font-bold tracking-wider ${STATUS_BADGE[p.status]?.replace('hover:bg-blue-200', '')?.replace('hover:bg-yellow-200', '')?.replace('hover:bg-purple-200', '')?.replace('hover:bg-green-200', '')?.replace('hover:bg-emerald-200', '')?.replace('hover:bg-red-200', '')?.replace('hover:bg-gray-200', '') || "bg-gray-100 text-gray-600"}`}>
+                        {p.status?.replace(/_/g, " ")}
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => setStatusModal({ isOpen: true, id: p.id, currentStatus: p.status, nama: p.nama_lengkap })}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-md text-[9px] uppercase font-bold tracking-wider transition shrink-0 ${STATUS_BADGE[p.status] || "bg-gray-100 text-gray-600"}`}
+                        title="Klik untuk ubah status"
+                      >
+                        {p.status?.replace(/_/g, " ")}
+                        <Edit2 size={10} />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="border-t border-gray-100"></div>
+                  
+                  <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600">
+                    <div>
+                      <span className="block text-gray-400 font-medium">Asal Sekolah</span>
+                      <span className="font-semibold text-gray-700 truncate block">{p.asal_sekolah || "-"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-400 font-medium">Gelombang</span>
+                      <span className="font-semibold text-gray-700 block">{p.ppdb_tahun?.nama_gelombang || "-"}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="block text-gray-400 font-medium mb-0.5">Verifikasi Dokumen</span>
+                      <span className={`inline-block text-[9px] uppercase font-bold px-2 py-0.5 rounded ${docsOk === docsTotal && docsTotal > 0 ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                        {docsOk}/{docsTotal} valid
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <button 
+                      onClick={() => setDetailData(p)}
+                      className="py-2.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                    >
+                      <Eye size={14} /> Detail
+                    </button>
+                    {!isPimpinan && p.status === "Diterima" && !p.id_user_aktif ? (
+                      <button
+                        onClick={() => setConfirmModal({isOpen: true, id: p.id, nama: p.nama_lengkap, type: "aktivasi"})}
+                        className="py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                      >
+                        <UserCheck size={14} /> Aktivasi
+                      </button>
+                    ) : (
+                      <div className="py-2.5 bg-gray-50 text-gray-400 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 cursor-default">
+                        Selesai
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
         <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
       </div>
 

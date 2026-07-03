@@ -19,6 +19,8 @@ import InputStafModal from "../../components/InputStafModal";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
 import ProfileAvatar from '../../components/ProfileAvatar';
 import SearchBar from "../../components/SearchBar";
+import FilterDropdown from "../../components/FilterDropdown";
+import FilterSelect from "../../components/FilterSelect";
 
 
 export default function ManajemenStaf() {
@@ -192,25 +194,33 @@ export default function ManajemenStaf() {
         <Plus size={20} className="mr-2" /> Tambah Staf Baru
       </button>
 
-      <div className="space-y-3">
-        <SearchBar placeholder="Cari berdasarkan nama atau NIP staf..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} />
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-          {["Semua", "Admin", "Pimpinan", "Tim Kesehatan", "Pengurus"].map((roleName) => (
-              <button
-                key={roleName}
-                onClick={() => setFilterRole(roleName)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
-                  filterRole === roleName
-                    ? "bg-green-600 text-white border-green-600 shadow-md"
-                    : "bg-white text-gray-600 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200"
-                }`}
-              >
-                {roleName}
-              </button>
-            ),
-          )}
-        </div>
+      <div className="flex gap-3 items-center justify-between w-full">
+        <SearchBar
+          placeholder="Cari berdasarkan nama atau NIP staf..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+          className="flex-1"
+        />
+        <FilterDropdown
+          activeCount={filterRole !== "Semua" ? 1 : 0}
+          onReset={() => setFilterRole("Semua")}
+        >
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Role / Hak Akses</label>
+            <FilterSelect
+              placeholder="Semua Role"
+              value={filterRole === "Semua" ? "" : filterRole}
+              onChange={(e) => setFilterRole(e.target.value || "Semua")}
+              options={[
+                { value: "Admin", label: "Admin" },
+                { value: "Pimpinan", label: "Pimpinan" },
+                { value: "Tim Kesehatan", label: "Tim Kesehatan" },
+                { value: "Pengurus", label: "Pengurus" },
+              ]}
+            />
+          </div>
+        </FilterDropdown>
       </div>
 
       {loading ? (

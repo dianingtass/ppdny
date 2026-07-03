@@ -140,7 +140,7 @@ export default function DataSantriPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+      <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari nama atau NIS..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
           activeCount={(selectedKelas ? 1 : 0) + (selectedKamar ? 1 : 0) + (selectedGender ? 1 : 0)}

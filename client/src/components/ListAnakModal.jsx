@@ -83,12 +83,14 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
             <p className="text-xs text-gray-500">Wali: {ortuData?.nama}</p>
           </div>
           <div className="inline-flex items-center gap-2">
-            <button
-              onClick={() => onAssignClick(ortuData)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-md shadow-green-100"
-            >
-              <Plus size={18} /> Tambah Anak
-            </button>
+            {rolePrefix !== "pimpinan" && onAssignClick && (
+              <button
+                onClick={() => onAssignClick(ortuData)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-md shadow-green-100"
+              >
+                <Plus size={18} /> Tambah Anak
+              </button>
+            )}
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-200 rounded-full transition text-gray-400"
@@ -119,12 +121,14 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleRemove(item.id_relasi)}
-                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  {rolePrefix !== "pimpinan" && (
+                    <button
+                      onClick={() => handleRemove(item.id_relasi)}
+                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Save, Loader2, User, Mail, Phone, MapPin, Calendar, School, Home } from "lucide-react";
 import ProfileAvatar from './ProfileAvatar';
 
-export default function InputSantriModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, userRole }) {
+export default function InputSantriModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, userRole, viewOnly }) {
   const initialForm = { 
     nip: "", nama: "", email: "", no_hp: "", alamat: "", 
     jenis_kelamin: "", tempat_lahir: "", tanggal_lahir: "", 
@@ -10,11 +10,11 @@ export default function InputSantriModal({ isOpen, onClose, isEditing, editData,
   };
   
   const [formData, setFormData] = useState(initialForm);
-  const isReadOnly = !["pengurus", "admin"].includes(userRole?.toLowerCase());
+  const isReadOnly = viewOnly || !["pengurus", "admin"].includes(userRole?.toLowerCase());
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditing && editData) {
+      if (editData) {
         setFormData({
           ...editData,
           password: "", // Jangan tampilkan password lama

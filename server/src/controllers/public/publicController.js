@@ -41,3 +41,24 @@ exports.getLandingStats = async (req, res) => {
         res.status(500).json({ success: false, message: "Gagal memuat statistik publik" });
     }
 };
+
+exports.getPpdbStatus = async (req, res) => {
+    try {
+        const activeYear = await prisma.ppdb_tahun.findFirst({
+            where: {
+                is_active: true,
+                tanggal_buka: { lte: new Date() },
+                tanggal_tutup: { gte: new Date() }
+            }
+        });
+
+        res.json({
+            success: true,
+            isOpen: !!activeYear,
+            gelombang: activeYear ? activeYear.nama_gelombang : null
+        });
+    } catch (error) {
+        console.error("Get PPDB Status Error:", error);
+        res.status(500).json({ success: false, message: "Gagal memuat status PPDB" });
+    }
+};

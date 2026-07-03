@@ -4,9 +4,12 @@ import TahunModal from "../../components/ppdb/TahunModal";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
+import SearchBar from "../../components/SearchBar";
+import FilterSelect from "../../components/FilterSelect";
+import FilterDropdown from "../../components/FilterDropdown";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  Users, CheckCircle, XCircle, Clock,
+  Users, CheckCircle, XCircle, Clock, Calendar,
   Plus, Edit2, Trash2, Award, AlertTriangle, X
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
@@ -23,7 +26,30 @@ export default function AdminPpdbDashboard() {
   const [editData, setEditData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(tahunList, 10);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Semua");
+
+  const getGelombangStatus = (t) => {
+    const now = new Date();
+    const buka = new Date(t.tanggal_buka);
+    const tutup = new Date(t.tanggal_tutup);
+    if (now >= buka && now <= tutup) return "Dibuka";
+    if (now > tutup) return "Ditutup";
+    return "Belum Buka";
+  };
+
+  const filteredTahunList = tahunList.filter(item => {
+    const matchSearch = 
+      (item.nama_gelombang?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (item.tahun_ajaran?.toLowerCase() || "").includes(search.toLowerCase());
+      
+    const status = getGelombangStatus(item);
+    const matchStatus = statusFilter === "Semua" || status === statusFilter;
+    
+    return matchSearch && matchStatus;
+  });
+
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredTahunList, 10);
 
   const { message, showAlert, clearAlert } = useAlert();
   const [modalDelete, setModalDelete] = useState({ isOpen: false, id: null });
@@ -46,6 +72,10 @@ export default function AdminPpdbDashboard() {
   }, [selectedTahun]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  useEffect(() => {
+    jump(1);
+  }, [search, statusFilter]);
 
   const handleFilterChange = (idTahun) => {
     setSelectedTahun(idTahun);
@@ -99,27 +129,51 @@ export default function AdminPpdbDashboard() {
           )}
         </div>
 
-        <div className="mb-6 flex items-center gap-3 flex-wrap">
-          <span className="text-sm font-medium text-gray-600">Filter:</span>
-          <button
-            onClick={() => handleFilterChange(null)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-              !selectedTahun ? "bg-green-600 text-white shadow-md" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-            }`}
+        <div className="flex gap-3 items-center w-full mb-6">
+          <SearchBar 
+            placeholder="Cari gelombang..." 
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)} 
+            onClear={() => setSearch("")} 
+            className="flex-1" 
+          />
+          <FilterDropdown
+            activeCount={(statusFilter !== "Semua" ? 1 : 0) + (selectedTahun ? 1 : 0)}
+            onReset={() => {
+              setStatusFilter("Semua");
+              setSelectedTahun(null);
+              jump(1);
+            }}
           >
-            Semua
-          </button>
-          {tahunList.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => handleFilterChange(t.id)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                selectedTahun === t.id ? "bg-green-600 text-white shadow-md" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {t.nama_gelombang}
-            </button>
-          ))}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Gelombang</label>
+                <FilterSelect
+                  placeholder="Semua Status"
+                  value={statusFilter}
+                  onChange={(e) => { setStatusFilter(e.target.value || "Semua"); jump(1); }}
+                  options={[
+                    { value: "Semua", label: "Semua Status" },
+                    { value: "Dibuka", label: "Dibuka" },
+                    { value: "Belum Buka", label: "Belum Buka" },
+                    { value: "Ditutup", label: "Ditutup" },
+                  ]}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang Terpilih (Statistik)</label>
+                <FilterSelect
+                  placeholder="Semua Gelombang"
+                  value={selectedTahun || ""}
+                  onChange={(e) => handleFilterChange(e.target.value ? parseInt(e.target.value) : null)}
+                  options={tahunList.map(t => ({
+                    value: t.id.toString(),
+                    label: t.nama_gelombang
+                  }))}
+                />
+              </div>
+            </div>
+          </FilterDropdown>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -139,15 +193,15 @@ export default function AdminPpdbDashboard() {
         <div className="py-4">
           <h2 className="font-bold text-gray-800">Daftar Gelombang PPDB</h2>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500 border-b border-gray-100 bg-gray-50/50 uppercase tracking-wider text-[11px] font-bold ">
                   <th className="px-5 py-4">Nama Gelombang</th>
-                  <th className="px-5 py-4">TA</th>
-                  <th className="px-5 py-4">Tgl Buka</th>
-                  <th className="px-5 py-4">Tgl Tutup</th>
+                  <th className="px-5 py-4">Tahun Ajaran</th>
+                  <th className="px-5 py-4">Tanggal Buka</th>
+                  <th className="px-5 py-4">Tanggal Tutup</th>
                   <th className="px-5 py-4">Kuota</th>
                   <th className="px-5 py-4">Pendaftar</th>
                   <th className="px-5 py-4">Status</th>
@@ -197,6 +251,74 @@ export default function AdminPpdbDashboard() {
             </table>
           </div>
         </div>
+
+        <div className="block md:hidden space-y-4">
+          {currentData.length === 0 ? (
+            <div className="text-center p-8 bg-white rounded-xl text-gray-500">Belum ada data gelombang.</div>
+          ) : (
+            currentData.map((t) => {
+              const now = new Date();
+              const buka = new Date(t.tanggal_buka);
+              const tutup = new Date(t.tanggal_tutup);
+              const isOpen = now >= buka && now <= tutup;
+              const isClosed = now > tutup;
+              return (
+                <div key={t.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-gray-800 text-base leading-tight truncate">{t.nama_gelombang}</h3>
+                      <p className="text-xs text-gray-400 mt-1">Tahun Ajaran: <span className="font-semibold text-gray-600">{t.tahun_ajaran}</span></p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${
+                      isOpen ? "bg-green-100 text-green-700" :
+                      isClosed ? "bg-gray-100 text-gray-500" :
+                      "bg-yellow-100 text-yellow-700"
+                    }`}>
+                      {isOpen ? "Dibuka" : isClosed ? "Ditutup" : "Belum Buka"}
+                    </span>
+                  </div>
+
+                  <div className="border-t border-gray-100"></div>
+
+                  <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600">
+                    <div>
+                      <span className="block text-gray-400 font-medium">Periode Pendaftaran</span>
+                      <span className="font-semibold text-gray-700 text-xs">
+                        {new Date(t.tanggal_buka).toLocaleDateString("id-ID")} - {new Date(t.tanggal_tutup).toLocaleDateString("id-ID")}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-400 font-medium">Kuota Pendaftaran</span>
+                      <span className="font-semibold text-gray-700">{t.kuota ?? "Tanpa Batas (∞)"}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="block text-gray-400 font-medium">Total Pendaftar Aktif</span>
+                      <span className="font-bold text-green-600 text-sm mt-0.5 inline-block">{t.total_pendaftar} Pendaftar</span>
+                    </div>
+                  </div>
+
+                  {!isPimpinan && (
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      <button
+                        onClick={() => openEdit(t)}
+                        className="py-2.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                      >
+                        <Edit2 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => setModalDelete({isOpen: true, id: t.id})}
+                        className="py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                      >
+                        <Trash2 size={14} /> Hapus
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+
         <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
       </div>
 

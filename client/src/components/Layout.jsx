@@ -94,6 +94,12 @@ export default function GlobalLayout() {
       icon: Users,
       roles: ["admin"],
     },
+    {
+      name: "Data Staf",
+      path: "/data-staf",
+      icon: Users,
+      roles: ["pimpinan"],
+    },
 
     {
       name: "Data Santri",
@@ -111,21 +117,21 @@ export default function GlobalLayout() {
       name: "Data Orang Tua",
       path: "/data-orangtua",
       icon: Users,
-      roles: ["pengurus", "admin"],
+      roles: ["pengurus", "admin", "pimpinan"],
     },
 
     {
       name: "Data Kelas",
       path: "/data-kelas",
       icon: BookOpen,
-      roles: ["pengurus", "admin"],
+      roles: ["pengurus", "admin", "pimpinan"],
     },
 
     {
       name: "Data Kamar",
       path: "/data-kamar",
       icon: BedDouble,
-      roles: ["pengurus", "admin"],
+      roles: ["pengurus", "admin", "pimpinan"],
     },
     {
       name: "Jenis Layanan",
@@ -175,7 +181,7 @@ export default function GlobalLayout() {
       name: "Absensi Kesehatan",
       path: "/daftarAbsensiKamar",
       icon: BookCheck,
-      roles: ["timkesehatan", "admin"],
+      roles: ["timkesehatan", "admin", "pimpinan"],
     },
 
     {
@@ -203,14 +209,14 @@ export default function GlobalLayout() {
       name: "Kegiatan",
       path: "/kegiatan",
       icon: Activity,
-      roles: ["pengurus", "admin"],
+      roles: ["pengurus", "admin", "pimpinan"],
     },
 
     {
       name: "Riwayat Layanan",
       path: "/riwayat-layanan",
       icon: FileText,
-      roles: ["pengurus", "admin"],
+      roles: ["pengurus", "admin", "pimpinan"],
     },
 
     {

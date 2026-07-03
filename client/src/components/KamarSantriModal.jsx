@@ -72,7 +72,9 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
         </div>
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3 bg-white">
           <SearchBar placeholder="Cari penghuni..." value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button onClick={() => onAssignClick(kamarData)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-green-100"><Plus size={18} /> Tambah Santri</button>
+          {rolePrefix !== "pimpinan" && onAssignClick && (
+            <button onClick={() => onAssignClick(kamarData)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition shadow-md shadow-green-100"><Plus size={18} /> Tambah Santri</button>
+          )}
         </div>
         <div className="flex-1 overflow-y-auto p-4 [scrollbar-width:none]">
           {loading ? (
@@ -85,7 +87,9 @@ export default function KamarSantriModal({ isOpen, onClose, kamarData, onAssignC
                     <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 border border-gray-200 flex-shrink-0" />
                     <div className="min-w-0"><p className="font-bold text-gray-800 text-sm truncate">{item?.nama}</p><p className="text-[10px] text-gray-400 truncate">NIS: {item?.nip}</p></div>
                   </div>
-                  <button onClick={() => handleRemoveClick(item.id, item?.nama)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                  {rolePrefix !== "pimpinan" && (
+                    <button onClick={() => handleRemoveClick(item.id, item?.nama)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                  )}
                 </div>
               ))}
             </div>

@@ -82,7 +82,7 @@ export default function DataUstadz() {
       </div>
 
       {/* Search Bar + Filter */}
-      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+      <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari nama atau NIP..."
           value={search}
@@ -189,46 +189,37 @@ export default function DataUstadz() {
           <div className="block md:hidden space-y-4">
             {currentData.length > 0 ? (
               currentData.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3"
-                >
+                <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                   <div className="flex items-start gap-3">
-                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 border border-gray-100 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-bold text-gray-800 text-lg leading-tight">
-                        {item.nama}
-                      </h3>
-                      <p className="text-sm text-gray-500 font-medium">
-                        NIP: {item.nip || "Tanpa NIP"}
-                      </p>
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 text-lg leading-tight">{item.nama}</h3>
+                      <p className="text-sm text-gray-500 font-medium">NIP: {item.nip || "-"}</p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-md font-medium border border-green-100">
+                          {item.jenis_kelamin ? (item.jenis_kelamin === "Laki_laki" ? "Laki-laki" : "Perempuan") : "-"}
+                        </span>
+                      </div>
                     </div>
                   </div>
-
                   <div className="border-t border-gray-100"></div>
-
                   <div className="grid grid-cols-1 gap-y-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <Mail size={14} className="text-gray-400" />
-                      <span>{item.email || "-"}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone size={14} className="text-gray-400" />
-                      <span>{item.no_hp || "-"}</span>
-                    </div>
+                    <div className="flex items-center gap-2"><Phone size={14} className="text-gray-400" /> <span>{item.no_hp || "-"}</span></div>
+                    <div className="flex items-center gap-2"><Mail size={14} className="text-gray-400" /> <span className="truncate">{item.email || "-"}</span></div>
                   </div>
-
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="w-full py-2 bg-green-50 text-green-600 rounded-xl font-bold text-sm flex justify-center items-center gap-2 active:scale-95 transition"
-                  >
-                    <Eye size={16} /> Lihat Profil
-                  </button>
+                  <div className="grid grid-cols-1 gap-2 mt-1">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="py-2.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                    >
+                      <Eye size={14} /> Lihat Profil
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
               <div className="text-center p-8 bg-white rounded-xl text-gray-500">
-                Data ustadz kosong.
+                Data ustadz tidak ditemukan.
               </div>
             )}
           </div>

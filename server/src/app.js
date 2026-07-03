@@ -129,6 +129,13 @@ app.use('/api/pimpinan/keuangan',  require('./routes/pimpinan/keuanganRoutes'));
 app.use('/api/pimpinan/feedback',  require('./routes/pimpinan/feedbackRoutes'));
 app.use('/api/pimpinan/screening', require('./routes/pimpinan/screeningRoutes'));
 app.use('/api/pimpinan/observasi', require('./routes/pimpinan/observasiRoutes'));
+app.use('/api/pimpinan/staf',      require('./routes/pimpinan/stafRoutes'));
+app.use('/api/pimpinan/orangtua',      require('./routes/pimpinan/orangtuaRoutes'));
+app.use('/api/pimpinan/kelas',         require('./routes/pimpinan/kelasRoutes'));
+app.use('/api/pimpinan/kamar',         require('./routes/pimpinan/kamarRoutes'));
+app.use('/api/pimpinan/kegiatan',      require('./routes/pimpinan/kegiatanRoutes'));
+app.use('/api/pimpinan/riwayat-layanan', require('./routes/pimpinan/riwayatLayananRoutes'));
+app.use('/api/pimpinan/absensi',       require('./routes/pimpinan/absensiRoutes'));
 
 app.use('/api/admin/dashboard',          require('./routes/admin/dashboardRoutes'));
 app.use('/api/admin/staf',               require('./routes/admin/stafRoutes'));

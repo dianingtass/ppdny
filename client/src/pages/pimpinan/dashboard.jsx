@@ -205,7 +205,7 @@ export default function PimpinanDashboard() {
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Pemasukan Bulanan"
+          title="Pemasukan Bulan Ini"
           value={formatRupiah(data.keuangan.total_pendapatan)}
           icon={<DollarSign size={24} />}
           color="blue"

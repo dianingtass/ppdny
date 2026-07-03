@@ -166,7 +166,7 @@ export default function Kegiatan() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-32 space-y-6 relative z-10 md:-mt-12">
         
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:-mt-16">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+          <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari Kegiatan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
             activeCount={filterType !== "Semua" ? 1 : 0}

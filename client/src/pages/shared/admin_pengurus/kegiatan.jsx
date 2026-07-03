@@ -141,7 +141,7 @@ export default function KegiatanPage({ rolePrefix }) {
         <Plus size={20} className="mr-2" /> Tambah Kegiatan
       </button>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+      <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari nama kegiatan atau lokasi..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
           activeCount={(filterType ? 1 : 0) + (selectedSkalaType ? 1 : 0) + (selectedSpecificTarget ? 1 : 0)}

@@ -110,7 +110,7 @@ export default function KeuanganPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+      <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
           activeCount={(selectedStatus ? 1 : 0) + (selectedJenis ? 1 : 0)}

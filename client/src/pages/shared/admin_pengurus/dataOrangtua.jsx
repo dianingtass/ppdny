@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Edit2, Trash2, Loader2, Phone, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, Phone, ExternalLink, Mail } from "lucide-react";
 import InputOrtuModal from "../../../components/InputOrtuModal";
 import ListAnakModal from "../../../components/ListAnakModal";
 import AssignRelasiModal from "../../../components/AssignRelasiModal";
@@ -12,6 +12,7 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import ProfileAvatar from "../../../components/ProfileAvatar";
 
 export default function DataOrangtuaPage({ rolePrefix }) {
   const [ortuList, setOrtuList] = useState([]);
@@ -121,7 +122,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
       </div>
 
       {/* Search + Filter */}
-      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+      <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari nama atau No HP..."
           value={search}
@@ -158,9 +159,9 @@ export default function DataOrangtuaPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[40%]">Nama Wali</th>
-                    <th className="p-4 w-[25%]">No WhatsApp</th>
-                    <th className="p-4 w-[20%] text-center">Tanggungan</th>
+                    <th className="p-4 w-[35%]">Nama Wali</th>
+                    <th className="p-4 w-[25%]">Kontak</th>
+                    <th className="p-4 w-[25%] text-center">Tanggungan</th>
                     <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
@@ -169,20 +170,30 @@ export default function DataOrangtuaPage({ rolePrefix }) {
                     <tr key={item.id} className="hover:bg-gray-50 transition">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 font-bold flex items-center justify-center flex-shrink-0">{item.nama.charAt(0).toUpperCase()}</div>
-                          <div className="min-w-0"><p className="font-semibold text-gray-800 truncate">{item.nama}</p><p className="text-xs text-gray-500 truncate">{item.email || "Tanpa Email"}</p></div>
+                          <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-10 h-10 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-800 truncate">{item.nama}</p>
+                            <span className="px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded flex-shrink-0">
+                              {item.hubungan || "Wali"}
+                            </span>
+                          </div>
                         </div>
                       </td>
-                      <td className="p-4 text-sm text-gray-600 flex items-center gap-2 mt-2"><Phone size={14} /> {item.no_hp || "-"}</td>
+                      <td className="p-4">
+                        <div className="text-sm text-gray-600 space-y-1 min-w-0">
+                          <div className="flex items-center gap-2 truncate"><Mail size={14} /> {item.email || "-"}</div>
+                          <div className="flex items-center gap-2 truncate"><Phone size={14} /> {item.no_hp || "-"}</div>
+                        </div>
+                      </td>
                       <td className="p-4 text-center">
-                        <button onClick={() => setListAnakModal({ isOpen: true, data: item })} className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-lg text-xs font-bold hover:bg-green-600 hover:text-white transition">
+                        <button onClick={() => setListAnakModal({ isOpen: true, data: item })} className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-lg text-xs font-bold hover:bg-green-600 hover:text-white transition">
                           {item.jumlah_anak} Anak <ExternalLink size={14} />
                         </button>
                       </td>
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => { setIsEditing(true); setSelectedData(item); setIsModalOpen(true); }} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"><Edit2 size={18} /></button>
-                          <button onClick={() => handleDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={18} /></button>
+                          <button onClick={() => { setIsEditing(true); setSelectedData(item); setIsModalOpen(true); }} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Edit"><Edit2 size={18} /></button>
+                          <button onClick={() => handleDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus"><Trash2 size={18} /></button>
                         </div>
                       </td>
                     </tr>
@@ -191,6 +202,35 @@ export default function DataOrangtuaPage({ rolePrefix }) {
               </table>
             </div>
           </div>
+
+          <div className="block md:hidden space-y-4">
+            {currentData.length > 0 ? (
+              currentData.map((item) => (
+                <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
+                    <ProfileAvatar fotoProfil={item.foto_profil} nama={item.nama} className="w-12 h-12 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 text-lg leading-tight">{item.nama}</h3>
+                      <p className="text-sm text-gray-500 font-medium">Status: {item.hubungan || "Wali"}</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-gray-100"></div>
+                  <div className="grid grid-cols-1 gap-y-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2"><Phone size={14} className="text-gray-400" /> <span>{item.no_hp || "-"}</span></div>
+                    <div className="flex items-center gap-2"><Mail size={14} className="text-gray-400" /> <span className="truncate">{item.email || "-"}</span></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <button onClick={() => setListAnakModal({ isOpen: true, data: item })} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition">Anak: {item.jumlah_anak}</button>
+                    <button onClick={() => { setIsEditing(true); setSelectedData(item); setIsModalOpen(true); }} className="py-2.5 bg-green-50 text-green-600 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition"><Edit2 size={14} /> Edit</button>
+                    <button onClick={() => handleDelete(item)} className="py-2.5 bg-red-50 text-red-600 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition"><Trash2 size={14} /> Hapus</button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center p-8 bg-white rounded-xl text-gray-500">Data orang tua tidak ditemukan.</div>
+            )}
+          </div>
+
           <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
         </>
       )}

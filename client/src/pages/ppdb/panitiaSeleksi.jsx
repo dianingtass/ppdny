@@ -90,7 +90,7 @@ export default function PanitiaSeleksi() {
   const executePublish = async () => {
     setIsPublishing(true);
     try {
-      const res = await api.post("/ppdb/panitia/publish", { id_tahun: filterTahun });
+      const res = await api.post(`/ppdb/panitia/pengumuman/${filterTahun}`);
       if (res.data.success) {
         showAlert("success", res.data.message || "Pengumuman berhasil dipublish!");
         setConfirmPublish(false);
@@ -143,7 +143,7 @@ export default function PanitiaSeleksi() {
         </div>
 
         {/* Search + Filter Dropdown */}
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full mb-5">
+        <div className="flex gap-3 items-center w-full mb-5">
           <SearchBar
             placeholder="Cari nama / no. pendaftaran..."
             value={search}
@@ -203,7 +203,7 @@ export default function PanitiaSeleksi() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
@@ -269,6 +269,74 @@ export default function PanitiaSeleksi() {
             </table>
           </div>
         </div>
+
+        <div className="block md:hidden space-y-4">
+          {currentData.length === 0 ? (
+            <div className="text-center p-8 bg-white rounded-xl text-gray-500">Tidak ada data peserta seleksi</div>
+          ) : (
+            currentData.map((p) => {
+              const seleksi = p.ppdb_seleksi;
+              const statusSeleksi = seleksi?.status_seleksi || "Belum_Diseleksi";
+              return (
+                <div key={p.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-gray-800 text-base leading-tight truncate">{p.nama_lengkap}</h3>
+                      <p className="text-xs text-gray-400 mt-1">
+                        No: <span className="font-mono font-semibold text-gray-500">{p.no_pendaftaran}</span>
+                      </p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-md text-[9px] uppercase font-bold shrink-0 ${STATUS_SELEKSI_BADGE[statusSeleksi]}`}>
+                      {statusSeleksi.replace(/_/g, " ")}
+                    </span>
+                  </div>
+
+                  <div className="border-t border-gray-100"></div>
+
+                  <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600">
+                    <div>
+                      <span className="block text-gray-400 font-medium">Asal Sekolah</span>
+                      <span className="font-semibold text-gray-700 truncate block">{p.asal_sekolah || "-"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-400 font-medium">Nilai Total</span>
+                      {seleksi?.nilai_total != null ? (
+                        <span className={`font-black text-sm ${seleksi.nilai_total >= 70 ? "text-green-600" : seleksi.nilai_total >= 50 ? "text-yellow-600" : "text-red-500"}`}>
+                          {seleksi.nilai_total}
+                        </span>
+                      ) : <span className="text-gray-300 font-bold">-</span>}
+                    </div>
+                    <div>
+                      <span className="block text-gray-400 font-medium">Baca Quran</span>
+                      <span className="font-semibold text-gray-700 block text-xs">{p.kemampuan_quran?.replace(/_/g, " ") || "-"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-400 font-medium">Rekomendasi</span>
+                      {seleksi?.rekomendasi ? (
+                        <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-md text-[9px] uppercase font-bold ${REKOMENDASI_BADGE[seleksi.rekomendasi]}`}>
+                          {seleksi.rekomendasi}
+                        </span>
+                      ) : <span className="text-gray-400 font-bold text-xs">-</span>}
+                    </div>
+                  </div>
+
+                  {!isPimpinan && (
+                    <div className="grid grid-cols-1 mt-1">
+                      <button
+                        onClick={() => openSeleksi(p)}
+                        className="py-2.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl font-bold text-xs flex justify-center items-center gap-1.5 active:scale-95 transition"
+                      >
+                        <Edit2 size={14} />
+                        {seleksi?.status_seleksi === "Selesai" ? "Edit Penilaian" : "Beri Nilai"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+
         <Pagination currentPage={currentPage} totalPages={maxPage} onNext={next} onPrev={prev} />
       </div>
 

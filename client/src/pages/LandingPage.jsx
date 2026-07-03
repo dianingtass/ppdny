@@ -20,6 +20,7 @@ export default function LandingPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [stats, setStats] = useState({ santri: 0, ustadz: 0 }); // State untuk statistik
   const [loadingStats, setLoadingStats] = useState(true);
+  const [isPpdbOpen, setIsPpdbOpen] = useState(false);
 
   const images = [
     "/ppdny/ppdny-1.jpg",
@@ -36,22 +37,30 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  // Efek untuk Fetch Data Statistik dari API Public
+  // Efek untuk Fetch Data Statistik & Status PPDB dari API Public
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        // Sesuaikan rute ini dengan rute public API Anda
-        const res = await api.get("/public/stats"); 
-        if (res.data.success) {
-          setStats(res.data.data);
+        const statsRes = await api.get("/public/stats"); 
+        if (statsRes.data.success) {
+          setStats(statsRes.data.data);
         }
       } catch (err) {
         console.error("Gagal mengambil statistik:", err);
       } finally {
         setLoadingStats(false);
       }
+
+      try {
+        const ppdbRes = await api.get("/public/ppdb-status");
+        if (ppdbRes.data.success) {
+          setIsPpdbOpen(ppdbRes.data.isOpen);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil status PPDB:", err);
+      }
     };
-    fetchStats();
+    fetchData();
   }, []);
 
   return (
@@ -72,32 +81,34 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link
               to="/materi"
-              className="text-gray-600 hover:text-green-600 font-semibold px-4 py-2 transition"
+              className="text-gray-600 hover:text-green-600 font-semibold px-4 py-2 transition hidden md:inline-flex"
             >
               Materi
             </Link>
+            {isPpdbOpen && (
+              <Link
+                to="/ppdb/daftar"
+                className="text-gray-600 hover:text-green-600 font-semibold px-4 py-2 transition hidden md:inline-flex"
+              >
+                Pendaftaran PPDB
+              </Link>
+            )}
             <Link
               to="/login"
-              className="text-gray-600 hover:text-green-600 font-semibold px-4 py-2 transition"
+              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition active:scale-95 shadow-md shadow-green-100"
             >
-              Masuk Sistem
-            </Link>
-            <Link
-              to="/ppdb/daftar"
-              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition active:scale-95"
-            >
-              <UserPlus size={18} /> Pendaftaran PPDB
+              <LogIn size={18} /> Masuk
             </Link>
           </div>
         </div>
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gray-900">
+      <section className="relative pt-36 pb-20 md:pt-52 md:pb-24 min-h-[600px] md:min-h-[700px] overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gray-900 items-center">
           {images.map((img, index) => (
             <div
               key={index}
@@ -122,7 +133,7 @@ export default function LandingPage() {
 
             <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
               Membangun Generasi <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">
+              <span className="text-transparent bg-clip-text bg-green-400">
                 Berakhlak & Berprestasi
               </span>
             </h1>
@@ -134,22 +145,18 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/ppdb/daftar"
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition group"
-              >
-                <UserPlus size={20} /> Daftar Sekarang
-                <ArrowRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </Link>
-              <Link
-                to="/login"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-sm backdrop-blur-sm transition"
-              >
-                <LogIn size={20} className="text-green-400" /> Login ke SIM-Tren
-              </Link>
+              {isPpdbOpen && (
+                <Link
+                  to="/ppdb/daftar"
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition group"
+                >
+                  <UserPlus size={20} /> Daftar Sekarang
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -205,7 +212,7 @@ export default function LandingPage() {
       </section>
 
       {/* VISI & MISI SECTION */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-900 text-white">
+      <section className="py-20 relative overflow-hidden bg-green-700 text-white">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -218,12 +225,12 @@ export default function LandingPage() {
           
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
             {/* VISI CARD */}
-            <div className="lg:col-span-2 bg-white/10 backdrop-blur-md border border-white/15 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-2xl hover:bg-white/[0.12] transition duration-300">
+            <div className="lg:col-span-2 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-lg hover:bg-white/[0.12] transition duration-300">
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-6 border border-white/10">
                   <Target className="text-green-300 w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-green-300 mb-2 block">Visi Sekolah</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-green-300 mb-2 block">Visi Kami</span>
                 <h3 className="text-2xl md:text-3xl font-extrabold mb-4 leading-tight">Unggul Prestasi</h3>
               </div>
               <p className="text-lg md:text-xl text-white/95 leading-relaxed font-semibold italic border-l-4 border-green-400 pl-4 py-2 my-auto">
@@ -232,28 +239,26 @@ export default function LandingPage() {
             </div>
             
             {/* MISI CARD */}
-            <div className="lg:col-span-3 bg-white/10 backdrop-blur-md border border-white/15 p-8 md:p-10 rounded-3xl shadow-2xl hover:bg-white/[0.12] transition duration-300">
+            <div className="lg:col-span-3 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-3xl shadow-lg hover:bg-white/[0.12] transition duration-300">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
                   <Compass className="text-green-300 w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-green-300 block">Misi Sekolah</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-300 block">Misi Kami</span>
                   <h3 className="text-xl font-bold text-white">Upaya & Langkah Kami</h3>
                 </div>
               </div>
               
               <div className="space-y-5">
                 {[
-                  { key: "a", text: "Menciptakan lingkungan sekolah yang kondusif atraktif, kreatif dan inovatif." },
-                  { key: "b", text: "Menumbuhkan rasa percaya diri siswa bertanggung jawab dan mandiri." },
-                  { key: "c", text: "Pembiasan nilai-nilai keagamaan dan disiplin." },
-                  { key: "d", text: "Mengembangkan minat dan bakat siswa dalam bidang Agama, Seni, Olahraga, Sains dan Bahasa." }
+                  { text: "Menciptakan lingkungan sekolah yang kondusif atraktif, kreatif dan inovatif." },
+                  { text: "Menumbuhkan rasa percaya diri siswa bertanggung jawab dan mandiri." },
+                  { text: "Pembiasan nilai-nilai keagamaan dan disiplin." },
+                  { text: "Mengembangkan minat dan bakat siswa dalam bidang Agama, Seni, Olahraga, Sains dan Bahasa." }
                 ].map((item) => (
-                  <div key={item.key} className="flex gap-4 items-start group/item">
-                    <div className="w-8 h-8 rounded-xl bg-green-500/20 group-hover/item:bg-green-500/40 flex items-center justify-center font-bold text-green-200 shrink-0 mt-0.5 transition-colors">
-                      {item.key}
-                    </div>
+                  <div className="flex items-center gap-4 group/item">
+                    <div className="w-6 h-6 rounded-full bg-white/20 group-hover/item:bg-green-500/70 flex items-center justify-center font-bold text-green-200 shrink-0 transition-colors"/>
                     <p className="text-base text-white/90 leading-relaxed font-medium transition-colors group-hover/item:text-white">
                       {item.text}
                     </p>
@@ -346,21 +351,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* MOBILE BOTTOM NAV */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-6 gap-3 z-50 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <Link
-          to="/login"
-          className="flex-1 py-3 px-2 bg-gray-100 text-gray-800 font-bold rounded-xl text-center text-sm flex items-center justify-center mb-3"
-        >
-          Masuk SIM-Tren
-        </Link>
-        <Link
-          to="/ppdb/daftar"
-          className="flex-1 py-3 px-2 bg-green-600 text-white font-bold rounded-xl text-center text-sm flex items-center justify-center"
-        >
-          <UserPlus size={16} /> Daftar PPDB
-        </Link>
-      </div>
     </div>
   );
 }

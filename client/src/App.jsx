@@ -1,127 +1,152 @@
 import './App.css'
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Layout from "./components/Layout"
 import { AuthProvider } from "./context/AuthContext";
 import InstallPrompt from "./components/InstallPrompt";
 
-import LandingPage from "./pages/LandingPage"
+// Public Pages
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const Login = lazy(() => import("./pages/Login"));
+const MateriView = lazy(() => import("./pages/viewMateri"));
+const DetailMateri = lazy(() => import("./pages/detailMateri"));
+const FormPendaftaran = lazy(() => import("./pages/ppdb/formPendaftaran"));
+const CekStatus = lazy(() => import("./pages/ppdb/cekStatus"));
 
-import SantriDashboard from "./pages/santri/dashboard"
-import SantriProfile from "./pages/santri/pendataan"
-import SantriKeuangan from "./pages/santri/keuangan"
-import SantriKegiatan from "./pages/santri/kegiatan"
-import SantriPengaduan from "./pages/santri/pengaduan"
-import SantriLayanan from "./pages/santri/layanan"
-import SantriRiwayatLayanan from "./pages/santri/riwayatLayanan"
-import SantriScabiesDashboard from "./pages/santri/scabiesDashboard"
-import SantriScabiesKonsultasi from "./pages/santri/scabiesKonsultasi"
-import SantriScabiesKonsultasiRoom from "./pages/santri/scabiesKonsultasiRoom"
-import MateriView from "./pages/viewMateri"
-import DetailMateri from "./pages/detailMateri"
-import MateriManage from "./pages/manageMateri"
-import FaqPage from "./pages/faq"
+// Santri Pages
+const SantriDashboard = lazy(() => import("./pages/santri/dashboard"));
+const SantriProfile = lazy(() => import("./pages/santri/pendataan"));
+const SantriKeuangan = lazy(() => import("./pages/santri/keuangan"));
+const SantriKegiatan = lazy(() => import("./pages/santri/kegiatan"));
+const SantriPengaduan = lazy(() => import("./pages/santri/pengaduan"));
+const SantriLayanan = lazy(() => import("./pages/santri/layanan"));
+const SantriRiwayatLayanan = lazy(() => import("./pages/santri/riwayatLayanan"));
+const SantriScabiesDashboard = lazy(() => import("./pages/santri/scabiesDashboard"));
+const SantriScabiesKonsultasi = lazy(() => import("./pages/santri/scabiesKonsultasi"));
+const SantriScabiesKonsultasiRoom = lazy(() => import("./pages/santri/scabiesKonsultasiRoom"));
 
-import PengurusDashboard from "./pages/pengurus/dashboard"
-import PengurusSantri from "./pages/pengurus/dataSantri"
-import PengurusOrangtua from "./pages/pengurus/dataOrangtua"
-import PengurusUstadz from "./pages/pengurus/dataUstadz"
-import PengurusKelas from "./pages/pengurus/dataKelas"
-import PengurusKamar from "./pages/pengurus/dataKamar"
-import PengurusJenisLayanan from "./pages/pengurus/jenisLayanan"
-import PengurusJenisTagihan from "./pages/pengurus/jenisTagihan"
-import PengurusRiwayatLayanan from "./pages/pengurus/riwayatLayanan"
-import PengurusKeuangan from "./pages/pengurus/keuangan"
-import PengurusKegiatan from "./pages/pengurus/kegiatan"
+// General / Shared
+const MateriManage = lazy(() => import("./pages/manageMateri"));
+const FaqPage = lazy(() => import("./pages/faq"));
 
-import TimkesDashboard from "./pages/timkesehatan/dashboard"
-import TimkesScreening from "./pages/timkesehatan/screening/daftarSantriScreening"
-import TimkesDetailScreening from "./pages/timkesehatan/screening/portalScreening"
-import TimkesCreateScreening from "./pages/timkesehatan/screening/formScreening"
-import TimkesViewScreening from "./pages/timkesehatan/screening/viewScreening"
-import TimkesAbsensiKebersihan from "./pages/timkesehatan/absensi/daftarKamarAbsensi"
-import TimkesDetailAbsensi from "./pages/timkesehatan/absensi/portalAbsensi"
-import TimkesCreateAbsensi from "./pages/timkesehatan/absensi/formAbsensi"
-import TimkesLaporanAbsensi from "./pages/timkesehatan/absensi/viewAbsensi"
-import TimkesObservasi from "./pages/timkesehatan/observasi/daftarSantriObservasi"
-import TimkesDetailObservasi from "./pages/timkesehatan/observasi/portalObservasi"
-import TimkesCreateObservasi from "./pages/timkesehatan/observasi/formObservasi"
-import TimkesViewObservasi from "./pages/timkesehatan/observasi/viewObservasi"
-import TimkesKonsultasiPage from "./pages/timkesehatan/konsultasi"
-import TimkesKonsultasiRiwayatPage from "./pages/timkesehatan/konsultasiRiwayat"
+// Pengurus Pages
+const PengurusDashboard = lazy(() => import("./pages/pengurus/dashboard"));
+const PengurusSantri = lazy(() => import("./pages/pengurus/dataSantri"));
+const PengurusOrangtua = lazy(() => import("./pages/pengurus/dataOrangtua"));
+const PengurusUstadz = lazy(() => import("./pages/pengurus/dataUstadz"));
+const PengurusKelas = lazy(() => import("./pages/pengurus/dataKelas"));
+const PengurusKamar = lazy(() => import("./pages/pengurus/dataKamar"));
+const PengurusJenisLayanan = lazy(() => import("./pages/pengurus/jenisLayanan"));
+const PengurusJenisTagihan = lazy(() => import("./pages/pengurus/jenisTagihan"));
+const PengurusRiwayatLayanan = lazy(() => import("./pages/pengurus/riwayatLayanan"));
+const PengurusKeuangan = lazy(() => import("./pages/pengurus/keuangan"));
+const PengurusKegiatan = lazy(() => import("./pages/pengurus/kegiatan"));
 
-import OrangtuaDashboard from "./pages/orangtua/dashboard"
-import OrangtuaScabiesDashboard from "./pages/orangtua/scabiesDashboard"
-import OrangTuaPortalScreening from "./pages/orangtua/screening/portalScreening"
-import OrangTuaViewScreening from "./pages/orangtua/screening/viewScreening"
-import OrangTuaPortalObservasi from "./pages/orangtua/observasi/portalObservasi"
-import OrangTuaViewObservasi from "./pages/orangtua/observasi/viewObservasi"
-import OrangtuaProfile from "./pages/orangtua/pendataan"
-import OrangtuaKegiatan from "./pages/orangtua/kegiatan"
-import OrangtuaKeuangan from "./pages/orangtua/keuangan"
-import OrangtuaPengaduan from "./pages/orangtua/pengaduan"
+// Tim Kesehatan Pages
+const TimkesDashboard = lazy(() => import("./pages/timkesehatan/dashboard"));
+const TimkesScreening = lazy(() => import("./pages/timkesehatan/screening/daftarSantriScreening"));
+const TimkesDetailScreening = lazy(() => import("./pages/timkesehatan/screening/portalScreening"));
+const TimkesCreateScreening = lazy(() => import("./pages/timkesehatan/screening/formScreening"));
+const TimkesViewScreening = lazy(() => import("./pages/timkesehatan/screening/viewScreening"));
+const TimkesAbsensiKebersihan = lazy(() => import("./pages/timkesehatan/absensi/daftarKamarAbsensi"));
+const TimkesDetailAbsensi = lazy(() => import("./pages/timkesehatan/absensi/portalAbsensi"));
+const TimkesCreateAbsensi = lazy(() => import("./pages/timkesehatan/absensi/formAbsensi"));
+const TimkesLaporanAbsensi = lazy(() => import("./pages/timkesehatan/absensi/viewAbsensi"));
+const TimkesObservasi = lazy(() => import("./pages/timkesehatan/observasi/daftarSantriObservasi"));
+const TimkesDetailObservasi = lazy(() => import("./pages/timkesehatan/observasi/portalObservasi"));
+const TimkesCreateObservasi = lazy(() => import("./pages/timkesehatan/observasi/formObservasi"));
+const TimkesViewObservasi = lazy(() => import("./pages/timkesehatan/observasi/viewObservasi"));
+const TimkesKonsultasiPage = lazy(() => import("./pages/timkesehatan/konsultasi"));
+const TimkesKonsultasiRiwayatPage = lazy(() => import("./pages/timkesehatan/konsultasiRiwayat"));
 
-import UstadzDashboard from "./pages/ustadz/dashboard"
-import UstadzProfile from "./pages/ustadz/pendataan"
-import UstadzKegiatan from "./pages/ustadz/kegiatan"
-import UstadzSantri from "./pages/ustadz/daftarSantri"
-import UstadzPengaduan from "./pages/ustadz/pengaduan"
+// Orang Tua Pages
+const OrangtuaDashboard = lazy(() => import("./pages/orangtua/dashboard"));
+const OrangtuaScabiesDashboard = lazy(() => import("./pages/orangtua/scabiesDashboard"));
+const OrangTuaPortalScreening = lazy(() => import("./pages/orangtua/screening/portalScreening"));
+const OrangTuaViewScreening = lazy(() => import("./pages/orangtua/screening/viewScreening"));
+const OrangTuaPortalObservasi = lazy(() => import("./pages/orangtua/observasi/portalObservasi"));
+const OrangTuaViewObservasi = lazy(() => import("./pages/orangtua/observasi/viewObservasi"));
+const OrangtuaProfile = lazy(() => import("./pages/orangtua/pendataan"));
+const OrangtuaKegiatan = lazy(() => import("./pages/orangtua/kegiatan"));
+const OrangtuaKeuangan = lazy(() => import("./pages/orangtua/keuangan"));
+const OrangtuaPengaduan = lazy(() => import("./pages/orangtua/pengaduan"));
 
-import PimpinanDashboard from "./pages/pimpinan/dashboard"
-import PimpinanSantri from "./pages/pimpinan/dataSantri"
-import PimpinanUstadz from "./pages/pimpinan/dataUstadz"
-import PimpinanPengaduan from "./pages/pimpinan/pengaduan"
-import PimpinanKeuangan from "./pages/pimpinan/keuangan"
-import PimpinanFeedback from "./pages/pimpinan/feedback"
-import PimpinanScreening from "./pages/pimpinan/screening/daftarSantriScreening"
-import PimpinanDetailScreening from "./pages/pimpinan/screening/portalScreening"
-import PimpinanViewScreening from "./pages/pimpinan/screening/viewScreening"
-import PimpinanObservasi from "./pages/pimpinan/observasi/daftarSantriObservasi"
-import PimpinanDetailObservasi from "./pages/pimpinan/observasi/portalObservasi"
-import PimpinanViewObservasi from "./pages/pimpinan/observasi/viewObservasi"
+// Ustadz Pages
+const UstadzDashboard = lazy(() => import("./pages/ustadz/dashboard"));
+const UstadzProfile = lazy(() => import("./pages/ustadz/pendataan"));
+const UstadzKegiatan = lazy(() => import("./pages/ustadz/kegiatan"));
+const UstadzSantri = lazy(() => import("./pages/ustadz/daftarSantri"));
+const UstadzPengaduan = lazy(() => import("./pages/ustadz/pengaduan"));
 
-import AdminDashboard from "./pages/admin/dashboard"
-import AdminStaf from "./pages/admin/manajemenStaf"
-import AdminSantri from "./pages/admin/dataSantri"
-import AdminOrangtua from "./pages/admin/dataOrangtua"
-import AdminUstadz from "./pages/admin/dataUstadz"
-import AdminKelas from "./pages/admin/dataKelas"
-import AdminKamar from "./pages/admin/dataKamar"
-import AdminJenisLayanan from "./pages/admin/jenisLayanan"
-import AdminJenisTagihan from "./pages/admin/jenisTagihan"
-import AdminPengaduan from "./pages/admin/pengaduan"
-import AdminScreening from "./pages/admin/screening/daftarSantriScreening"
-import AdminDetailScreening from "./pages/admin/screening/portalScreening"
-import AdminCreateScreening from "./pages/admin/screening/formScreening"
-import AdminViewScreening from "./pages/admin/screening/viewScreening"
-import AdminKegiatan from "./pages/admin/kegiatan"
-import AdminRiwayatLayanan from "./pages/admin/riwayatLayanan"
-import AdminKeuangan from "./pages/admin/keuangan"
-import AdminFeedback from "./pages/admin/feedback"
-import AdminLog from "./pages/admin/log"
-import AdminObservasi from "./pages/admin/observasi/daftarSantriObservasi"
-import AdminDetailObservasi from "./pages/admin/observasi/portalObservasi"
-import AdminCreateObservasi from "./pages/admin/observasi/formObservasi"
-import AdminViewObservasi from "./pages/admin/observasi/viewObservasi"
+// Pimpinan Pages
+const PimpinanDashboard = lazy(() => import("./pages/pimpinan/dashboard"));
+const PimpinanSantri = lazy(() => import("./pages/pimpinan/dataSantri"));
+const PimpinanUstadz = lazy(() => import("./pages/pimpinan/dataUstadz"));
+const PimpinanPengaduan = lazy(() => import("./pages/pimpinan/pengaduan"));
+const PimpinanKeuangan = lazy(() => import("./pages/pimpinan/keuangan"));
+const PimpinanStaf = lazy(() => import("./pages/pimpinan/dataStaf"));
+const PimpinanFeedback = lazy(() => import("./pages/pimpinan/feedback"));
+const PimpinanScreening = lazy(() => import("./pages/pimpinan/screening/daftarSantriScreening"));
+const PimpinanDetailScreening = lazy(() => import("./pages/pimpinan/screening/portalScreening"));
+const PimpinanViewScreening = lazy(() => import("./pages/pimpinan/screening/viewScreening"));
+const PimpinanObservasi = lazy(() => import("./pages/pimpinan/observasi/daftarSantriObservasi"));
+const PimpinanDetailObservasi = lazy(() => import("./pages/pimpinan/observasi/portalObservasi"));
+const PimpinanViewObservasi = lazy(() => import("./pages/pimpinan/observasi/viewObservasi"));
+const PimpinanOrangtua = lazy(() => import("./pages/pimpinan/dataOrangtua"));
+const PimpinanKelas = lazy(() => import("./pages/pimpinan/dataKelas"));
+const PimpinanKamar = lazy(() => import("./pages/pimpinan/dataKamar"));
+const PimpinanKegiatan = lazy(() => import("./pages/pimpinan/kegiatan"));
+const PimpinanRiwayatLayanan = lazy(() => import("./pages/pimpinan/riwayatLayanan"));
+const PimpinanAbsensiKebersihan = lazy(() => import("./pages/pimpinan/absensi/daftarKamarAbsensi"));
+const PimpinanDetailAbsensi = lazy(() => import("./pages/pimpinan/absensi/portalAbsensi"));
+const PimpinanLaporanAbsensi = lazy(() => import("./pages/pimpinan/absensi/viewAbsensi"));
 
-import AdminAbsensiKebersihan from "./pages/admin/absensi/daftarKamarAbsensi"
-import AdminDetailAbsensi from "./pages/admin/absensi/portalAbsensi"
-import AdminCreateAbsensi from "./pages/admin/absensi/formAbsensi"
-import AdminLaporanAbsensi from "./pages/admin/absensi/viewAbsensi"
+// Admin Pages
+const AdminDashboard = lazy(() => import("./pages/admin/dashboard"));
+const AdminStaf = lazy(() => import("./pages/admin/manajemenStaf"));
+const AdminSantri = lazy(() => import("./pages/admin/dataSantri"));
+const AdminOrangtua = lazy(() => import("./pages/admin/dataOrangtua"));
+const AdminUstadz = lazy(() => import("./pages/admin/dataUstadz"));
+const AdminKelas = lazy(() => import("./pages/admin/dataKelas"));
+const AdminKamar = lazy(() => import("./pages/admin/dataKamar"));
+const AdminJenisLayanan = lazy(() => import("./pages/admin/jenisLayanan"));
+const AdminJenisTagihan = lazy(() => import("./pages/admin/jenisTagihan"));
+const AdminPengaduan = lazy(() => import("./pages/admin/pengaduan"));
+const AdminScreening = lazy(() => import("./pages/admin/screening/daftarSantriScreening"));
+const AdminDetailScreening = lazy(() => import("./pages/admin/screening/portalScreening"));
+const AdminCreateScreening = lazy(() => import("./pages/admin/screening/formScreening"));
+const AdminViewScreening = lazy(() => import("./pages/admin/screening/viewScreening"));
+const AdminKegiatan = lazy(() => import("./pages/admin/kegiatan"));
+const AdminRiwayatLayanan = lazy(() => import("./pages/admin/riwayatLayanan"));
+const AdminKeuangan = lazy(() => import("./pages/admin/keuangan"));
+const AdminFeedback = lazy(() => import("./pages/admin/feedback"));
+const AdminLog = lazy(() => import("./pages/admin/log"));
+const AdminObservasi = lazy(() => import("./pages/admin/observasi/daftarSantriObservasi"));
+const AdminDetailObservasi = lazy(() => import("./pages/admin/observasi/portalObservasi"));
+const AdminCreateObservasi = lazy(() => import("./pages/admin/observasi/formObservasi"));
+const AdminViewObservasi = lazy(() => import("./pages/admin/observasi/viewObservasi"));
+const AdminAbsensiKebersihan = lazy(() => import("./pages/admin/absensi/daftarKamarAbsensi"));
+const AdminDetailAbsensi = lazy(() => import("./pages/admin/absensi/portalAbsensi"));
+const AdminCreateAbsensi = lazy(() => import("./pages/admin/absensi/formAbsensi"));
+const AdminLaporanAbsensi = lazy(() => import("./pages/admin/absensi/viewAbsensi"));
 
-import PpdbDashboard from "./pages/ppdb/adminDashboard";
-import Pendaftar     from "./pages/ppdb/adminPendaftar";
-import Seleksi     from "./pages/ppdb/panitiaSeleksi";
-import FormPendaftaran    from "./pages/ppdb/formPendaftaran";
-import CekStatus          from "./pages/ppdb/cekStatus";       
+// PPDB Pages
+const PpdbDashboard = lazy(() => import("./pages/ppdb/adminDashboard"));
+const Pendaftar = lazy(() => import("./pages/ppdb/adminPendaftar"));
+const Seleksi = lazy(() => import("./pages/ppdb/panitiaSeleksi"));
 
 function App() {
   return (
     <AuthProvider>
       <InstallPrompt />
       <BrowserRouter>
-        <Routes>
+        <Suspense fallback={
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/materi" element={<MateriView />} />
@@ -253,6 +278,18 @@ function App() {
               <Route index element={<PimpinanDashboard />} />
               <Route path="data-santri" element={<PimpinanSantri />} />
               <Route path="data-ustadz" element={<PimpinanUstadz />} />
+              <Route path="data-staf" element={<PimpinanStaf />} />
+              <Route path="data-orangtua" element={<PimpinanOrangtua />} />
+              <Route path="data-kelas" element={<PimpinanKelas />} />
+              <Route path="data-kamar" element={<PimpinanKamar />} />
+              <Route path="kegiatan" element={<PimpinanKegiatan />} />
+              <Route path="riwayat-layanan" element={<PimpinanRiwayatLayanan />} />
+              
+              {/* ABSENSI KEBERSIHAN */}
+              <Route path="daftarAbsensiKamar" element={<PimpinanAbsensiKebersihan />} />
+              <Route path="daftarAbsensiKamar/:id" element={<PimpinanDetailAbsensi />} />
+              <Route path="daftarAbsensiKamar/:id/laporan" element={<PimpinanLaporanAbsensi />} />
+
               <Route path="scabies/materi" element={<MateriView />} />
               <Route path="scabies/materi/:id" element={<DetailMateri />} />
               <Route path="pengaduan" element={<PimpinanPengaduan />} />
@@ -318,8 +355,9 @@ function App() {
           </Route>
 
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </Suspense>
+    </BrowserRouter>
+  </AuthProvider>
   );
 }
 

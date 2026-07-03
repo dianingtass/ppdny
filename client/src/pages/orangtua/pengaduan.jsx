@@ -98,7 +98,7 @@ export default function OrangTuaPengaduan() {
             <Plus size={20} className="mr-2" /> Buat Laporan Baru
         </button>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+        <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari laporan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
             activeCount={filterStatus !== "Semua" ? 1 : 0}

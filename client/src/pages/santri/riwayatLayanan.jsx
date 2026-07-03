@@ -125,7 +125,7 @@ export default function RiwayatLayananList() {
           </div>
 
           {/* Search + Filter */}
-          <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+          <div className="flex gap-3 items-center w-full">
             <SearchBar
               placeholder="Cari riwayat..."
               value={searchTerm}

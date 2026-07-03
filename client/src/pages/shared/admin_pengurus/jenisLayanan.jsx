@@ -89,7 +89,7 @@ export default function JenisLayananPage({ rolePrefix }) {
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+      <div className="flex gap-3 items-center w-full">
         <SearchBar placeholder="Cari nama layanan..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 

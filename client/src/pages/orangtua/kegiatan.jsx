@@ -79,7 +79,7 @@ export default function OrangTuaKegiatan() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-32 space-y-8 relative z-10 md:-mt-16">
         
         {/* Search + Filter */}
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+        <div className="flex gap-3 items-center w-full">
           <SearchBar
             placeholder="Cari Kegiatan..."
             value={search}

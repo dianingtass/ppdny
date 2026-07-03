@@ -97,7 +97,7 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
       </div>
 
       {/* Search */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full">
+      <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari nama atau NIS..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
           activeCount={(selectedRisiko ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)}
