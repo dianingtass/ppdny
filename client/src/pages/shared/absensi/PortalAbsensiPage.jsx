@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../config/api";
 import {
@@ -9,6 +9,8 @@ import {
   ClipboardList
 } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function PortalAbsensiPage({ rolePrefix }) {
 
@@ -27,6 +29,10 @@ export default function PortalAbsensiPage({ rolePrefix }) {
   const [totalPages, setTotalPages] = useState(1);
 
   const limit = 10;
+  const riwayat = useMemo(() => {
+    return absensi.filter(item => item.id_heading !== latest?.id_heading);
+  }, [absensi, latest]);
+  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort } = useSort(riwayat, "tanggal", "desc");
 
   const fetchDetail = async () => {
     try {
@@ -79,10 +85,6 @@ export default function PortalAbsensiPage({ rolePrefix }) {
     );
 
   if (!kamar) return null;
-
-  const riwayat = absensi.filter(
-    item => item.id_heading !== latest?.id_heading
-  );
 
   const formatGender = (gender) => {
     if (!gender) return "-";
@@ -308,16 +310,16 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               <table className="w-full table-fixed border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                    <th className="p-4 pl-6 w-1/3">Tanggal</th>
-                    <th className="p-4 w-1/3">Pemeriksa</th>
+                    <SortableHeader label="Tanggal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-1/3 cursor-pointer text-left" />
+                    <SortableHeader label="Pemeriksa" sortKey="users.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-1/3 cursor-pointer text-left" />
                     {rolePrefix !== "pimpinan" && <th className="p-4 pr-6 w-1/3 text-center">Aksi</th>}
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-gray-50">
 
-                  {riwayat.length > 0 ? (
-                    riwayat.map((item) => (
+                  {sortedRiwayat.length > 0 ? (
+                    sortedRiwayat.map((item) => (
                       <tr
                         key={item.id_heading}
                         className="hover:bg-gray-50 transition"
@@ -353,7 +355,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               </table>
             </div>
             <div className="lg:hidden">
-              {renderAbsensiCards(riwayat, "Belum ada riwayat absensi.")}
+              {renderAbsensiCards(sortedRiwayat, "Belum ada riwayat absensi.")}
             </div>
           </div>
 

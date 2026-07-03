@@ -11,13 +11,28 @@ export default function SantriDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [activeMenu, setActiveMenu] = useState("home");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [faqs, setFaqs] = useState([]);
+  const [openFaqId, setOpenFaqId] = useState(null);
   
   const navigate = useNavigate();
 
   // Fetch dashboard data
   useEffect(() => {
     fetchDashboardData();
+    fetchFaq();
   }, []);
+
+  const fetchFaq = async () => {
+    try {
+      const res = await api.get("/global/faq");
+      if (res.data.success) {
+        const generalFaq = (res.data.data || []).filter(f => f.kategori === "Umum");
+        setFaqs(generalFaq);
+      }
+    } catch (error) {
+      console.error("Gagal memuat FAQ dashboard:", error);
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -548,6 +563,38 @@ export default function SantriDashboard() {
                 </div>
               </div>
             </div>
+
+            {/* FAQ Umum */}
+            {faqs.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-md p-6 space-y-4">
+                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  FAQ Umum
+                </h3>
+                <div className="space-y-2.5">
+                  {faqs.slice(0, 5).map((faq) => {
+                    const isOpen = openFaqId === faq.id_faq;
+                    return (
+                      <div key={faq.id_faq} className="border border-gray-100 rounded-xl overflow-hidden transition duration-200">
+                        <button
+                          onClick={() => setOpenFaqId(isOpen ? null : faq.id_faq)}
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gray-50/50 hover:bg-gray-50 transition text-left text-sm font-semibold text-gray-700"
+                        >
+                          <span>{faq.pertanyaan}</span>
+                          <ChevronDown size={16} className={`text-gray-400 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        <div className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${isOpen ? "grid-rows-[1fr] border-t border-gray-100" : "grid-rows-[0fr]"}`}>
+                          <div className="overflow-hidden">
+                            <div className="px-4 py-3 text-xs text-gray-600 leading-relaxed bg-white whitespace-pre-wrap">
+                              {faq.jawaban}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Bottom Navigation */}
             <div className="fixed bottom-4 left-4 right-4 bg-white rounded-2xl shadow-2xl p-4 z-50 border border-gray-100 md:hidden">

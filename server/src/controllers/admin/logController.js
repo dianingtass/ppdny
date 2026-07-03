@@ -8,13 +8,23 @@ exports.getAllLogs = async (req, res) => {
         const limit = parseInt(req.query.limit) || 15;
         const skip = (page - 1) * limit;
 
-        const { search, aksi, role } = req.query;
+        const { search, aksi, role, startDate, endDate } = req.query;
 
         // Bangun kondisi query pencarian
         let whereClause = {};
 
         if (aksi && aksi !== 'Semua') whereClause.aksi = aksi;
         if (role && role !== 'Semua') whereClause.role_user = role;
+
+        if (startDate || endDate) {
+            whereClause.created_at = {};
+            if (startDate) {
+                whereClause.created_at.gte = new Date(`${startDate}T00:00:00.000Z`);
+            }
+            if (endDate) {
+                whereClause.created_at.lte = new Date(`${endDate}T23:59:59.999Z`);
+            }
+        }
 
         if (search) {
             whereClause.OR = [

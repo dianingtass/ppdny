@@ -11,6 +11,8 @@ import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import ProfileAvatar from "../../../components/ProfileAvatar";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function DataUstadzPage({ rolePrefix }) {
   const [ustadzList, setUstadzList] = useState([]);
@@ -22,7 +24,8 @@ export default function DataUstadzPage({ rolePrefix }) {
     (item) => !selectedGender || item.jenis_kelamin === selectedGender
   );
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredUstadzList);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredUstadzList, "nama");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,9 +53,7 @@ export default function DataUstadzPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => {
-    jump(1);
-  }, [selectedGender]);
+  useEffect(() => { jump(1); }, [selectedGender]);
 
   const handleAdd = () => { setIsEditing(false); setSelectedData(null); setIsModalOpen(true); };
   const handleEdit = (data) => { setIsEditing(true); setSelectedData(data); setIsModalOpen(true); };
@@ -103,7 +104,6 @@ export default function DataUstadzPage({ rolePrefix }) {
         </button>
       </div>
 
-      {/* Search + Filter */}
       <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari nama atau NIP..."
@@ -143,9 +143,9 @@ export default function DataUstadzPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[35%]">Nama & NIP</th>
-                    <th className="p-4 w-[25%]">Kontak</th>
-                    <th className="p-4 w-[25%]">Jenis Kelamin</th>
+                    <SortableHeader label="Nama & NIP" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[35%] cursor-pointer" />
+                    <SortableHeader label="Email" sortKey="email" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Jenis Kelamin" sortKey="jenis_kelamin" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
                     <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>

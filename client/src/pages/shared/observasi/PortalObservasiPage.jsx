@@ -4,6 +4,8 @@ import { ArrowLeft, ClipboardList, History, Loader2, Plus } from "lucide-react";
 import api from "../../../config/api";
 import Pagination from "../../../components/pagination/Pagination";
 import { formatObservasiWaktu, getObservasiBadgeClass, getObservasiScoreLabel } from "../../../components/UtilsObservasi";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function PortalObservasiPage({
   rolePrefix,
@@ -22,6 +24,11 @@ export default function PortalObservasiPage({
   const [totalPages, setTotalPages] = useState(1);
   const [totalObservasi, setTotalObservasi] = useState(0);
   const limit = 10;
+  const riwayat = useMemo(
+    () => observasi.filter((item) => item.id_observasi !== latest?.id_observasi),
+    [latest, observasi]
+  );
+  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort } = useSort(riwayat, "tanggal", "desc");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,11 +61,6 @@ export default function PortalObservasiPage({
       topRef.current.scrollIntoView({ block: "start" });
     }
   }, [loading, page]);
-
-  const riwayat = useMemo(
-    () => observasi.filter((item) => item.id_observasi !== latest?.id_observasi),
-    [latest, observasi]
-  );
 
   if (loading) {
     return (
@@ -232,21 +234,21 @@ export default function PortalObservasiPage({
             <History className="mr-2 text-green-600" size={24} />
             Riwayat Observasi
           </h2>
-
+ 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full table-fixed border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                    <th className="p-4 pl-6 w-[22%]">Tanggal</th>
-                    <th className="p-4 w-[18%]">Waktu</th>
-                    <th className="p-4 w-[28%]">Skor Observasi</th>
-                    <th className="p-4 w-[25%]">Pengamat</th>
+                    <SortableHeader label="Tanggal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[22%] cursor-pointer text-left" />
+                    <SortableHeader label="Waktu" sortKey="waktu" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[18%] cursor-pointer text-left" />
+                    <SortableHeader label="Skor Observasi" sortKey="total_skor" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[28%] cursor-pointer text-left" />
+                    <SortableHeader label="Pengamat" sortKey="users_observasi_id_timkesTousers.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer text-left" />
                     <th className="p-4 pr-6 w-[15%] text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {riwayat.length > 0 ? riwayat.map((item) => (
+                  {sortedRiwayat.length > 0 ? sortedRiwayat.map((item) => (
                     <tr key={item.id_observasi} className="hover:bg-gray-50 transition">
                       <td className="p-4 pl-6">{new Date(item.tanggal).toLocaleDateString("id-ID")}</td>
                       <td className="p-4">{formatObservasiWaktu(item.waktu)}</td>
@@ -270,7 +272,7 @@ export default function PortalObservasiPage({
               </table>
             </div>
             <div className="lg:hidden">
-              {renderObservasiCards(riwayat, "Belum ada riwayat observasi.")}
+              {renderObservasiCards(sortedRiwayat, "Belum ada riwayat observasi.")}
             </div>
           </div>
 

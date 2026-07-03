@@ -8,6 +8,9 @@ import ProfileAvatar from '../../../components/ProfileAvatar';
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
+
 
 const WAKTU_OPTIONS = [
   { value: "Pagi", label: "Pagi" },
@@ -65,6 +68,14 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
   }, [debouncedSearch, page, rolePrefix, kategoriSkor, waktu, startDate, endDate]);
 
   const activeFilterCount = [kategoriSkor, waktu, startDate, endDate].filter(Boolean).length;
+
+  const mappedSantri = santriList.map(item => ({
+    ...item,
+    tanggal_terakhir: item.latest_observasi?.tanggal || null,
+    total_observasi: item._count?.observasi_observasi_id_santriTousers || 0
+  }));
+
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(mappedSantri, "nama");
 
   return (
     <div className="space-y-6">
@@ -148,14 +159,14 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
               <table className="w-full text-left table-fixed border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 font-semibold w-[20%]">Nama & NIS</th>
-                    <th className="p-4 font-semibold w-[15%]">Riwayat Observasi Terakhir</th>
-                    <th className="p-4 font-semibold text-center w-[15%]">Total Observasi</th>
+                    <SortableHeader label="Nama & NIS" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Observasi Terakhir" sortKey="tanggal_terakhir" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] cursor-pointer" />
+                    <SortableHeader label="Total Observasi Bulan Ini" sortKey="total_observasi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] text-center cursor-pointer" />
                     <th className="p-4 font-semibold text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {santriList.length > 0 ? santriList.map((item) => (
+                  {sortedData.length > 0 ? sortedData.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition">
                       <td className="p-4 align-top">
                         <div className="flex items-center gap-3">
@@ -200,7 +211,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
           </div>
 
           <div className="md:hidden space-y-4">
-            {santriList.map((item) => {
+            {sortedData.map((item) => {
               const latest = item.latest_observasi;
               const total = item._count?.observasi_observasi_id_santriTousers || 0;
 

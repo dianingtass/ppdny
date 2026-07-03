@@ -7,6 +7,9 @@ import ProfileAvatar from '../../../components/ProfileAvatar';
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
+
 
 export default function DaftarSantriScreeningPage({ rolePrefix }) {
   const [santriList, setSantriList] = useState([]);
@@ -64,6 +67,14 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, selectedRisiko, startDate, endDate]);
+
+  const mappedSantri = santriList.map(item => ({
+    ...item,
+    tanggal_terakhir: item.screening_screening_id_santriTousers?.[0]?.tanggal || null,
+    total_screening: item._count?.screening_screening_id_santriTousers || 0
+  }));
+
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(mappedSantri, "nama");
 
   const getDiagnosaStyle = (diagnosa) => {
     if (!diagnosa) return "text-gray-500";
@@ -164,16 +175,16 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
               <table className="w-full text-left table-fixed border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 font-semibold w-[20%]">Nama & NIS</th>
-                    <th className="p-4 font-semibold w-[15%]">Riwayat Screening Terakhir</th>
-                    <th className="p-4 font-semibold text-center w-[15%]">Total Screening</th>
+                    <SortableHeader label="Nama & NIS" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Screening Terakhir" sortKey="tanggal_terakhir" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] cursor-pointer" />
+                    <SortableHeader label="Total Screening" sortKey="total_screening" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] text-center cursor-pointer" />
                     <th className="p-4 font-semibold text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-gray-100">
-                  {santriList.length > 0 ? (
-                    santriList.map((item) => (
+                  {sortedData.length > 0 ? (
+                    sortedData.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50 transition">
                         
                         {/* NAMA */}
@@ -245,10 +256,10 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
           
           {/* MOBILE CARD */}
           <div className="md:hidden space-y-4">
-            {santriList.map((item) => {
-              const latest = item.screening_screening_id_santriTousers?.[0];
+            {sortedData.map((item) => {
               const total = item._count?.screening_screening_id_santriTousers || 0;
-
+              const hasScreening = item.screening_screening_id_santriTousers?.[0];
+ 
               return (
                 <div
                   key={item.id}
@@ -267,20 +278,20 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
                       {total}
                     </span>
                   </div>
-
-                  {latest ? (
+ 
+                  {hasScreening ? (
                     <div>
                       <p className="text-xs text-gray-500">
-                        {new Date(latest.tanggal).toLocaleDateString("id-ID")}
+                        {new Date(hasScreening.tanggal).toLocaleDateString("id-ID")}
                       </p>
                       <span className={`inline-block mt-1 px-3 py-1 text-xs rounded-full ${
-                          latest?.diagnosa === "Scabies"
+                          hasScreening?.diagnosa === "Scabies"
                             ? "bg-red-100 text-red-700"
-                            : latest?.diagnosa === "Bukan_Scabies"
+                            : hasScreening?.diagnosa === "Bukan_Scabies"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
                       }`}>
-                        {latest.diagnosa.replaceAll("_", " ")}
+                        {hasScreening.diagnosa.replaceAll("_", " ")}
                       </span>
                     </div>
                   ) : (

@@ -12,6 +12,8 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function DataKelasPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
@@ -25,7 +27,8 @@ export default function DataKelasPage({ rolePrefix }) {
   ).map((yr) => ({ value: yr, label: yr }));
 
   const filteredData = dataList.filter((item) => !selectedTahun || item.tahun_ajaran === selectedTahun);
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "kelas");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [modalKelas, setKelasModal] = useState({ isOpen: false, isEditing: false, data: null });
@@ -52,13 +55,8 @@ export default function DataKelasPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => {
-    fetchData();
-  }, [refreshListKey]);
-
-  useEffect(() => {
-    jump(1);
-  }, [selectedTahun]);
+  useEffect(() => { fetchData(); }, [refreshListKey]);
+  useEffect(() => { jump(1); }, [selectedTahun]);
 
   const handleSubmitKelas = async (formData) => {
     setIsSaving(true);
@@ -120,7 +118,6 @@ export default function DataKelasPage({ rolePrefix }) {
         </button>
       </div>
 
-      {/* Search + Filter */}
       <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari Kelas..."
@@ -154,7 +151,10 @@ export default function DataKelasPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                    <th className="p-4 w-[30%]">Nama Kelas</th><th className="p-4 w-[25%]">Tahun Ajaran</th><th className="p-4 w-[35%]">Wali Kelas</th><th className="p-4 text-center w-[10%]">Aksi</th>
+                    <SortableHeader label="Nama Kelas" sortKey="kelas" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[30%] cursor-pointer" />
+                    <SortableHeader label="Tahun Ajaran" sortKey="tahun_ajaran" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Wali Kelas" sortKey="users.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[35%] cursor-pointer" />
+                    <th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

@@ -9,13 +9,13 @@ import { clearAuthSession, getAuthToken, getStoredAuthUser, setAuthSession } fro
 
 // Map role → dashboard path (konsisten dengan ProtectedRoutes.jsx)
 const ROLE_DASHBOARD = {
-  santri:       "/santri",
-  orangtua:     "/orangtua",
-  wali:         "/orangtua",
-  pengurus:     "/pengurus",
-  pimpinan:     "/pimpinan",
-  ustadz:       "/ustadz",
-  admin:        "/admin",
+  santri: "/santri",
+  orangtua: "/orangtua",
+  wali: "/orangtua",
+  pengurus: "/pengurus",
+  pimpinan: "/pimpinan",
+  ustadz: "/ustadz",
+  admin: "/admin",
   timkesehatan: "/timkesehatan",
 };
 
@@ -68,7 +68,7 @@ export default function Login() {
     if (token || localStorage.getItem("user")) {
       clearAuthSession();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // --- HANDLER STEP 1: LOGIN AWAL ---
@@ -165,7 +165,7 @@ export default function Login() {
 
       {/* --- KOLOM KANAN (FORM LOGIN) --- */}
       <div className="flex w-full lg:w-1/2 justify-center items-center px-4 sm:px-6 lg:bg-white relative z-10">
-        <div className="w-full max-w-lg bg-white/20 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-8 rounded-3xl shadow-lg lg:shadow-none border border-white/20 lg:border-none">
+        <div className="w-full max-w-lg bg-white/20 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-8 rounded-2xl shadow-lg lg:shadow-none border border-white/20 lg:border-none">
           <button
             onClick={() => navigate("/")}
             className="absolute top-6 left-6 lg:top-8 lg:left-8 flex items-center gap-2 text-white lg:text-gray-800 hover:text-white lg:hover:text-green-600 font-bold text-lg transition-colors z-50"

@@ -5,12 +5,12 @@ import { X, Loader2 } from "lucide-react";
 export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSaving, role = "ustadz" }) {
     const [santris, setSantris] = useState([]);
     const [formData, setFormData] = useState({ id_santri: "", judul: "", deskripsi: "" });
-    
+
     const fetchSantriOptions = async () => {
         try {
             const url = role === "orangtua" ? "/orangtua/pengaduan/santri-options" : "/ustadz/pengaduan/santri-options";
             const res = await api.get(url);
-            
+
             if (res.data.success) {
                 setSantris(res.data.data);
                 // Jika orangtua punya anak (baik 1 atau lebih), otomatis pilih anak pertama sebagai default
@@ -22,14 +22,14 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
             console.error("Gagal load santri", err);
         }
     };
-        
+
     useEffect(() => {
         if (isOpen) {
             setFormData({ id_santri: "", judul: "", deskripsi: "" });
             fetchSantriOptions();
         }
     }, [isOpen, role]);
-    
+
     if (!isOpen) return null;
 
     // Cek apakah dropdown harus dikunci (disabled)
@@ -38,7 +38,7 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div>
                         <h3 className="font-bold text-gray-800 text-lg">Buat Pengaduan Baru</h3>
@@ -48,14 +48,14 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
                 </div>
                 <div className="p-6 overflow-y-auto">
                     <form id="form-pengaduan" onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="space-y-5">
-                        
+
                         <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Santri</label>
-                            <select 
-                                required 
+                            <select
+                                required
                                 disabled={isSantriDisabled}
-                                value={formData.id_santri} 
-                                onChange={(e) => setFormData({...formData, id_santri: e.target.value})} 
+                                value={formData.id_santri}
+                                onChange={(e) => setFormData({ ...formData, id_santri: e.target.value })}
                                 className={`w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-700 ${isSantriDisabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
                             >
                                 <option value="" disabled>Pilih Santri</option>
@@ -63,9 +63,9 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
                             </select>
                         </div>
 
-                        <div><label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Judul Laporan</label><input required type="text" value={formData.judul} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Contoh: Barang Hilang" /></div>
-                        
-                        <div><label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Deskripsi</label><textarea required rows="4" value={formData.deskripsi} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none resize-none" placeholder="Jelaskan detail kejadian..."></textarea></div>
+                        <div><label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Judul Laporan</label><input required type="text" value={formData.judul} onChange={(e) => setFormData({ ...formData, judul: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Contoh: Barang Hilang" /></div>
+
+                        <div><label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Deskripsi</label><textarea required rows="4" value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none resize-none" placeholder="Jelaskan detail kejadian..."></textarea></div>
                     </form>
                 </div>
                 <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">

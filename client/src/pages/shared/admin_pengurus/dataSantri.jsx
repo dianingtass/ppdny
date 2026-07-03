@@ -16,6 +16,8 @@ import ProfileAvatar from '../../../components/ProfileAvatar';
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 
 /**
@@ -28,6 +30,7 @@ export default function DataSantriPage({ rolePrefix }) {
   const [selectedKelas, setSelectedKelas] = useState("");
   const [selectedKamar, setSelectedKamar] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
+  const [refreshListKey, setRefreshListKey] = useState(0);
 
   const kelasOptions = Array.from(
     new Set(santriList.map((s) => s.kelas_aktif).filter((k) => k && k !== '-'))
@@ -43,9 +46,9 @@ export default function DataSantriPage({ rolePrefix }) {
     const matchGender = !selectedGender || santri.jenis_kelamin === selectedGender;
     return matchKelas && matchKamar && matchGender;
   });
-  const [refreshListKey, setRefreshListKey] = useState(0);
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredSantriList);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredSantriList, "nama");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -198,8 +201,8 @@ export default function DataSantriPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[35%]">Nama & NIS</th>
-                    <th className="p-4 w-[25%]">Kontak</th>
+                    <SortableHeader label="Nama & NIS" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[35%] cursor-pointer" />
+                    <SortableHeader label="Email" sortKey="email" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
                     <th className="p-4 w-[25%] text-center">Data Wali</th>
                     <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>

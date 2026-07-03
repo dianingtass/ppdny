@@ -8,6 +8,7 @@ import ProfileAvatar from '../../components/ProfileAvatar';
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import SortDropdown from '../../components/SortDropdown';
 
 export default function PimpinanPengaduan() {
   const [data, setData] = useState([]);
@@ -18,6 +19,8 @@ export default function PimpinanPengaduan() {
   const [rolePelapor, setRolePelapor] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [filterStatus, setFilterStatus] = useState("Semua");
+  const [sortBy, setSortBy] = useState("terbaru"); // terbaru, terlama
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
@@ -41,10 +44,20 @@ export default function PimpinanPengaduan() {
     }
   };
 
-  const filteredData = data.filter(item =>
-    (item.judul?.toLowerCase() || "").includes(search.toLowerCase()) ||
-    (item.santri?.nama?.toLowerCase() || "").includes(search.toLowerCase())
-  );
+  const sortedData = [...data]
+    .filter(item => {
+      const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase()) ||
+        (item.santri?.nama?.toLowerCase() || "").includes(search.toLowerCase());
+      const matchStatus = filterStatus === "Semua" || item.status === filterStatus;
+      return matchSearch && matchStatus;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.waktu_raw || 0);
+      const dateB = new Date(b.waktu_raw || 0);
+      if (sortBy === "terbaru") return dateB - dateA;
+      if (sortBy === "terlama") return dateA - dateB;
+      return 0;
+    });
 
   return (
     <div className="space-y-6 relative">
@@ -60,52 +73,76 @@ export default function PimpinanPengaduan() {
       <div className="space-y-3">
         <div className="flex gap-3 items-center justify-between w-full">
           <SearchBar placeholder="Cari berdasarkan judul laporan atau nama santri..." value={search} onChange={(e) => setSearch(e.target.value)} onClear={() => setSearch("")} className="flex-1" />
-          <FilterDropdown
-            activeCount={(rolePelapor ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)}
-            onReset={() => {
-              setRolePelapor("");
-              setStartDate("");
-              setEndDate("");
-            }}
-          >
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Dibuat Oleh</label>
-                <FilterSelect
-                  placeholder="Semua Pembuat"
-                  value={rolePelapor}
-                  onChange={(e) => setRolePelapor(e.target.value)}
-                  options={[
-                    { value: "ustadz", label: "Ustadz / Wali Kelas" },
-                    { value: "orangtua", label: "Orang Tua" },
-                  ]}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-gray-500">Rentang Tanggal</label>
-                <div className="grid grid-cols-1 gap-2">
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Dari Tanggal</label>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sampai Tanggal</label>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
-                    />
+          <div className="flex gap-2 items-center">
+            <SortDropdown
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "terbaru", label: "Terbaru" },
+                { value: "terlama", label: "Terlama" }
+              ]}
+            />
+            <FilterDropdown
+              activeCount={(rolePelapor ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0) + (filterStatus !== "Semua" ? 1 : 0)}
+              onReset={() => {
+                setRolePelapor("");
+                setStartDate("");
+                setEndDate("");
+                setFilterStatus("Semua");
+              }}
+            >
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pengaduan</label>
+                  <FilterSelect
+                    placeholder="Semua Status"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                    options={[
+                      { value: "Semua", label: "Semua Status" },
+                      { value: "Aktif", label: "Aktif" },
+                      { value: "Selesai", label: "Selesai" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Dibuat Oleh</label>
+                  <FilterSelect
+                    placeholder="Semua Pembuat"
+                    value={rolePelapor}
+                    onChange={(e) => setRolePelapor(e.target.value)}
+                    options={[
+                      { value: "ustadz", label: "Ustadz / Wali Kelas" },
+                      { value: "orangtua", label: "Orang Tua" },
+                    ]}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-gray-500">Rentang Tanggal</label>
+                  <div className="grid grid-cols-1 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Dari Tanggal</label>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sampai Tanggal</label>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full p-2 text-xs border border-gray-200 rounded-lg outline-none bg-white focus:ring-1 focus:ring-green-500 cursor-pointer"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </FilterDropdown>
+            </FilterDropdown>
+          </div>
         </div>
       </div>
 
@@ -115,8 +152,8 @@ export default function PimpinanPengaduan() {
             <Loader2 className="animate-spin text-green-500 mb-2" size={32} />
             <p className="text-gray-500">Memuat data...</p>
           </div>
-        ) : filteredData.length > 0 ? (
-          filteredData.map((item) => (
+        ) : sortedData.length > 0 ? (
+          sortedData.map((item) => (
             <div
               key={item.id}
               onClick={() => setSelectedId(item.id)}

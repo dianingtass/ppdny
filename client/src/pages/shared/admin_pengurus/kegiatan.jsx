@@ -14,6 +14,8 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 
 export default function KegiatanPage({ rolePrefix }) {
@@ -47,7 +49,8 @@ export default function KegiatanPage({ rolePrefix }) {
     return true;
   });
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "tanggal");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -220,11 +223,11 @@ export default function KegiatanPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[30%]">Nama Kegiatan</th>
-                    <th className="p-4 w-[20%]">Jadwal</th>
-                    <th className="p-4 w-[20%]">Lokasi</th>
-                    <th className="p-4 w-[20%]">Skala & Status</th>
-                    <th className="p-4 text-center w-[10%]">Aksi</th>
+                    <SortableHeader label="Nama Kegiatan" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[30%] cursor-pointer" />
+                    <SortableHeader label="Jadwal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Lokasi" sortKey="lokasi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] cursor-pointer" />
+                    <SortableHeader label="Skala & Status" sortKey="skala" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

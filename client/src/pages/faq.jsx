@@ -23,7 +23,7 @@ export default function FaqPage() {
 
   // Get current user role
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = (currentUser.role || "guest").toLowerCase().replace(/\s/g, '');
+  const userRole = String(currentUser.role || "guest").toLowerCase().replace(/\s/g, '');
   const isManageable = ["admin", "pengurus", "timkesehatan"].includes(userRole);
 
   const fetchFaq = async () => {

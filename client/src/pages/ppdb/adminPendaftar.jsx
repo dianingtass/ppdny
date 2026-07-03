@@ -14,6 +14,8 @@ import { useAlert } from "../../hooks/useAlert";
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import SortDropdown from "../../components/SortDropdown";
+import SortableHeader from "../../components/SortableHeader";
 
 
 const STATUS_OPTIONS = [
@@ -47,11 +49,45 @@ export default function AdminPendaftar() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTahun, setFilterTahun] = useState("");
+  const [sortBy, setSortBy] = useState("terbaru"); // terbaru, terlama, az, za
+  const [sortKey, setSortKey] = useState("id");
+  const [sortDir, setSortDir] = useState("desc");
   const [detailData, setDetailData] = useState(null);
   const [showManual, setShowManual] = useState(false);
   const [statusModal, setStatusModal] = useState({ isOpen: false, id: null, currentStatus: "", nama: "" });
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(pendaftar, 15);
+  const handleSortDropdownChange = (val) => {
+    setSortBy(val);
+    if (val === "terbaru") { setSortKey("id"); setSortDir("desc"); }
+    else if (val === "terlama") { setSortKey("id"); setSortDir("asc"); }
+    else if (val === "az") { setSortKey("nama"); setSortDir("asc"); }
+    else if (val === "za") { setSortKey("nama"); setSortDir("desc"); }
+  };
+
+  const handleSort = (key) => {
+    const dir = sortKey === key && sortDir === "desc" ? "asc" : "desc";
+    setSortKey(key);
+    setSortDir(dir);
+    if (key === "id") setSortBy(dir === "desc" ? "terbaru" : "terlama");
+    if (key === "nama") setSortBy(dir === "desc" ? "za" : "az");
+  };
+
+  const sortedPendaftar = [...pendaftar].sort((a, b) => {
+    if (sortKey === "id") {
+      const dateA = new Date(a.created_at || 0);
+      const dateB = new Date(b.created_at || 0);
+      return sortDir === "desc" ? dateB - dateA : dateA - dateB;
+    }
+    if (sortKey === "no") return sortDir === "desc" ? (b.no_pendaftaran || "").localeCompare(a.no_pendaftaran || "") : (a.no_pendaftaran || "").localeCompare(b.no_pendaftaran || "");
+    if (sortKey === "nama") return sortDir === "desc" ? (b.nama_lengkap || "").localeCompare(a.nama_lengkap || "") : (a.nama_lengkap || "").localeCompare(b.nama_lengkap || "");
+    if (sortKey === "gender") return sortDir === "desc" ? (b.jenis_kelamin || "").localeCompare(a.jenis_kelamin || "") : (a.jenis_kelamin || "").localeCompare(b.jenis_kelamin || "");
+    if (sortKey === "sekolah") return sortDir === "desc" ? (b.asal_sekolah || "").localeCompare(a.asal_sekolah || "") : (a.asal_sekolah || "").localeCompare(b.asal_sekolah || "");
+    if (sortKey === "gelombang") return sortDir === "desc" ? (b.ppdb_tahun?.nama_gelombang || "").localeCompare(a.ppdb_tahun?.nama_gelombang || "") : (a.ppdb_tahun?.nama_gelombang || "").localeCompare(b.ppdb_tahun?.nama_gelombang || "");
+    if (sortKey === "status") return sortDir === "desc" ? (b.status || "").localeCompare(a.status || "") : (a.status || "").localeCompare(b.status || "");
+    return 0;
+  });
+
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedPendaftar, 15);
   const { message, showAlert, clearAlert } = useAlert();
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, id: null, nama: "", type: "" }); 
   const [catatan, setCatatan] = useState("");
@@ -87,7 +123,7 @@ export default function AdminPendaftar() {
 
   useEffect(() => {
     jump(1);
-  }, [search, filterStatus, filterTahun]);
+  }, [search, filterStatus, filterTahun, sortBy]);
 
   const handleUpdateStatus = async (id, status) => {
     if (status === "Ditolak") {
@@ -145,42 +181,56 @@ export default function AdminPendaftar() {
 
         <div className="flex gap-3 items-center w-full mb-6">
           <SearchBar placeholder="Cari nama / no. pendaftaran..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
-          <FilterDropdown
-            activeCount={(filterStatus && filterStatus !== "Semua" ? 1 : 0) + (filterTahun ? 1 : 0)}
-            onReset={() => {
-              setFilterStatus("Semua");
-              setFilterTahun("");
-            }}
-          >
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pendaftaran</label>
-                <FilterSelect
-                  placeholder="Semua Status"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value || "Semua")}
-                  options={[
-                    { value: "Mendaftar", label: "Mendaftar" },
-                    { value: "Verifikasi", label: "Verifikasi" },
-                    { value: "Seleksi", label: "Seleksi" },
-                    { value: "Lulus", label: "Lulus" },
-                    { value: "Diterima", label: "Diterima" },
-                    { value: "Ditolak", label: "Ditolak" },
-                    { value: "Mengundurkan Diri", label: "Mengundurkan Diri" },
-                  ]}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
-                <FilterSelect
-                  value={filterTahun}
-                  onChange={(e) => setFilterTahun(e.target.value)}
-                  placeholder="Semua Gelombang"
-                  options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
-                />
-              </div>
+          <div className="flex gap-2 items-center">
+            <div className="block md:hidden">
+              <SortDropdown
+                value={sortBy}
+                onChange={handleSortDropdownChange}
+                options={[
+                  { value: "terbaru", label: "Terbaru" },
+                  { value: "terlama", label: "Terlama" },
+                  { value: "az", label: "A-Z" },
+                  { value: "za", label: "Z-A" }
+                ]}
+              />
             </div>
-          </FilterDropdown>
+            <FilterDropdown
+              activeCount={(filterStatus && filterStatus !== "Semua" ? 1 : 0) + (filterTahun ? 1 : 0)}
+              onReset={() => {
+                setFilterStatus("Semua");
+                setFilterTahun("");
+              }}
+            >
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pendaftaran</label>
+                  <FilterSelect
+                    placeholder="Semua Status"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                    options={[
+                      { value: "Mendaftar", label: "Mendaftar" },
+                      { value: "Verifikasi", label: "Verifikasi" },
+                      { value: "Seleksi", label: "Seleksi" },
+                      { value: "Lulus", label: "Lulus" },
+                      { value: "Diterima", label: "Diterima" },
+                      { value: "Ditolak", label: "Ditolak" },
+                      { value: "Mengundurkan Diri", label: "Mengundurkan Diri" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
+                  <FilterSelect
+                    value={filterTahun}
+                    onChange={(e) => setFilterTahun(e.target.value)}
+                    placeholder="Semua Gelombang"
+                    options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
+                  />
+                </div>
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
 
         <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -188,13 +238,13 @@ export default function AdminPendaftar() {
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500 border-b border-gray-100 bg-gray-50 uppercase tracking-wider text-[11px] font-bold">
-                  <th className="px-5 py-4">No. Pendaftaran</th>
-                  <th className="px-5 py-4">Nama Lengkap</th>
-                  <th className="px-5 py-4">L/P</th>
-                  <th className="px-5 py-4">Asal Sekolah</th>
-                  <th className="px-5 py-4">Gelombang</th>
+                  <SortableHeader label="No. Pendaftaran" sortKey="no" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Nama Lengkap" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="L/P" sortKey="gender" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Asal Sekolah" sortKey="sekolah" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Gelombang" sortKey="gelombang" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
                   <th className="px-5 py-4">Dokumen</th>
-                  <th className="px-5 py-4">Status</th>
+                  <SortableHeader label="Status" sortKey="status" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
                   <th className="px-5 py-4 text-center">Aksi</th>
                 </tr>
               </thead>

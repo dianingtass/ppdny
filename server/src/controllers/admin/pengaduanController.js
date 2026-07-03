@@ -55,6 +55,7 @@ exports.getDaftarPengaduan = async (req, res) => {
       judul: item.judul || "Tanpa Judul",
       deskripsi: item.deskripsi,
       waktu: formatDate(item.waktu_aduan),
+      waktu_raw: item.waktu_aduan,
       status: item.status,
       santri: {
         nama: item.users_pengaduan_id_santriTousers?.nama || "Tidak diketahui",

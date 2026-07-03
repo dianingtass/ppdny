@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
+import SortDropdown from "../../components/SortDropdown";
+import SortableHeader from "../../components/SortableHeader";
 
 export default function AdminPpdbDashboard() {
   const { user } = useContext(AuthContext);
@@ -28,6 +30,9 @@ export default function AdminPpdbDashboard() {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
+  const [sortBy, setSortBy] = useState("terbaru"); // terbaru, terlama, kuotaDesc, pendaftarDesc
+  const [sortKey, setSortKey] = useState("id");
+  const [sortDir, setSortDir] = useState("desc");
 
   const getGelombangStatus = (t) => {
     const now = new Date();
@@ -38,18 +43,46 @@ export default function AdminPpdbDashboard() {
     return "Belum Buka";
   };
 
-  const filteredTahunList = tahunList.filter(item => {
-    const matchSearch = 
-      (item.nama_gelombang?.toLowerCase() || "").includes(search.toLowerCase()) ||
-      (item.tahun_ajaran?.toLowerCase() || "").includes(search.toLowerCase());
-      
-    const status = getGelombangStatus(item);
-    const matchStatus = statusFilter === "Semua" || status === statusFilter;
-    
-    return matchSearch && matchStatus;
-  });
+  const handleSortDropdownChange = (val) => {
+    setSortBy(val);
+    if (val === "terbaru") { setSortKey("id"); setSortDir("desc"); }
+    else if (val === "terlama") { setSortKey("id"); setSortDir("asc"); }
+    else if (val === "kuotaDesc") { setSortKey("kuota"); setSortDir("desc"); }
+    else if (val === "pendaftarDesc") { setSortKey("pendaftar"); setSortDir("desc"); }
+  };
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredTahunList, 10);
+  const handleSort = (key) => {
+    const dir = sortKey === key && sortDir === "desc" ? "asc" : "desc";
+    setSortKey(key);
+    setSortDir(dir);
+    if (key === "id") setSortBy(dir === "desc" ? "terbaru" : "terlama");
+    if (key === "kuota") setSortBy("kuotaDesc");
+    if (key === "pendaftar") setSortBy("pendaftarDesc");
+  };
+
+  const sortedTahunList = [...tahunList]
+    .filter(item => {
+      const matchSearch = 
+        (item.nama_gelombang?.toLowerCase() || "").includes(search.toLowerCase()) ||
+        (item.tahun_ajaran?.toLowerCase() || "").includes(search.toLowerCase());
+        
+      const status = getGelombangStatus(item);
+      const matchStatus = statusFilter === "Semua" || status === statusFilter;
+      
+      return matchSearch && matchStatus;
+    })
+    .sort((a, b) => {
+      if (sortKey === "id") return sortDir === "desc" ? b.id - a.id : a.id - b.id;
+      if (sortKey === "nama") return sortDir === "desc" ? (b.nama_gelombang || "").localeCompare(a.nama_gelombang || "") : (a.nama_gelombang || "").localeCompare(b.nama_gelombang || "");
+      if (sortKey === "tahun") return sortDir === "desc" ? (b.tahun_ajaran || "").localeCompare(a.tahun_ajaran || "") : (a.tahun_ajaran || "").localeCompare(b.tahun_ajaran || "");
+      if (sortKey === "buka") return sortDir === "desc" ? new Date(b.tanggal_buka) - new Date(a.tanggal_buka) : new Date(a.tanggal_buka) - new Date(b.tanggal_buka);
+      if (sortKey === "tutup") return sortDir === "desc" ? new Date(b.tanggal_tutup) - new Date(a.tanggal_tutup) : new Date(a.tanggal_tutup) - new Date(b.tanggal_tutup);
+      if (sortKey === "kuota") return sortDir === "desc" ? (b.kuota ?? 999999) - (a.kuota ?? 999999) : (a.kuota ?? 999999) - (b.kuota ?? 999999);
+      if (sortKey === "pendaftar") return sortDir === "desc" ? (b.total_pendaftar || 0) - (a.total_pendaftar || 0) : (a.total_pendaftar || 0) - (b.total_pendaftar || 0);
+      return 0;
+    });
+
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedTahunList, 10);
 
   const { message, showAlert, clearAlert } = useAlert();
   const [modalDelete, setModalDelete] = useState({ isOpen: false, id: null });
@@ -75,7 +108,7 @@ export default function AdminPpdbDashboard() {
 
   useEffect(() => {
     jump(1);
-  }, [search, statusFilter]);
+  }, [search, statusFilter, sortBy]);
 
   const handleFilterChange = (idTahun) => {
     setSelectedTahun(idTahun);
@@ -137,8 +170,21 @@ export default function AdminPpdbDashboard() {
             onClear={() => setSearch("")} 
             className="flex-1" 
           />
-          <FilterDropdown
-            activeCount={(statusFilter !== "Semua" ? 1 : 0) + (selectedTahun ? 1 : 0)}
+          <div className="flex gap-2 items-center">
+            <div className="block md:hidden">
+              <SortDropdown
+                value={sortBy}
+                onChange={handleSortDropdownChange}
+                options={[
+                  { value: "terbaru", label: "Terbaru" },
+                  { value: "terlama", label: "Terlama" },
+                  { value: "kuotaDesc", label: "Kuota Terbanyak" },
+                  { value: "pendaftarDesc", label: "Pendaftar Terbanyak" }
+                ]}
+              />
+            </div>
+            <FilterDropdown
+              activeCount={(statusFilter !== "Semua" ? 1 : 0) + (selectedTahun ? 1 : 0)}
             onReset={() => {
               setStatusFilter("Semua");
               setSelectedTahun(null);
@@ -174,6 +220,7 @@ export default function AdminPpdbDashboard() {
               </div>
             </div>
           </FilterDropdown>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -198,12 +245,12 @@ export default function AdminPpdbDashboard() {
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500 border-b border-gray-100 bg-gray-50/50 uppercase tracking-wider text-[11px] font-bold ">
-                  <th className="px-5 py-4">Nama Gelombang</th>
-                  <th className="px-5 py-4">Tahun Ajaran</th>
-                  <th className="px-5 py-4">Tanggal Buka</th>
-                  <th className="px-5 py-4">Tanggal Tutup</th>
-                  <th className="px-5 py-4">Kuota</th>
-                  <th className="px-5 py-4">Pendaftar</th>
+                  <SortableHeader label="Nama Gelombang" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Tahun Ajaran" sortKey="tahun" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Tanggal Buka" sortKey="buka" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Tanggal Tutup" sortKey="tutup" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Kuota" sortKey="kuota" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Pendaftar" sortKey="pendaftar" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
                   <th className="px-5 py-4">Status</th>
                   {!isPimpinan && <th className="px-5 py-4 text-center">Aksi</th>}
                 </tr>

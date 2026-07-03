@@ -30,9 +30,9 @@ export default function OrangTuaDashboard() {
   const [activeSantriId, setActiveSantriId] = useState(localStorage.getItem('active_santri_id') || "");
 
   const formatDate = (dateString) => {
-    if(!dateString) return "-";
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString('id-ID', {
-        day: 'numeric', month: 'long', year: 'numeric'
+      day: 'numeric', month: 'long', year: 'numeric'
     });
   };
 
@@ -40,16 +40,16 @@ export default function OrangTuaDashboard() {
     try {
       setLoading(true);
       const res = await api.get("/orangtua/dashboard", {
-          params: { id_santri: activeSantriId }
+        params: { id_santri: activeSantriId }
       });
-      
+
       if (res.data.success) {
-          setData(res.data.data);
-          // JIKA LOCAL STORAGE KOSONG, SET OTOMATIS DARI BACKEND
-          if (!activeSantriId && res.data.data.anak.id) {
-              localStorage.setItem('active_santri_id', res.data.data.anak.id);
-              setActiveSantriId(res.data.data.anak.id);
-          }
+        setData(res.data.data);
+        // JIKA LOCAL STORAGE KOSONG, SET OTOMATIS DARI BACKEND
+        if (!activeSantriId && res.data.data.anak.id) {
+          localStorage.setItem('active_santri_id', res.data.data.anak.id);
+          setActiveSantriId(res.data.data.anak.id);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -61,8 +61,8 @@ export default function OrangTuaDashboard() {
   useEffect(() => { fetchData(); }, [activeSantriId]);
 
   const handleSwitchAnak = (newId) => {
-      localStorage.setItem('active_santri_id', newId);
-      setActiveSantriId(newId);
+    localStorage.setItem('active_santri_id', newId);
+    setActiveSantriId(newId);
   };
 
   const handleLogout = () => {
@@ -85,28 +85,28 @@ export default function OrangTuaDashboard() {
         <div className="max-w-6xl mx-auto flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold">SIM-Tren</h1>
-              <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
+            <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
           </div>
           <div className="flex items-center space-x-4">
             <NotificationDropdown />
             <div className="relative hidden md:block">
-              <button 
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
-                >
-                  <ProfileAvatar fotoProfil={data.ortu.foto_profil} nama={data.ortu.nama} className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-transparent transition" />
-                  <div>
-                    <p className="font-medium leading-tight">{data.ortu.nama}</p>
-                    <p className="text-sm text-white/75">{data.ortu.hubungan} {data.anak.nama.split(" ")[0]}</p>
-                  </div>
-                  <ChevronDown 
-                    size={16} 
-                    className={`text-green-200 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} 
-                  />
-                </button>
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
+              >
+                <ProfileAvatar fotoProfil={data.ortu.foto_profil} nama={data.ortu.nama} className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-transparent transition" />
+                <div>
+                  <p className="font-medium leading-tight">{data.ortu.nama}</p>
+                  <p className="text-sm text-white/75">{data.ortu.hubungan} {data.anak.nama.split(" ")[0]}</p>
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`text-green-200 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border py-2 z-50">
-                  <button onClick={() => {setIsProfileOpen(false); navigate("/orangtua/profil");}} className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition">
+                  <button onClick={() => { setIsProfileOpen(false); navigate("/orangtua/profil"); }} className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition">
                     <Settings size={16} className="mr-2" /> <span className="text-sm font-semibold">Edit Profil</span>
                   </button>
                   <button onClick={handleLogout} className="w-full flex items-center py-3 px-5 text-red-600 hover:bg-red-50 transition">
@@ -121,7 +121,7 @@ export default function OrangTuaDashboard() {
 
       {/* Profile Anak Card (Floating) */}
       <div className="max-w-6xl mx-auto px-4 -mt-12">
-        <div className="bg-white rounded-3xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
+        <div className="bg-white rounded-2xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
           <ProfileAvatar
             fotoProfil={data.anak.foto_profil}
             nama={data.anak.nama}
@@ -131,21 +131,21 @@ export default function OrangTuaDashboard() {
           />
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1 justify-center md:justify-start">
-                <p className="text-green-600 text-xs font-bold uppercase tracking-widest">Data Anak Anda</p>
-                {/* DROPDOWN SWITCHER ANAK */}
-                {data.list_anak && data.list_anak.length > 1 && (
-                    <select 
-                        value={activeSantriId}
-                        onChange={(e) => handleSwitchAnak(e.target.value)}
-                        className="text-xs bg-gray-100 text-gray-700 font-bold px-2 py-1 rounded-lg border-none outline-none cursor-pointer focus:ring-2 focus:ring-green-500 mx-auto md:mx-0"
-                    >
-                        {data.list_anak.map(anak => (
-                            <option key={anak.id_santri} value={anak.id_santri}>Ganti ke: {anak.nama}</option>
-                        ))}
-                    </select>
-                )}
+              <p className="text-green-600 text-xs font-bold uppercase tracking-widest">Data Anak Anda</p>
+              {/* DROPDOWN SWITCHER ANAK */}
+              {data.list_anak && data.list_anak.length > 1 && (
+                <select
+                  value={activeSantriId}
+                  onChange={(e) => handleSwitchAnak(e.target.value)}
+                  className="text-xs bg-gray-100 text-gray-700 font-bold px-2 py-1 rounded-lg border-none outline-none cursor-pointer focus:ring-2 focus:ring-green-500 mx-auto md:mx-0"
+                >
+                  {data.list_anak.map(anak => (
+                    <option key={anak.id_santri} value={anak.id_santri}>Ganti ke: {anak.nama}</option>
+                  ))}
+                </select>
+              )}
             </div>
-            
+
             <h2 className="text-2xl font-black text-gray-800">{data.anak.nama}</h2>
             <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
               <span className="bg-gray-100 px-3 py-1 rounded-full text-xs font-bold text-gray-600">NIS: {data.anak.nip}</span>
@@ -160,11 +160,11 @@ export default function OrangTuaDashboard() {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-          
+
           {/* Main Info (Left) */}
           <div className="lg:col-span-2 space-y-6">
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
               <h3 className="font-bold text-gray-800 mb-4 px-2">Menu Wali</h3>
               <div className="grid grid-cols-5 gap-1.5 md:gap-2 text-white">
                 <MenuButton icon={<Wallet />} label="Keuangan" onClick={() => navigate("/orangtua/keuangan")} color="bg-green-500" />
@@ -174,21 +174,21 @@ export default function OrangTuaDashboard() {
                 <MenuButton icon={<BookOpen />} label="Panduan" onClick={() => window.open("/docs/Panduan_SIM-Tren_Orang_Tua.pdf", "_blank")} color="bg-blue-500" />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+              <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                 <Wallet className="text-green-500 mb-2" size={24} />
                 <p className="text-gray-400 text-xs font-medium">Tagihan Aktif</p>
                 <h4 className="text-xl font-black text-gray-800">{data.statistik.tagihan_aktif} Tagihan</h4>
               </div>
-              <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+              <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                 <History className="text-green-500 mb-2" size={24} />
                 <p className="text-gray-400 text-xs font-medium">Kehadiran (Hadir)</p>
                 <h4 className="text-xl font-black text-gray-800">{data.statistik.kehadiran_total} Kali</h4>
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-gray-800">Pengaduan Terakhir</h3>
                 <button onClick={() => navigate("/orangtua/pengaduan")} className="text-green-600 text-xs font-bold">Lihat Semua</button>
@@ -211,7 +211,7 @@ export default function OrangTuaDashboard() {
 
           {/* Side Info (Right) */}
           <div className="space-y-6 mb-10">
-            <div className="bg-white rounded-3xl shadow-lg shadow-green-100 border border-green-50 p-6">
+            <div className="bg-white rounded-2xl shadow-lg shadow-green-100 border border-green-50 p-6">
               <h3 className="font-bold text-gray-800 mb-4">Tagihan Mendesak</h3>
               {data.keuangan.tagihan_pending ? (
                 <div className="space-y-4">
@@ -231,7 +231,7 @@ export default function OrangTuaDashboard() {
               )}
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><Cross className="text-teal-500" /> Kondisi Kesehatan</h3>
               <div className="grid grid-cols-1 gap-4">
                 <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
@@ -240,7 +240,7 @@ export default function OrangTuaDashboard() {
                 </div>
                 <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100">
                   <p className="text-xs font-bold text-orange-600 mb-1 uppercase">Diagnosa Scabies</p>
-                  <p className="text-sm font-bold text-gray-800">{data.kesehatan.screening?.diagnosa || 'Belum Screening'}</p>
+                  <p className="text-sm font-bold text-gray-800">{data.kesehatan.screening?.diagnosa?.replaceAll('_', ' ') || 'Belum Screening'}</p>
                 </div>
               </div>
             </div>

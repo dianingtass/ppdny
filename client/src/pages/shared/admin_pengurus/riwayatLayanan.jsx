@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Eye, Loader2, Calendar, Star } from "lucide-react";
+import { Eye, Loader2, Calendar, Star, Plus } from "lucide-react";
 import DetailRiwayatModal from "../../../components/DetailRiwayatLayananPengurusModal";
 import ProsesLayananModal from "../../../components/ProsesLayananModal";
 import InputRiwayatLayananModal from "../../../components/InputRiwayatLayananModal";
 import AlertToast from "../../../components/AlertToast";
-import { Plus } from "lucide-react";
 import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
@@ -13,6 +12,8 @@ import ProfileAvatar from '../../../components/ProfileAvatar';
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -53,7 +54,8 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     return matchStatus && matchLayanan;
   });
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "waktu");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [detailData, setDetailData] = useState(null);
@@ -80,16 +82,10 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => {
-    jump(1);
-  }, [selectedStatus, selectedLayanan]);
+  useEffect(() => { jump(1); }, [selectedStatus, selectedLayanan]);
 
   const handleOpenDetail = (item) => { setDetailData(item); setIsDetailOpen(true); };
-
-  const handleOpenProcess = (item) => {
-    setProcessData(item);
-    setIsProcessOpen(true);
-  };
+  const handleOpenProcess = (item) => { setProcessData(item); setIsProcessOpen(true); };
 
   const handleSubmitProcess = async (id, formData) => {
     setIsSaving(true);
@@ -121,18 +117,6 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     }
   };
 
-  const getActiveFilterCount = () => {
-    let count = 0;
-    if (selectedStatus) count++;
-    if (selectedLayanan) count++;
-    return count;
-  };
-
-  const resetFilters = () => {
-    setSelectedStatus("");
-    setSelectedLayanan("");
-  };
-
   return (
     <div className="space-y-6 relative">
       <AlertToast message={message} onClose={clearAlert} />
@@ -150,7 +134,6 @@ export default function RiwayatLayananPage({ rolePrefix }) {
         </button>
       </div>
 
-      {/* Search + Filter */}
       <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari riwayat layanan..."
@@ -160,8 +143,8 @@ export default function RiwayatLayananPage({ rolePrefix }) {
           className="flex-1"
         />
         <FilterDropdown
-          activeCount={getActiveFilterCount()}
-          onReset={resetFilters}
+          activeCount={(selectedStatus ? 1 : 0) + (selectedLayanan ? 1 : 0)}
+          onReset={() => { setSelectedStatus(""); setSelectedLayanan(""); }}
         >
           <div className="space-y-3">
             <div>
@@ -203,9 +186,9 @@ export default function RiwayatLayananPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                    <th className="p-4 w-[20%]">Waktu & Layanan</th>
-                    <th className="p-4 w-[40%]">Santri</th>
-                    <th className="p-4 w-[10%]">Status</th>
+                    <SortableHeader label="Waktu & Layanan" sortKey="waktu" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Santri" sortKey="users.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[40%] cursor-pointer" />
+                    <SortableHeader label="Status" sortKey="status_sesudah" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[10%] cursor-pointer" />
                     <th className="p-4 text-center w-[20%]">Rating</th>
                     <th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>

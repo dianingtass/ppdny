@@ -13,6 +13,8 @@ import Pagination from "../../components/pagination/Pagination";
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import SortDropdown from "../../components/SortDropdown";
+import SortableHeader from "../../components/SortableHeader";
 
 export default function FeedbackView() {
   const [dataList, setDataList] = useState([]);
@@ -23,6 +25,9 @@ export default function FeedbackView() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("Semua");
   const [selectedRating, setSelectedRating] = useState("");
+  const [sortBy, setSortBy] = useState("terbaru"); // terbaru, terlama, ratingDesc, ratingAsc
+  const [sortKey, setSortKey] = useState("tanggal"); // tanggal, rating
+  const [sortDir, setSortDir] = useState("desc");
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,22 +52,52 @@ export default function FeedbackView() {
     fetchData();
   }, []);
 
+  const handleSortDropdownChange = (val) => {
+    setSortBy(val);
+    if (val === "terbaru") { setSortKey("tanggal"); setSortDir("desc"); }
+    else if (val === "terlama") { setSortKey("tanggal"); setSortDir("asc"); }
+    else if (val === "ratingDesc") { setSortKey("rating"); setSortDir("desc"); }
+    else if (val === "ratingAsc") { setSortKey("rating"); setSortDir("asc"); }
+  };
+
+  const handleSort = (key) => {
+    const dir = sortKey === key && sortDir === "desc" ? "asc" : "desc";
+    setSortKey(key);
+    setSortDir(dir);
+    if (key === "tanggal") setSortBy(dir === "desc" ? "terbaru" : "terlama");
+    if (key === "rating") setSortBy(dir === "desc" ? "ratingDesc" : "ratingAsc");
+  };
+
   // LOGIKA FILTER GABUNGAN (SEARCH + TYPE + RATING)
-  const filteredData = dataList.filter(item => {
-    const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase());
-    const matchType = filterType === "Semua" || item.tipe === filterType;
-    const itemRating = Math.round(item.avg_rating || 0);
-    const matchRating = !selectedRating || itemRating === parseInt(selectedRating);
-    return matchSearch && matchType && matchRating;
-  });
+  const sortedData = [...dataList]
+    .filter(item => {
+      const matchSearch = (item.judul?.toLowerCase() || "").includes(search.toLowerCase());
+      const matchType = filterType === "Semua" || item.tipe === filterType;
+      const itemRating = Math.round(item.avg_rating || 0);
+      const matchRating = !selectedRating || itemRating === parseInt(selectedRating);
+      return matchSearch && matchType && matchRating;
+    })
+    .sort((a, b) => {
+      if (sortKey === "tanggal") {
+        const dateA = new Date(a.created_at || a.tanggal || 0);
+        const dateB = new Date(b.created_at || b.tanggal || 0);
+        return sortDir === "desc" ? dateB - dateA : dateA - dateB;
+      }
+      if (sortKey === "rating") {
+        const valA = a.avg_rating || 0;
+        const valB = b.avg_rating || 0;
+        return sortDir === "desc" ? valB - valA : valA - valB;
+      }
+      return 0;
+    });
 
   // Custom Hook Pagination 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData, 10);
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData, 10);
 
   // Reset pagination ke halaman 1 setiap kali filter atau search berubah
   useEffect(() => {
       jump(1);
-  }, [filterType, selectedRating, search, dataList]);
+  }, [filterType, selectedRating, search, sortBy, dataList]);
 
   const handleOpenDetail = (item) => {
       setSelectedItem({ id: item.id, tipe: item.tipe });
@@ -104,10 +139,23 @@ export default function FeedbackView() {
           onClear={() => setSearch("")}
           className="flex-1"
         />
-        <FilterDropdown
-          activeCount={getActiveFilterCount()}
-          onReset={resetFilters}
-        >
+        <div className="flex gap-2 items-center">
+          <div className="block md:hidden">
+            <SortDropdown
+              value={sortBy}
+              onChange={handleSortDropdownChange}
+              options={[
+                { value: "terbaru", label: "Terbaru" },
+                { value: "terlama", label: "Terlama" },
+                { value: "ratingDesc", label: "Rating Tertinggi" },
+                { value: "ratingAsc", label: "Rating Terendah" }
+              ]}
+            />
+          </div>
+          <FilterDropdown
+            activeCount={getActiveFilterCount()}
+            onReset={resetFilters}
+          >
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">Tipe Feedback</label>
@@ -140,6 +188,7 @@ export default function FeedbackView() {
             </div>
           </div>
         </FilterDropdown>
+        </div>
       </div>
 
       {loading ? (
@@ -157,8 +206,8 @@ export default function FeedbackView() {
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
                     <th className="p-4 w-[35%] pl-6">Judul</th>
                     <th className="p-4 w-[15%]">Tipe</th>
-                    <th className="p-4 w-[15%]">Tanggal</th>
-                    <th className="p-4 w-[20%]">Rating Rata-rata</th>
+                    <SortableHeader label="Tanggal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="p-4 w-[15%] cursor-pointer" />
+                    <SortableHeader label="Rating Rata-rata" sortKey="rating" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="p-4 w-[20%] cursor-pointer" />
                     <th className="p-4 text-center w-[15%] pr-6">Aksi</th>
                   </tr>
                 </thead>

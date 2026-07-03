@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Edit2, Trash2, Users, Loader2, MapPin, Home } from "lucide-react";
+import { Plus, Edit2, Trash2, Users, Loader2, MapPin } from "lucide-react";
 import KamarModal from "../../../components/KamarModal";
 import KamarSantriModal from "../../../components/KamarSantriModal";
 import AssignKamarModal from "../../../components/AssignKamarModal";
@@ -12,6 +12,8 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function DataKamarPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
@@ -21,7 +23,8 @@ export default function DataKamarPage({ rolePrefix }) {
   const [selectedGender, setSelectedGender] = useState("");
 
   const filteredData = dataList.filter(item => !selectedGender || item.gender === selectedGender);
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "kamar");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [modalKamar, setModalKamar] = useState({ isOpen: false, isEditing: false, data: null });
@@ -48,13 +51,8 @@ export default function DataKamarPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => {
-    fetchData();
-  }, [refreshListKey]);
-
-  useEffect(() => {
-    jump(1);
-  }, [selectedGender]);
+  useEffect(() => { fetchData(); }, [refreshListKey]);
+  useEffect(() => { jump(1); }, [selectedGender]);
 
   const handleSubmitKamar = async (formData) => {
     setIsSaving(true);
@@ -116,7 +114,6 @@ export default function DataKamarPage({ rolePrefix }) {
         </button>
       </div>
 
-      {/* Search + Filter */}
       <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari Kamar..."
@@ -153,7 +150,11 @@ export default function DataKamarPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                    <th className="p-4 w-[30%]">Nama Kamar</th><th className="p-4 w-[20%]">Terisi / Kapasitas</th><th className="p-4 w-[15%]">Gender</th><th className="p-4 w-[25%]">Lokasi</th><th className="p-4 text-center w-[10%]">Aksi</th>
+                    <SortableHeader label="Nama Kamar" sortKey="kamar" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[30%] cursor-pointer" />
+                    <SortableHeader label="Terisi / Kapasitas" sortKey="kapasitas" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Gender" sortKey="gender" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] cursor-pointer" />
+                    <SortableHeader label="Lokasi" sortKey="lokasi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

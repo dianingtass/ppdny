@@ -201,7 +201,6 @@ const createObservasiController = ({ writableRoles = [] }) => {
 
         // Bangun filter observasi berdasarkan param yang dikirim
         const observasiFilter = {};
-        if (waktu) observasiFilter.waktu = waktu;
         if (startDate || endDate) {
           observasiFilter.tanggal = {};
           if (startDate) observasiFilter.tanggal.gte = new Date(startDate);
@@ -217,6 +216,15 @@ const createObservasiController = ({ writableRoles = [] }) => {
         } else if (Object.keys(observasiFilter).length > 0) {
           where.observasi_observasi_id_santriTousers = { some: observasiFilter };
         }
+
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const endOfMonth = new Date();
+        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+        endOfMonth.setDate(0);
+        endOfMonth.setHours(23, 59, 59, 999);
 
         const [data, total] = await prisma.$transaction([
           prisma.users.findMany({
@@ -241,7 +249,14 @@ const createObservasiController = ({ writableRoles = [] }) => {
               },
               _count: {
                 select: {
-                  observasi_observasi_id_santriTousers: true
+                  observasi_observasi_id_santriTousers: {
+                    where: {
+                      tanggal: {
+                        gte: startOfMonth,
+                        lte: endOfMonth
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -256,6 +271,11 @@ const createObservasiController = ({ writableRoles = [] }) => {
 
           // Filter kategori skor secara post-query (karena butuh join kalkulasi)
           if (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi" && latestKategori !== kategoriSkor) {
+            return null;
+          }
+
+          // Filter waktu berdasarkan observasi terakhir
+          if (waktu && (!latest || latest.waktu !== waktu)) {
             return null;
           }
 

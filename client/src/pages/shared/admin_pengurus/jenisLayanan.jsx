@@ -8,12 +8,16 @@ import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function JenisLayananPage({ rolePrefix }) {
   const [layananList, setLayananList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(layananList);
+
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(layananList, "nama_layanan");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,7 +108,10 @@ export default function JenisLayananPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[20%]">Jenis Layanan</th><th className="p-4 w-[20%]">Estimasi Waktu</th><th className="p-4 w-[50%]">Deskripsi</th><th className="p-4 text-center w-[10%]">Aksi</th>
+                    <SortableHeader label="Jenis Layanan" sortKey="nama_layanan" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Estimasi Waktu" sortKey="estimasi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Deskripsi" sortKey="deskripsi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[50%] cursor-pointer" />
+                    <th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

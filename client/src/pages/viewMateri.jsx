@@ -10,6 +10,7 @@ import { AuthContext } from "../context/AuthContext";
 import SearchBar from "../components/SearchBar";
 import FilterSelect from "../components/FilterSelect";
 import FilterDropdown from "../components/FilterDropdown";
+import SortDropdown from "../components/SortDropdown";
 
 const LEGACY_RECENT_STORAGE_KEY = "santri_recent_materi";
 
@@ -20,6 +21,7 @@ export default function MateriView() {
   const [materi, setMateri]                         = useState([]);
   const [search, setSearch]                         = useState("");
   const [selectedSumber, setSelectedSumber]         = useState("");
+  const [sortBy, setSortBy]                         = useState("terbaru"); // "terbaru" | "terlama" | "az" | "za"
   const [loading, setLoading]                       = useState(true);
   const [isAjukanOpen, setIsAjukanOpen]             = useState(false);
   const [isRiwayatOpen, setIsRiwayatOpen]           = useState(false);
@@ -100,6 +102,21 @@ export default function MateriView() {
   const materiTeori      = filtered.filter((item) => item.sumber !== "pengalaman");
   const materiPengalaman = filtered.filter((item) => item.sumber === "pengalaman");
 
+  const sortMateriList = (list) => {
+    return [...list].sort((a, b) => {
+      const dateA = new Date(a.created_at || a.tanggal_pengajuan || 0);
+      const dateB = new Date(b.created_at || b.tanggal_pengajuan || 0);
+      if (sortBy === "terbaru") return dateB - dateA;
+      if (sortBy === "terlama") return dateA - dateB;
+      if (sortBy === "az") return (a.judul || "").localeCompare(b.judul || "");
+      if (sortBy === "za") return (b.judul || "").localeCompare(a.judul || "");
+      return 0;
+    });
+  };
+
+  const sortedTeori      = sortMateriList(materiTeori);
+  const sortedPengalaman = sortMateriList(materiPengalaman);
+
   const isPimpinan = role === "pimpinan";
 
   if (isPimpinan) {
@@ -131,29 +148,41 @@ export default function MateriView() {
             onClear={() => setSearch("")}
             className="flex-1"
           />
-          <FilterDropdown
-            activeCount={selectedSumber ? 1 : 0}
-            onReset={() => setSelectedSumber("")}
-          >
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1">Sumber Materi</label>
-              <FilterSelect
-                placeholder="Semua Sumber"
-                value={selectedSumber}
-                onChange={(e) => setSelectedSumber(e.target.value)}
-                options={[
-                  { value: "teori", label: "Berdasarkan Teori" },
-                  { value: "pengalaman", label: "Berdasarkan Pengalaman" },
-                ]}
-              />
-            </div>
-          </FilterDropdown>
+          <div className="flex gap-2 items-center">
+            <SortDropdown
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "terbaru", label: "Terbaru" },
+                { value: "terlama", label: "Terlama" },
+                { value: "az", label: "A-Z" },
+                { value: "za", label: "Z-A" }
+              ]}
+            />
+            <FilterDropdown
+              activeCount={selectedSumber ? 1 : 0}
+              onReset={() => setSelectedSumber("")}
+            >
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Sumber Materi</label>
+                <FilterSelect
+                  placeholder="Semua Sumber"
+                  value={selectedSumber}
+                  onChange={(e) => setSelectedSumber(e.target.value)}
+                  options={[
+                    { value: "teori", label: "Berdasarkan Teori" },
+                    { value: "pengalaman", label: "Berdasarkan Pengalaman" },
+                  ]}
+                />
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
 
         {/* DAFTAR MATERI */}
         <div className="pb-10">
           {/* MATERI BERDASARKAN TEORI */}
-          {materiTeori.length > 0 && (
+          {sortedTeori.length > 0 && (
             <div className="mb-10">
               <div className="mb-4">
                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -163,7 +192,7 @@ export default function MateriView() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {materiTeori.map((item) => (
+                {sortedTeori.map((item) => (
                   <CardMateri
                     key={item.id}
                     materi={item}
@@ -177,7 +206,7 @@ export default function MateriView() {
           )}
 
           {/* MATERI BERDASARKAN PENGALAMAN */}
-          {materiPengalaman.length > 0 && (
+          {sortedPengalaman.length > 0 && (
             <div className="mb-10">
               <div className="mb-4">
                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -186,7 +215,7 @@ export default function MateriView() {
                 </h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {materiPengalaman.map((item) => (
+                {sortedPengalaman.map((item) => (
                   <CardMateri
                     key={item.id}
                     materi={item}
@@ -273,30 +302,42 @@ export default function MateriView() {
             onClear={() => setSearch("")}
             className="flex-1"
           />
-          <FilterDropdown
-            activeCount={selectedSumber ? 1 : 0}
-            onReset={() => setSelectedSumber("")}
-          >
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1">Sumber Materi</label>
-              <FilterSelect
-                placeholder="Semua Sumber"
-                value={selectedSumber}
-                onChange={(e) => setSelectedSumber(e.target.value)}
-                options={[
-                  { value: "teori", label: "Berdasarkan Teori" },
-                  { value: "pengalaman", label: "Berdasarkan Pengalaman" },
-                ]}
-              />
-            </div>
-          </FilterDropdown>
+          <div className="flex gap-2 items-center">
+            <SortDropdown
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "terbaru", label: "Terbaru" },
+                { value: "terlama", label: "Terlama" },
+                { value: "az", label: "A-Z" },
+                { value: "za", label: "Z-A" }
+              ]}
+            />
+            <FilterDropdown
+              activeCount={selectedSumber ? 1 : 0}
+              onReset={() => setSelectedSumber("")}
+            >
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Sumber Materi</label>
+                <FilterSelect
+                  placeholder="Semua Sumber"
+                  value={selectedSumber}
+                  onChange={(e) => setSelectedSumber(e.target.value)}
+                  options={[
+                    { value: "teori", label: "Berdasarkan Teori" },
+                    { value: "pengalaman", label: "Berdasarkan Pengalaman" },
+                  ]}
+                />
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
       </div>
 
       {/* DAFTAR MATERI */}
       <div className="max-w-6xl mx-auto px-4 pb-10">
         {/* MATERI BERDASARKAN TEORI */}
-        {materiTeori.length > 0 && (
+        {sortedTeori.length > 0 && (
           <div className="mb-12">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -309,7 +350,7 @@ export default function MateriView() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {materiTeori.map((item) => (
+              {sortedTeori.map((item) => (
                 <CardMateri
                   key={item.id}
                   materi={item}
@@ -323,7 +364,7 @@ export default function MateriView() {
         )}
 
         {/* MATERI BERDASARKAN PENGALAMAN */}
-        {materiPengalaman.length > 0 && (
+        {sortedPengalaman.length > 0 && (
           <div className="mb-12">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -335,7 +376,7 @@ export default function MateriView() {
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {materiPengalaman.map((item) => (
+              {sortedPengalaman.map((item) => (
                 <CardMateri
                   key={item.id}
                   materi={item}

@@ -49,9 +49,6 @@ const getSantriList = async (req, res) => {
         none: {}
       };
     } else {
-      if (diagnosa) {
-        screeningFilter.diagnosa = diagnosa;
-      }
       if (startDate || endDate) {
         screeningFilter.tanggal = {};
         if (startDate) {
@@ -99,11 +96,21 @@ const getSantriList = async (req, res) => {
       prisma.users.count({ where: whereCondition })
     ]);
 
+    const filteredData = data.map(item => {
+      const latest = item.screening_screening_id_santriTousers?.[0] || null;
+      if (diagnosa && diagnosa !== "Belum_Pernah_Screening") {
+        if (!latest || latest.diagnosa !== diagnosa) {
+          return null;
+        }
+      }
+      return item;
+    }).filter(Boolean);
+
     res.json({
       success: true,
-      data,
+      data: filteredData,
       pagination: {
-        total,
+        total: filteredData.length,
         page: Number(page),
         limit: Number(limit)
       }

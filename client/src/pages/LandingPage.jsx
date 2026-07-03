@@ -41,7 +41,7 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const statsRes = await api.get("/public/stats"); 
+        const statsRes = await api.get("/public/stats");
         if (statsRes.data.success) {
           setStats(statsRes.data.data);
         }
@@ -165,7 +165,7 @@ export default function LandingPage() {
       {/* TENTANG KAMI / KEUNGGULAN */}
       <section className="py-20 bg-white border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-black text-gray-800 mb-4">
               Mengapa Memilih Kami?
@@ -222,10 +222,10 @@ export default function LandingPage() {
             </p>
             <div className="w-16 h-1 bg-green-400 mx-auto mt-4 rounded-full"></div>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
             {/* VISI CARD */}
-            <div className="lg:col-span-2 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-lg hover:bg-white/[0.12] transition duration-300">
+            <div className="lg:col-span-2 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-2xl flex flex-col justify-between shadow-lg hover:bg-white/[0.12] transition duration-300">
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-6 border border-white/10">
                   <Target className="text-green-300 w-6 h-6" />
@@ -237,9 +237,9 @@ export default function LandingPage() {
                 "Unggul dalam prestasi akademik dan non-akademik"
               </p>
             </div>
-            
+
             {/* MISI CARD */}
-            <div className="lg:col-span-3 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-3xl shadow-lg hover:bg-white/[0.12] transition duration-300">
+            <div className="lg:col-span-3 bg-white/10 backdrop-blur border border-white/15 p-8 md:p-10 rounded-2xl shadow-lg hover:bg-white/[0.12] transition duration-300">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
                   <Compass className="text-green-300 w-6 h-6" />
@@ -249,7 +249,7 @@ export default function LandingPage() {
                   <h3 className="text-xl font-bold text-white">Upaya & Langkah Kami</h3>
                 </div>
               </div>
-              
+
               <div className="space-y-5">
                 {[
                   { text: "Menciptakan lingkungan sekolah yang kondusif atraktif, kreatif dan inovatif." },
@@ -258,7 +258,7 @@ export default function LandingPage() {
                   { text: "Mengembangkan minat dan bakat siswa dalam bidang Agama, Seni, Olahraga, Sains dan Bahasa." }
                 ].map((item) => (
                   <div className="flex items-center gap-4 group/item">
-                    <div className="w-6 h-6 rounded-full bg-white/20 group-hover/item:bg-green-500/70 flex items-center justify-center font-bold text-green-200 shrink-0 transition-colors"/>
+                    <div className="w-6 h-6 rounded-full bg-white/20 group-hover/item:bg-green-500/70 flex items-center justify-center font-bold text-green-200 shrink-0 transition-colors" />
                     <p className="text-base text-white/90 leading-relaxed font-medium transition-colors group-hover/item:text-white">
                       {item.text}
                     </p>

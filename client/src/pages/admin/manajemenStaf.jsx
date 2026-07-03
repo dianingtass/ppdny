@@ -21,6 +21,8 @@ import ProfileAvatar from '../../components/ProfileAvatar';
 import SearchBar from "../../components/SearchBar";
 import FilterDropdown from "../../components/FilterDropdown";
 import FilterSelect from "../../components/FilterSelect";
+import useSort from "../../hooks/useSort";
+import SortableHeader from "../../components/SortableHeader";
 
 
 export default function ManajemenStaf() {
@@ -73,8 +75,10 @@ export default function ManajemenStaf() {
     });
   }, [dataList, search, filterRole]);
 
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "nama");
+
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(
-    filteredData,
+    sortedData,
     10,
   );
 
@@ -235,9 +239,9 @@ export default function ManajemenStaf() {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[35%]">Identitas Staf</th>
+                    <SortableHeader label="Identitas Staf" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[35%]" />
                     <th className="p-4 w-[25%]">Hak Akses (Role)</th>
-                    <th className="p-4 w-[25%]">Kontak</th>
+                    <SortableHeader label="Kontak" sortKey="email" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%]" />
                     <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>

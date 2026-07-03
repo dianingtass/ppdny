@@ -26,7 +26,7 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
       setCatatan("");
       setDynamicInputs({});
       setShowDropdown(false);
-      
+
       const fetchOptions = async () => {
         setLoadingOptions(true);
         try {
@@ -82,8 +82,8 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
   };
 
   // Filter santri based on search term
-  const filteredSantri = santriList.filter(s => 
-    s.nama.toLowerCase().includes(santriSearch.toLowerCase()) || 
+  const filteredSantri = santriList.filter(s =>
+    s.nama.toLowerCase().includes(santriSearch.toLowerCase()) ||
     s.nip.includes(santriSearch)
   );
 
@@ -91,8 +91,8 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
 
   return (
     <div className="fixed inset-0 bg-black/55 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
-        
+      <div className="bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
+
         {/* Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
           <div>
@@ -162,9 +162,8 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
                             setSantriSearch(`${s.nama} (${s.nip})`);
                             setShowDropdown(false);
                           }}
-                          className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-green-50 transition flex items-center justify-between ${
-                            selectedSantri === s.id ? "bg-green-50 text-green-700 font-semibold" : "text-gray-700"
-                          }`}
+                          className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-green-50 transition flex items-center justify-between ${selectedSantri === s.id ? "bg-green-50 text-green-700 font-semibold" : "text-gray-700"
+                            }`}
                         >
                           <span>{s.nama}</span>
                           <span className="text-xs text-gray-400">NIS: {s.nip}</span>
@@ -204,7 +203,7 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">
                           {q.label} {isRequired && <span className="text-red-500">*</span>}
                         </label>
-                        
+
                         {q.tipe_input === "Teks_Panjang" ? (
                           <textarea
                             required={isRequired}

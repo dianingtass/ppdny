@@ -149,7 +149,7 @@ export default function OrangTuaScabiesDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 -mt-12">
-        <div className="bg-white rounded-3xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
+        <div className="bg-white rounded-2xl shadow-xl p-6 flex flex-col md:flex-row items-center gap-6 border border-white">
           <ProfileAvatar
             fotoProfil={data.anak.foto_profil}
             nama={data.anak.nama}
@@ -246,7 +246,7 @@ export default function OrangTuaScabiesDashboard() {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-6">
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
                 <div>
                   <h4 className="font-bold text-gray-900">Riwayat Screening Terakhir</h4>
@@ -297,7 +297,7 @@ export default function OrangTuaScabiesDashboard() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
                   <div>
                     <h4 className="font-bold text-gray-900">Riwayat Observasi Terakhir</h4>
@@ -329,7 +329,7 @@ export default function OrangTuaScabiesDashboard() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h4 className="font-bold text-gray-900 mb-4">Insight Wali</h4>
                 <div className="space-y-4">
                   <InsightItem label="Status Terakhir" value={scabiesInsights.status_terakhir || "Belum ada insight status terakhir."} />
@@ -338,7 +338,7 @@ export default function OrangTuaScabiesDashboard() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h4 className="font-bold text-gray-900 mb-4">Komposisi Riwayat Screening</h4>
                 <div className="space-y-4">
                   <StatProgress
@@ -403,7 +403,7 @@ function ScabiesParentCard({ title, value, detail, icon, tone }) {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
       <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${tones[tone] || tones.gray}`}>{icon}</div>
       <p className="mt-4 text-[11px] font-bold uppercase tracking-wide text-gray-400">{title}</p>
       <h4 className="mt-1 text-xl font-black text-gray-900">{value}</h4>
@@ -414,7 +414,7 @@ function ScabiesParentCard({ title, value, detail, icon, tone }) {
 
 function ScabiesParentChartCard({ title, description, data, xKey }) {
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
       <div className="mb-4">
         <h4 className="text-lg font-bold text-gray-900">{title}</h4>
         <p className="text-xs text-gray-500 mt-1">{description}</p>

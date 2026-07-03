@@ -11,6 +11,8 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 const formatRupiah = (num) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
@@ -37,7 +39,8 @@ export default function KeuanganPage({ rolePrefix }) {
     return matchStatus && matchJenis;
   });
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredData);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "nama_tagihan");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isTagihanOpen, setIsTagihanOpen] = useState(false);
@@ -114,11 +117,7 @@ export default function KeuanganPage({ rolePrefix }) {
         <SearchBar placeholder="Cari tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
           activeCount={(selectedStatus ? 1 : 0) + (selectedJenis ? 1 : 0)}
-          onReset={() => {
-            setSelectedStatus("");
-            setSelectedJenis("");
-            jump(1);
-          }}
+          onReset={() => { setSelectedStatus(""); setSelectedJenis(""); jump(1); }}
         >
           <div className="space-y-3">
             <div>
@@ -158,12 +157,12 @@ export default function KeuanganPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
-                    <th className="p-4 w-[25%] font-semibold">Nama & Jenis Tagihan</th>
-                    <th className="p-4 w-[25%] font-semibold">Santri</th>
-                    <th className="p-4 w-[20%] font-semibold">Nominal</th>
-                    <th className="p-4 w-[20%] font-semibold">Jatuh Tempo</th>
-                    <th className="p-4 w-[15%] font-semibold text-center">Status</th>
-                    <th className="p-4 w-[15%] font-semibold text-center">Aksi</th>
+                    <SortableHeader label="Nama & Jenis Tagihan" sortKey="nama_tagihan" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Santri" sortKey="users.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Nominal" sortKey="nominal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Jatuh Tempo" sortKey="batas_pembayaran" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                    <SortableHeader label="Status" sortKey="status" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] text-center cursor-pointer" />
+                    <th className="p-4 w-[15%] text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -183,8 +182,8 @@ export default function KeuanganPage({ rolePrefix }) {
                       </td>
                       <td className="p-4 text-center">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-                          item.status === 'Lunas' ? 'bg-green-100 text-green-700' : 
-                          item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' : 
+                          item.status === 'Lunas' ? 'bg-green-100 text-green-700' :
+                          item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' :
                           'bg-red-100 text-red-700'
                         }`}>
                           {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : item.status}
@@ -213,8 +212,8 @@ export default function KeuanganPage({ rolePrefix }) {
                     <p className="text-xs text-gray-400 mt-0.5">{item.jenis_tagihan?.jenis_tagihan || "-"}</p>
                   </div>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    item.status === 'Lunas' ? 'bg-green-100 text-green-700' : 
-                    item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' : 
+                    item.status === 'Lunas' ? 'bg-green-100 text-green-700' :
+                    item.status === 'Perlu_Konfirmasi' || item.status === 'Perlu Konfirmasi' ? 'bg-amber-100 text-amber-700' :
                     'bg-red-100 text-red-700'
                   }`}>
                     {item.status === 'Perlu_Konfirmasi' ? 'Perlu Konfirmasi' : item.status}

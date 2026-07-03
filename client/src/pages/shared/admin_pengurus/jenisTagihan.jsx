@@ -8,13 +8,16 @@ import { useAlert } from "../../../hooks/useAlert";
 import usePagination from "../../../components/pagination/usePagination";
 import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function JenisTagihanPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(dataList);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(dataList, "jenis_tagihan");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,7 +108,9 @@ export default function JenisTagihanPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[25%]">Jenis Tagihan</th><th className="p-4 w-[60%]">Deskripsi</th><th className="p-4 text-center w-[15%]">Aksi</th>
+                    <SortableHeader label="Jenis Tagihan" sortKey="jenis_tagihan" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Deskripsi" sortKey="deskripsi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[60%] cursor-pointer" />
+                    <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

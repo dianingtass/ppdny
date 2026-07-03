@@ -10,6 +10,8 @@ import { useAlert } from "../../hooks/useAlert";
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import SortDropdown from "../../components/SortDropdown";
+import SortableHeader from "../../components/SortableHeader";
 
 const STATUS_SELEKSI_BADGE = {
   Belum_Diseleksi: "bg-gray-100 text-gray-600",
@@ -33,9 +35,42 @@ export default function PanitiaSeleksi() {
   const [search, setSearch] = useState("");
   const [filterTahun, setFilterTahun] = useState("");
   const [filterSeleksi, setFilterSeleksi] = useState("");
+  const [sortBy, setSortBy] = useState("terbaru"); // terbaru, terlama, az, za
+  const [sortKey, setSortKey] = useState("id");
+  const [sortDir, setSortDir] = useState("desc");
   const [selectedPendaftar, setSelectedPendaftar] = useState(null);
-  
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(pendaftar, 15);
+
+  const handleSortDropdownChange = (val) => {
+    setSortBy(val);
+    if (val === "terbaru") { setSortKey("id"); setSortDir("desc"); }
+    else if (val === "terlama") { setSortKey("id"); setSortDir("asc"); }
+    else if (val === "az") { setSortKey("nama"); setSortDir("asc"); }
+    else if (val === "za") { setSortKey("nama"); setSortDir("desc"); }
+  };
+
+  const handleSort = (key) => {
+    const dir = sortKey === key && sortDir === "desc" ? "asc" : "desc";
+    setSortKey(key);
+    setSortDir(dir);
+    if (key === "id") setSortBy(dir === "desc" ? "terbaru" : "terlama");
+    if (key === "nama") setSortBy(dir === "desc" ? "za" : "az");
+  };
+
+  const sortedPendaftar = [...pendaftar].sort((a, b) => {
+    if (sortKey === "id") {
+      const dateA = new Date(a.created_at || 0);
+      const dateB = new Date(b.created_at || 0);
+      return sortDir === "desc" ? dateB - dateA : dateA - dateB;
+    }
+    if (sortKey === "no") return sortDir === "desc" ? (b.no_pendaftaran || "").localeCompare(a.no_pendaftaran || "") : (a.no_pendaftaran || "").localeCompare(b.no_pendaftaran || "");
+    if (sortKey === "nama") return sortDir === "desc" ? (b.nama_lengkap || "").localeCompare(a.nama_lengkap || "") : (a.nama_lengkap || "").localeCompare(b.nama_lengkap || "");
+    if (sortKey === "sekolah") return sortDir === "desc" ? (b.asal_sekolah || "").localeCompare(a.asal_sekolah || "") : (a.asal_sekolah || "").localeCompare(b.asal_sekolah || "");
+    if (sortKey === "status") return sortDir === "desc" ? (b.ppdb_seleksi?.status_seleksi || "").localeCompare(a.ppdb_seleksi?.status_seleksi || "") : (a.ppdb_seleksi?.status_seleksi || "").localeCompare(b.ppdb_seleksi?.status_seleksi || "");
+    if (sortKey === "rekomendasi") return sortDir === "desc" ? (b.ppdb_seleksi?.rekomendasi || "").localeCompare(a.ppdb_seleksi?.rekomendasi || "") : (a.ppdb_seleksi?.rekomendasi || "").localeCompare(b.ppdb_seleksi?.rekomendasi || "");
+    return 0;
+  });
+
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedPendaftar, 15);
 
   const { message, showAlert, clearAlert } = useAlert();
   const [confirmPublish, setConfirmPublish] = useState(false);
@@ -151,35 +186,49 @@ export default function PanitiaSeleksi() {
             onClear={() => setSearch("")}
             className="flex-1"
           />
-          <FilterDropdown
-            activeCount={getActiveFilterCount()}
-            onReset={resetFilters}
-          >
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
-                <FilterSelect
-                  value={filterTahun}
-                  onChange={(e) => setFilterTahun(e.target.value)}
-                  placeholder="Semua Gelombang"
-                  options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Seleksi</label>
-                <FilterSelect
-                  value={filterSeleksi}
-                  onChange={(e) => setFilterSeleksi(e.target.value)}
-                  placeholder="Semua Status"
-                  options={[
-                    { value: "Belum_Diseleksi", label: "Belum Diseleksi" },
-                    { value: "Sedang_Diseleksi", label: "Sedang Diseleksi" },
-                    { value: "Selesai", label: "Selesai" },
-                  ]}
-                />
-              </div>
+          <div className="flex gap-2 items-center">
+            <div className="block md:hidden">
+              <SortDropdown
+                value={sortBy}
+                onChange={handleSortDropdownChange}
+                options={[
+                  { value: "terbaru", label: "Terbaru" },
+                  { value: "terlama", label: "Terlama" },
+                  { value: "az", label: "A-Z" },
+                  { value: "za", label: "Z-A" }
+                ]}
+              />
             </div>
-          </FilterDropdown>
+            <FilterDropdown
+              activeCount={getActiveFilterCount()}
+              onReset={resetFilters}
+            >
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Gelombang PPDB</label>
+                  <FilterSelect
+                    value={filterTahun}
+                    onChange={(e) => setFilterTahun(e.target.value)}
+                    placeholder="Semua Gelombang"
+                    options={tahunList.map((t) => ({ value: t.id, label: t.nama_gelombang }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Status Seleksi</label>
+                  <FilterSelect
+                    value={filterSeleksi}
+                    onChange={(e) => setFilterSeleksi(e.target.value)}
+                    placeholder="Semua Status"
+                    options={[
+                      { value: "Belum_Diseleksi", label: "Belum Diseleksi" },
+                      { value: "Sedang_Diseleksi", label: "Sedang Diseleksi" },
+                      { value: "Selesai", label: "Selesai" },
+                    ]}
+                  />
+                </div>
+              </div>
+            </FilterDropdown>
+          </div>
         </div>
 
         {pendaftar.length > 0 && (
@@ -208,13 +257,13 @@ export default function PanitiaSeleksi() {
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500 border-b border-gray-100 bg-gray-50 uppercase tracking-wider text-[11px] font-bold">
-                  <th className="px-5 py-4">No. Pendaftaran</th>
-                  <th className="px-5 py-4">Nama Lengkap</th>
-                  <th className="px-5 py-4">Asal Sekolah</th>
+                  <SortableHeader label="No. Pendaftaran" sortKey="no" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Nama Lengkap" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Asal Sekolah" sortKey="sekolah" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
                   <th className="px-5 py-4">Baca Quran</th>
                   <th className="px-5 py-4 text-center">Nilai Total</th>
-                  <th className="px-5 py-4">Status Seleksi</th>
-                  <th className="px-5 py-4">Rekomendasi</th>
+                  <SortableHeader label="Status Seleksi" sortKey="status" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
+                  <SortableHeader label="Rekomendasi" sortKey="rekomendasi" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-5 py-4 cursor-pointer" />
                   {!isPimpinan && <th className="px-5 py-4 text-center">Aksi</th>}
                 </tr>
               </thead>

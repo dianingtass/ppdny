@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api";
-import { Plus, Edit2, Trash2, Loader2, Phone, ExternalLink, Mail } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, Mail, Phone } from "lucide-react";
 import InputOrtuModal from "../../../components/InputOrtuModal";
 import ListAnakModal from "../../../components/ListAnakModal";
 import AssignRelasiModal from "../../../components/AssignRelasiModal";
@@ -13,6 +13,8 @@ import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import ProfileAvatar from "../../../components/ProfileAvatar";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function DataOrangtuaPage({ rolePrefix }) {
   const [ortuList, setOrtuList] = useState([]);
@@ -27,7 +29,8 @@ export default function DataOrangtuaPage({ rolePrefix }) {
     return item.hubungan === selectedHubungan;
   });
 
-  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(filteredOrtuList);
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredOrtuList, "nama");
+  const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,9 +60,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
     return () => clearTimeout(t);
   }, [search, refreshListKey]);
 
-  useEffect(() => {
-    jump(1);
-  }, [selectedHubungan]);
+  useEffect(() => { jump(1); }, [selectedHubungan]);
 
   const handleSubmitBasic = async (formData) => {
     setIsSaving(true);
@@ -121,7 +122,6 @@ export default function DataOrangtuaPage({ rolePrefix }) {
         </button>
       </div>
 
-      {/* Search + Filter */}
       <div className="flex gap-3 items-center w-full">
         <SearchBar
           placeholder="Cari nama atau No HP..."
@@ -159,9 +159,9 @@ export default function DataOrangtuaPage({ rolePrefix }) {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                    <th className="p-4 w-[35%]">Nama Wali</th>
-                    <th className="p-4 w-[25%]">Kontak</th>
-                    <th className="p-4 w-[25%] text-center">Tanggungan</th>
+                    <SortableHeader label="Nama Wali" sortKey="nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[35%] cursor-pointer" />
+                    <SortableHeader label="Email" sortKey="email" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer" />
+                    <SortableHeader label="Tanggungan" sortKey="jumlah_anak" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] text-center cursor-pointer" />
                     <th className="p-4 text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
@@ -187,7 +187,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
                       </td>
                       <td className="p-4 text-center">
                         <button onClick={() => setListAnakModal({ isOpen: true, data: item })} className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-lg text-xs font-bold hover:bg-green-600 hover:text-white transition">
-                          {item.jumlah_anak} Anak <ExternalLink size={14} />
+                          {item.jumlah_anak} Anak
                         </button>
                       </td>
                       <td className="p-4 text-center">

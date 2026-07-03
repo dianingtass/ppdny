@@ -5,8 +5,8 @@ export default function PengaduanSantriModal({ isOpen, onClose, dataSantri, riwa
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                
+            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+
                 <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                     <div>
                         <h3 className="font-bold text-gray-800 text-lg flex items-center">
@@ -35,7 +35,7 @@ export default function PengaduanSantriModal({ isOpen, onClose, dataSantri, riwa
                                     </div>
                                     <p className="text-gray-600 text-xs pl-2 mb-3 leading-relaxed">{item.deskripsi}</p>
                                     <p className="text-gray-400 text-[10px] pl-2 flex items-center">
-                                        <Calendar size={10} className="mr-1"/>Dilaporkan pada: {item.tanggal}
+                                        <Calendar size={10} className="mr-1" />Dilaporkan pada: {item.tanggal}
                                     </p>
                                 </div>
                             ))}

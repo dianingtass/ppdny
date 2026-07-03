@@ -7,7 +7,7 @@ export default function DetailSantriModal({ isOpen, onClose, data }) {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
         <div className="bg-[url('/header.png')] bg-cover bg-center p-6 relative text-center">
           <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white bg-black/10 p-2 rounded-full transition"><X size={20} /></button>
           <ProfileAvatar
@@ -47,7 +47,7 @@ export default function DetailSantriModal({ isOpen, onClose, data }) {
                   </div>
                 ))}
               </div>
-            ) : <div className="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-200 flex items-center text-gray-400 text-xs italic"><AlertCircle size={14} className="mr-2"/> Belum ada data orang tua tertaut.</div>}
+            ) : <div className="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-200 flex items-center text-gray-400 text-xs italic"><AlertCircle size={14} className="mr-2" /> Belum ada data orang tua tertaut.</div>}
           </div>
         </div>
       </div>

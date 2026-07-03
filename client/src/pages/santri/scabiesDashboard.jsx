@@ -90,7 +90,7 @@ export default function SantriScabiesDashboard() {
         setDashboardData(dashboardRes.data?.data || null);
         setMateriList(materiRes.data?.data?.list_materi || []);
 
-        const faqRows = faqRes.data?.data || [];
+        const faqRows = (faqRes.data?.data || []).filter(f => f.kategori === "Kesehatan");
         setFaqList(faqRows);
         setLatestReports(latestReportsRes.data?.data || { screening: null, observasi: null });
         setRecentMateri((recentMateriRes.data?.data || []).slice(0, 3));

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
-import { 
-  User, Save, Lock, Camera, ArrowLeft, Loader2, 
+import {
+  User, Save, Lock, Camera, ArrowLeft, Loader2,
   AlertTriangle, CheckCircle, X, Users
 } from "lucide-react";
 import AlertToast from "../../components/AlertToast";
@@ -13,15 +13,15 @@ export default function OrangTuaProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
-  
+
   const [dataDiri, setDataDiri] = useState({});
   const [anakList, setAnakList] = useState([]);
   const [fotoProfil, setFotoProfil] = useState(null);
-  
+
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordBaru, setPasswordBaru] = useState("");
   const [konfirmasiPassword, setKonfirmasiPassword] = useState("");
-  
+
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -80,16 +80,16 @@ export default function OrangTuaProfile() {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { showAlert("error", "Ukuran file max. 2MB"); return; }
-    
+
     const formData = new FormData();
-    formData.append('foto', file); 
-    
+    formData.append('foto', file);
+
     try {
-      setSaving(true); 
+      setSaving(true);
       const res = await api.post('/orangtua/profile/photo', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (res.data.success) {
-          setFotoProfil(res.data.data.url);
-          showAlert("success", "Foto profil berhasil diperbarui");
+        setFotoProfil(res.data.data.url);
+        showAlert("success", "Foto profil berhasil diperbarui");
       }
     } catch (err) {
       showAlert("error", "Gagal upload foto");
@@ -116,9 +116,9 @@ export default function OrangTuaProfile() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 md:px-6 -mt-16 space-y-6 relative z-10">
-        
+
         {/* 1. Foto Profil */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
           <div className="relative inline-block group mb-2">
             <ProfileAvatar
               fotoProfil={fotoProfil || dataDiri.foto_profil}
@@ -128,63 +128,63 @@ export default function OrangTuaProfile() {
             />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg, image/jpg" onChange={handlePhotoUpload} />
             <button onClick={() => fileInputRef.current.click()} disabled={saving} className="absolute bottom-0 right-0 bg-green-600 text-white p-2.5 rounded-full hover:bg-green-700 shadow-md transition border-2 border-white cursor-pointer">
-                {saving ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
+              {saving ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
             </button>
           </div>
           <p className="text-sm text-gray-500 font-medium mt-2">Unggah Foto Profil (Maks. 2MB)</p>
         </div>
 
         {/* 2. Data Diri Form */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">Informasi Pribadi</h2>
             <button type="button" onClick={() => setShowPasswordModal(true)} className="text-sm font-bold text-green-600 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-xl transition flex items-center">
-                <Lock size={16} className="mr-2" /> Ganti Sandi
+              <Lock size={16} className="mr-2" /> Ganti Sandi
             </button>
           </div>
           <form onSubmit={handleUpdateDataDiri} className="space-y-5">
             <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
-                <input type="text" value={dataDiri.nama_lengkap || ''} onChange={(e) => setDataDiri({...dataDiri, nama_lengkap: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
+              <input type="text" value={dataDiri.nama_lengkap || ''} onChange={(e) => setDataDiri({ ...dataDiri, nama_lengkap: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Kelamin</label>
-                  <select value={dataDiri.jenis_kelamin || ''} onChange={(e) => setDataDiri({...dataDiri, jenis_kelamin: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 bg-white transition">
-                      <option value="" disabled>Pilih...</option>
-                      <option value="Laki_laki">Laki-laki</option>
-                      <option value="Perempuan">Perempuan</option>
-                  </select>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Kelamin</label>
+                <select value={dataDiri.jenis_kelamin || ''} onChange={(e) => setDataDiri({ ...dataDiri, jenis_kelamin: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 bg-white transition">
+                  <option value="" disabled>Pilih...</option>
+                  <option value="Laki_laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
               </div>
               <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
-                  <input type="email" value={dataDiri.email || ''} onChange={(e) => setDataDiri({...dataDiri, email: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
+                <input type="email" value={dataDiri.email || ''} onChange={(e) => setDataDiri({ ...dataDiri, email: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
               </div>
             </div>
-            
+
             <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nomor Handphone (WhatsApp)</label>
-                <input type="text" value={dataDiri.no_hp || ''} onChange={(e) => setDataDiri({...dataDiri, no_hp: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nomor Handphone (WhatsApp)</label>
+              <input type="text" value={dataDiri.no_hp || ''} onChange={(e) => setDataDiri({ ...dataDiri, no_hp: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" />
             </div>
-            
+
             <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alamat Tinggal</label>
-                <textarea rows="3" value={dataDiri.alamat || ''} onChange={(e) => setDataDiri({...dataDiri, alamat: e.target.value})} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none resize-none transition" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alamat Tinggal</label>
+              <textarea rows="3" value={dataDiri.alamat || ''} onChange={(e) => setDataDiri({ ...dataDiri, alamat: e.target.value })} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none resize-none transition" />
             </div>
-            
+
             <div className="pt-4 border-t border-gray-100">
-                <button type="submit" disabled={saving} className="w-full md:w-auto px-8 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition flex items-center justify-center disabled:bg-green-300">
-                    {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />} Simpan Pembaruan
-                </button>
+              <button type="submit" disabled={saving} className="w-full md:w-auto px-8 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition flex items-center justify-center disabled:bg-green-300">
+                {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />} Simpan Pembaruan
+              </button>
             </div>
           </form>
         </div>
 
         {/* 3. Daftar Anak (View Only) */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-10">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-10">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center"><Users className="mr-2 text-indigo-500" size={24}/> Daftar Santri Terhubung</h2>
+            <h2 className="text-xl font-bold text-gray-800 flex items-center"><Users className="mr-2 text-indigo-500" size={24} /> Daftar Santri Terhubung</h2>
             <p className="text-sm text-gray-500 mt-1">Data santri yang terhubung dengan akun Anda. Hubungi pengurus jika terdapat kesalahan.</p>
           </div>
 
@@ -209,9 +209,9 @@ export default function OrangTuaProfile() {
               </div>
             ))}
             {anakList.length === 0 && (
-                <div className="col-span-full text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-                    <p className="text-gray-500">Belum ada data anak yang terhubung.</p>
-                </div>
+              <div className="col-span-full text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+                <p className="text-gray-500">Belum ada data anak yang terhubung.</p>
+              </div>
             )}
           </div>
         </div>
@@ -220,30 +220,30 @@ export default function OrangTuaProfile() {
 
       {/* Modal Password */}
       {showPasswordModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="flex justify-between items-center p-6 border-b border-gray-100">
-                <h3 className="font-bold text-gray-800 text-xl flex items-center"><Lock className="mr-2 text-green-600" size={24} /> Ganti Kata Sandi</h3>
-                <button onClick={() => setShowPasswordModal(false)} className="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-full transition"><X size={20} /></button>
-              </div>
-              <form onSubmit={handleChangePassword} className="p-6 space-y-4">
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Kata Sandi Baru</label>
-                    <input type="password" placeholder="Minimal 6 karakter" value={passwordBaru} onChange={(e) => setPasswordBaru(e.target.value)} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Konfirmasi Kata Sandi</label>
-                    <input type="password" placeholder="Ulangi kata sandi baru" value={konfirmasiPassword} onChange={(e) => setKonfirmasiPassword(e.target.value)} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
-                </div>
-                <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-1 px-4 py-3.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">Batal</button>
-                    <button type="submit" disabled={saving} className="flex-1 px-4 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition disabled:bg-green-300">
-                        {saving ? "Menyimpan..." : "Simpan Sandi"}
-                    </button>
-                </div>
-              </form>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+              <h3 className="font-bold text-gray-800 text-xl flex items-center"><Lock className="mr-2 text-green-600" size={24} /> Ganti Kata Sandi</h3>
+              <button onClick={() => setShowPasswordModal(false)} className="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-full transition"><X size={20} /></button>
             </div>
+            <form onSubmit={handleChangePassword} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Kata Sandi Baru</label>
+                <input type="password" placeholder="Minimal 6 karakter" value={passwordBaru} onChange={(e) => setPasswordBaru(e.target.value)} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Konfirmasi Kata Sandi</label>
+                <input type="password" placeholder="Ulangi kata sandi baru" value={konfirmasiPassword} onChange={(e) => setKonfirmasiPassword(e.target.value)} className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-1 px-4 py-3.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">Batal</button>
+                <button type="submit" disabled={saving} className="flex-1 px-4 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition disabled:bg-green-300">
+                  {saving ? "Menyimpan..." : "Simpan Sandi"}
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
       )}
 
     </div>

@@ -6,6 +6,8 @@ import api from "../../../config/api";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import useSort from "../../../hooks/useSort";
+import SortableHeader from "../../../components/SortableHeader";
 
 export default function DaftarKamarAbsensiPage({ rolePrefix }) {
   const [kamarList, setKamarList] = useState([]);
@@ -65,6 +67,13 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
     setPage(1);
   }, [debouncedSearch, selectedGender]);
 
+  const mappedKamar = kamarList.map(item => ({
+    ...item,
+    tanggal_terakhir: item.heading_absensi?.[0]?.tanggal || null
+  }));
+
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(mappedKamar, "kamar");
+
   return (
     <div className="space-y-6">
 
@@ -122,18 +131,18 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
 
                 <thead>
                     <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-                        <th className="p-4 font-semibold w-[15%]">Nama Kamar</th>
-                        <th className="p-4 font-semibold w-[15%]">Riwayat Absensi Terakhir</th>
-                        <th className="p-4 font-semibold text-center w-[15%]">Total Absensi Bulan Ini</th>
-                        <th className="p-4 font-semibold text-center w-[15%]">Gender</th>
-                        <th className="p-4 font-semibold text-center w-[15%]">Aksi</th>
+                        <SortableHeader label="Nama Kamar" sortKey="kamar" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                        <SortableHeader label="Absensi Terakhir" sortKey="tanggal_terakhir" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
+                        <SortableHeader label="Total Absensi Bulan Ini" sortKey="total_absensi_bulan_ini" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] text-center cursor-pointer" />
+                        <SortableHeader label="Gender" sortKey="gender" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] text-center cursor-pointer" />
+                        <th className="p-4 font-semibold text-center w-[20%]">Aksi</th>
                     </tr>
                     </thead>
 
                     <tbody className="divide-y divide-gray-100">
 
-                    {kamarList.length > 0 ? (
-                        kamarList.map((item) => {
+                    {sortedData.length > 0 ? (
+                        sortedData.map((item) => {
 
                         const latestAbsensi = item.heading_absensi?.[0];
 
@@ -199,7 +208,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
 
           {/* MOBILE CARD */}
           <div className="md:hidden space-y-4">
-            {kamarList.map((item) => {
+            {sortedData.map((item) => {
 
                 const latest = item.heading_absensi?.[0];
 
