@@ -13,6 +13,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 const formatRupiah = (num) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(num);
@@ -39,7 +40,7 @@ export default function KeuanganPage({ rolePrefix }) {
     return matchStatus && matchJenis;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "nama_tagihan");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "nama_tagihan");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -144,6 +145,28 @@ export default function KeuanganPage({ rolePrefix }) {
             </div>
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_tagihan_asc", label: "Nama Tagihan (A-Z)" },
+            { value: "nama_tagihan_desc", label: "Nama Tagihan (Z-A)" },
+            { value: "users.nama_asc", label: "Santri (A-Z)" },
+            { value: "users.nama_desc", label: "Santri (Z-A)" },
+            { value: "nominal_desc", label: "Nominal (Terbanyak)" },
+            { value: "nominal_asc", label: "Nominal (Tersedikit)" },
+            { value: "batas_pembayaran_desc", label: "Jatuh Tempo (Terbaru)" },
+            { value: "batas_pembayaran_asc", label: "Jatuh Tempo (Terlama)" },
+            { value: "status_asc", label: "Status (A-Z)" },
+            { value: "status_desc", label: "Status (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

@@ -11,6 +11,7 @@ import {
 import Pagination from "../../../components/pagination/Pagination";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function PortalAbsensiPage({ rolePrefix }) {
 
@@ -32,7 +33,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
   const riwayat = useMemo(() => {
     return absensi.filter(item => item.id_heading !== latest?.id_heading);
   }, [absensi, latest]);
-  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort } = useSort(riwayat, "tanggal", "desc");
+  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(riwayat, "tanggal", "desc");
 
   const fetchDetail = async () => {
     try {
@@ -355,6 +356,23 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               </table>
             </div>
             <div className="lg:hidden">
+              <div className="p-3 border-b border-gray-100 flex justify-end">
+                <SortDropdown
+                  value={`${sortKey}_${sortDir}`}
+                  onChange={(val) => {
+                    const parts = val.split("_");
+                    const dir = parts.pop();
+                    const key = parts.join("_");
+                    setSort(key, dir);
+                  }}
+                  options={[
+                    { value: "tanggal_desc", label: "Terbaru" },
+                    { value: "tanggal_asc", label: "Terlama" },
+                    { value: "users.nama_asc", label: "Pemeriksa (A-Z)" },
+                    { value: "users.nama_desc", label: "Pemeriksa (Z-A)" }
+                  ]}
+                />
+              </div>
               {renderAbsensiCards(sortedRiwayat, "Belum ada riwayat absensi.")}
             </div>
           </div>

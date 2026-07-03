@@ -23,6 +23,7 @@ import FilterDropdown from "../../components/FilterDropdown";
 import FilterSelect from "../../components/FilterSelect";
 import useSort from "../../hooks/useSort";
 import SortableHeader from "../../components/SortableHeader";
+import SortDropdown from "../../components/SortDropdown";
 
 
 export default function ManajemenStaf() {
@@ -75,7 +76,7 @@ export default function ManajemenStaf() {
     });
   }, [dataList, search, filterRole]);
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "nama");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "nama");
 
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(
     sortedData,
@@ -299,6 +300,7 @@ export default function ManajemenStaf() {
           </div>
 
           <div className="block md:hidden space-y-4">
+
             {currentData.length > 0 ? (
               currentData.map((item) => (
                 <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">

@@ -18,6 +18,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 
 /**
@@ -47,7 +48,7 @@ export default function DataSantriPage({ rolePrefix }) {
     return matchKelas && matchKamar && matchGender;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredSantriList, "nama");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredSantriList, "nama");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -187,6 +188,22 @@ export default function DataSantriPage({ rolePrefix }) {
             </div>
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_asc", label: "Nama (A-Z)" },
+            { value: "nama_desc", label: "Nama (Z-A)" },
+            { value: "email_asc", label: "Email (A-Z)" },
+            { value: "email_desc", label: "Email (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

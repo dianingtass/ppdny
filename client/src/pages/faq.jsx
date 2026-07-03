@@ -305,8 +305,8 @@ export default function FaqPage() {
                     <option value="Kesehatan">Kesehatan</option>
                   </select>
                 ) : (
-                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700">
-                    {faqForm.kategori} (Terkunci sesuai hak akses Anda)
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+                    {faqForm.kategori}
                   </div>
                 )}
               </div>
@@ -318,7 +318,7 @@ export default function FaqPage() {
                   onChange={(e) => setFaqForm({ ...faqForm, pertanyaan: e.target.value })}
                   placeholder="Ketik pertanyaan FAQ..."
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none text-sm resize-none"
                 />
               </div>
 
@@ -329,7 +329,7 @@ export default function FaqPage() {
                   onChange={(e) => setFaqForm({ ...faqForm, jawaban: e.target.value })}
                   placeholder="Ketik jawaban FAQ..."
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none text-sm resize-none"
                 />
               </div>
 

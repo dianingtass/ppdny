@@ -14,6 +14,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -54,7 +55,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     return matchStatus && matchLayanan;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "waktu");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "waktu");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -172,6 +173,24 @@ export default function RiwayatLayananPage({ rolePrefix }) {
             </div>
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "waktu_desc", label: "Waktu (Terbaru)" },
+            { value: "waktu_asc", label: "Waktu (Terlama)" },
+            { value: "users.nama_asc", label: "Santri (A-Z)" },
+            { value: "users.nama_desc", label: "Santri (Z-A)" },
+            { value: "status_sesudah_asc", label: "Status (A-Z)" },
+            { value: "status_sesudah_desc", label: "Status (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

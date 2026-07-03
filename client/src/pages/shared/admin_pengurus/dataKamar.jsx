@@ -14,6 +14,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function DataKamarPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
@@ -23,7 +24,7 @@ export default function DataKamarPage({ rolePrefix }) {
   const [selectedGender, setSelectedGender] = useState("");
 
   const filteredData = dataList.filter(item => !selectedGender || item.gender === selectedGender);
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "kamar");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "kamar");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -139,6 +140,26 @@ export default function DataKamarPage({ rolePrefix }) {
             />
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "kamar_asc", label: "Nama Kamar (A-Z)" },
+            { value: "kamar_desc", label: "Nama Kamar (Z-A)" },
+            { value: "kapasitas_desc", label: "Kapasitas (Terbanyak)" },
+            { value: "kapasitas_asc", label: "Kapasitas (Tersedikit)" },
+            { value: "gender_asc", label: "Gender (A-Z)" },
+            { value: "gender_desc", label: "Gender (Z-A)" },
+            { value: "lokasi_asc", label: "Lokasi (A-Z)" },
+            { value: "lokasi_desc", label: "Lokasi (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

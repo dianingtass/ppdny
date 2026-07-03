@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, FileText } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
@@ -10,6 +10,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 
 const WAKTU_OPTIONS = [
@@ -44,16 +45,31 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, kategoriSkor, waktu, startDate, endDate]);
+  // Ref untuk melacak nilai filter sebelumnya
+  const prevFiltersRef = useRef(null);
 
   useEffect(() => {
+    const currentFilters = { debouncedSearch, kategoriSkor, waktu, startDate, endDate };
+    const prev = prevFiltersRef.current;
+
+    // Jika filter berubah (bukan navigasi page), reset page ke 1
+    const filterChanged = prev && (
+      prev.debouncedSearch !== debouncedSearch ||
+      prev.kategoriSkor !== kategoriSkor ||
+      prev.waktu !== waktu ||
+      prev.startDate !== startDate ||
+      prev.endDate !== endDate
+    );
+
+    const pageToFetch = filterChanged ? 1 : page;
+    if (filterChanged) setPage(1);
+    prevFiltersRef.current = currentFilters;
+
     const fetchSantri = async () => {
       setLoading(true);
       try {
         const res = await api.get(`/${rolePrefix}/observasi/santri`, {
-          params: { search: debouncedSearch, page, limit, kategoriSkor, waktu, startDate, endDate }
+          params: { search: debouncedSearch, page: pageToFetch, limit, kategoriSkor, waktu, startDate, endDate }
         });
         setSantriList(res.data.data || []);
         setTotalPages(Math.max(1, Math.ceil((res.data.pagination?.total || 0) / limit)));
@@ -65,6 +81,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
     };
 
     fetchSantri();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, page, rolePrefix, kategoriSkor, waktu, startDate, endDate]);
 
   const activeFilterCount = [kategoriSkor, waktu, startDate, endDate].filter(Boolean).length;
@@ -75,7 +92,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
     total_observasi: item._count?.observasi_observasi_id_santriTousers || 0
   }));
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(mappedSantri, "nama");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedSantri, "nama");
 
   return (
     <div className="space-y-6">
@@ -145,6 +162,24 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
             </div>
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_asc", label: "Nama (A-Z)" },
+            { value: "nama_desc", label: "Nama (Z-A)" },
+            { value: "tanggal_terakhir_desc", label: "Observasi Terakhir (Terbaru)" },
+            { value: "tanggal_terakhir_asc", label: "Observasi Terakhir (Terlama)" },
+            { value: "total_observasi_desc", label: "Total Observasi (Terbanyak)" },
+            { value: "total_observasi_asc", label: "Total Observasi (Tersedikit)" }
+          ]}
+        />
       </div>
 
       {loading ? (

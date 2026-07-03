@@ -14,6 +14,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function DataKelasPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
@@ -27,7 +28,7 @@ export default function DataKelasPage({ rolePrefix }) {
   ).map((yr) => ({ value: yr, label: yr }));
 
   const filteredData = dataList.filter((item) => !selectedTahun || item.tahun_ajaran === selectedTahun);
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "kelas");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "kelas");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -140,6 +141,24 @@ export default function DataKelasPage({ rolePrefix }) {
             />
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "kelas_asc", label: "Nama Kelas (A-Z)" },
+            { value: "kelas_desc", label: "Nama Kelas (Z-A)" },
+            { value: "tahun_ajaran_desc", label: "Tahun Ajaran (Terbaru)" },
+            { value: "tahun_ajaran_asc", label: "Tahun Ajaran (Terlama)" },
+            { value: "users.nama_asc", label: "Wali Kelas (A-Z)" },
+            { value: "users.nama_desc", label: "Wali Kelas (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

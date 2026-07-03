@@ -10,13 +10,14 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function JenisTagihanPage({ rolePrefix }) {
   const [dataList, setDataList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(dataList, "jenis_tagihan");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(dataList, "jenis_tagihan");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -94,7 +95,23 @@ export default function JenisTagihanPage({ rolePrefix }) {
       </div>
 
       <div className="flex gap-3 items-center w-full">
-        <SearchBar placeholder="Cari jenis tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <SearchBar placeholder="Cari jenis tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "jenis_tagihan_asc", label: "Jenis Tagihan (A-Z)" },
+            { value: "jenis_tagihan_desc", label: "Jenis Tagihan (Z-A)" },
+            { value: "deskripsi_asc", label: "Deskripsi (A-Z)" },
+            { value: "deskripsi_desc", label: "Deskripsi (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

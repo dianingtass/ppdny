@@ -33,7 +33,7 @@ export default function SortDropdown({
       >
         <ArrowUpDown size={18} className="text-gray-500" />
         <span className="hidden md:inline">Urutkan:</span>
-        <span className="text-green-600 font-bold">{selectedOption?.label}</span>
+        <span className="hidden md:inline text-green-600 font-bold">{selectedOption?.label}</span>
       </button>
 
       {/* Popover Menu */}

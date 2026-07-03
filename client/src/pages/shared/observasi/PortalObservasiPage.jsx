@@ -6,6 +6,7 @@ import Pagination from "../../../components/pagination/Pagination";
 import { formatObservasiWaktu, getObservasiBadgeClass, getObservasiScoreLabel } from "../../../components/UtilsObservasi";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function PortalObservasiPage({
   rolePrefix,
@@ -28,7 +29,7 @@ export default function PortalObservasiPage({
     () => observasi.filter((item) => item.id_observasi !== latest?.id_observasi),
     [latest, observasi]
   );
-  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort } = useSort(riwayat, "tanggal", "desc");
+  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(riwayat, "tanggal", "desc");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -272,6 +273,27 @@ export default function PortalObservasiPage({
               </table>
             </div>
             <div className="lg:hidden">
+              <div className="p-3 border-b border-gray-100 flex justify-end">
+                <SortDropdown
+                  value={`${sortKey}_${sortDir}`}
+                  onChange={(val) => {
+                    const parts = val.split("_");
+                    const dir = parts.pop();
+                    const key = parts.join("_");
+                    setSort(key, dir);
+                  }}
+                  options={[
+                    { value: "tanggal_desc", label: "Terbaru" },
+                    { value: "tanggal_asc", label: "Terlama" },
+                    { value: "waktu_desc", label: "Waktu Terbaru" },
+                    { value: "waktu_asc", label: "Waktu Terlama" },
+                    { value: "total_skor_desc", label: "Skor Tertinggi" },
+                    { value: "total_skor_asc", label: "Skor Terendah" },
+                    { value: "users_observasi_id_timkesTousers.nama_asc", label: "Pengamat (A-Z)" },
+                    { value: "users_observasi_id_timkesTousers.nama_desc", label: "Pengamat (Z-A)" }
+                  ]}
+                />
+              </div>
               {renderObservasiCards(sortedRiwayat, "Belum ada riwayat observasi.")}
             </div>
           </div>

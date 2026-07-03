@@ -10,13 +10,14 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function JenisLayananPage({ rolePrefix }) {
   const [layananList, setLayananList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(layananList, "nama_layanan");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(layananList, "nama_layanan");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -94,7 +95,25 @@ export default function JenisLayananPage({ rolePrefix }) {
       </div>
 
       <div className="flex gap-3 items-center w-full">
-        <SearchBar placeholder="Cari nama layanan..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <SearchBar placeholder="Cari nama layanan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_layanan_asc", label: "Jenis Layanan (A-Z)" },
+            { value: "nama_layanan_desc", label: "Jenis Layanan (Z-A)" },
+            { value: "estimasi_asc", label: "Estimasi Waktu (Tercepat)" },
+            { value: "estimasi_desc", label: "Estimasi Waktu (Terlama)" },
+            { value: "deskripsi_asc", label: "Deskripsi (A-Z)" },
+            { value: "deskripsi_desc", label: "Deskripsi (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

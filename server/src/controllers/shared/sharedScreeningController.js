@@ -22,12 +22,45 @@ const safeParseArray = (value) => {
   return [];
 };
 
+const getSantriListSelect = () => ({
+  id: true,
+  nama: true,
+  nip: true,
+  foto_profil: true,
+  screening_screening_id_santriTousers: {
+    take: 1,
+    orderBy: { tanggal: "desc" },
+    select: {
+      tanggal: true,
+      diagnosa: true
+    }
+  },
+  _count: {
+    select: {
+      screening_screening_id_santriTousers: true
+    }
+  }
+});
+
+const mapSantriListItem = (item, { diagnosa }) => {
+  const latest = item.screening_screening_id_santriTousers?.[0] || null;
+
+  if (diagnosa && diagnosa !== "Belum_Pernah_Screening") {
+    if (!latest || latest.diagnosa !== diagnosa) {
+      return null;
+    }
+  }
+
+  return item;
+};
+
 const createScreeningController = ({ writableRoles = ['timkesehatan'] } = {}) => {
 const getSantriList = async (req, res) => {
   try {
     const { search = "", page = 1, limit = 10, diagnosa, startDate, endDate } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
+    const limitNum = Number(limit);
 
     const whereCondition = {
       is_active: true,
@@ -67,52 +100,50 @@ const getSantriList = async (req, res) => {
       }
     }
 
-    const [data, total] = await prisma.$transaction([
-      prisma.users.findMany({
-        where: whereCondition,
-        skip,
-        take: Number(limit),
-        orderBy: { nama: "asc" },
-        select: {
-          id: true,
-          nama: true,
-          nip: true,
-          foto_profil: true,
-          screening_screening_id_santriTousers: {
-            take: 1,
-            orderBy: { tanggal: "desc" },
-            select: {
-              tanggal: true,
-              diagnosa: true
-            }
-          },
-          _count: {
-            select: {
-              screening_screening_id_santriTousers: true
-            }
-          }
-        }
-      }),
-      prisma.users.count({ where: whereCondition })
-    ]);
+    const needsPostFilter = Boolean(diagnosa && diagnosa !== "Belum_Pernah_Screening");
+    const select = getSantriListSelect();
 
-    const filteredData = data.map(item => {
-      const latest = item.screening_screening_id_santriTousers?.[0] || null;
-      if (diagnosa && diagnosa !== "Belum_Pernah_Screening") {
-        if (!latest || latest.diagnosa !== diagnosa) {
-          return null;
-        }
-      }
-      return item;
-    }).filter(Boolean);
+    let filteredData;
+    let total;
+
+    if (needsPostFilter) {
+      const allData = await prisma.users.findMany({
+        where: whereCondition,
+        orderBy: { nama: "asc" },
+        select
+      });
+
+      const filtered = allData
+        .map((item) => mapSantriListItem(item, { diagnosa }))
+        .filter(Boolean);
+
+      total = filtered.length;
+      filteredData = filtered.slice(skip, skip + limitNum);
+    } else {
+      const [data, dbTotal] = await prisma.$transaction([
+        prisma.users.findMany({
+          where: whereCondition,
+          skip,
+          take: limitNum,
+          orderBy: { nama: "asc" },
+          select
+        }),
+        prisma.users.count({ where: whereCondition })
+      ]);
+
+      filteredData = data
+        .map((item) => mapSantriListItem(item, { diagnosa }))
+        .filter(Boolean);
+      total = dbTotal;
+    }
 
     res.json({
       success: true,
       data: filteredData,
       pagination: {
-        total: filteredData.length,
+        total,
         page: Number(page),
-        limit: Number(limit)
+        limit: limitNum
       }
     });
 

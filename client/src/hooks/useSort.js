@@ -22,6 +22,11 @@ export default function useSort(data, defaultKey = "", defaultDir = "asc") {
     }
   };
 
+  const setSort = (key, dir) => {
+    setSortKey(key);
+    setSortDir(dir);
+  };
+
   const sortedData = useMemo(() => {
     if (!sortKey) return data;
 
@@ -52,5 +57,5 @@ export default function useSort(data, defaultKey = "", defaultDir = "asc") {
     });
   }, [data, sortKey, sortDir]);
 
-  return { sortedData, sortKey, sortDir, handleSort };
+  return { sortedData, sortKey, sortDir, handleSort, setSort };
 }

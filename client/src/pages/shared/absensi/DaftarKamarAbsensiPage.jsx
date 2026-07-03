@@ -8,6 +8,7 @@ import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function DaftarKamarAbsensiPage({ rolePrefix }) {
   const [kamarList, setKamarList] = useState([]);
@@ -72,7 +73,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
     tanggal_terakhir: item.heading_absensi?.[0]?.tanggal || null
   }));
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(mappedKamar, "kamar");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedKamar, "kamar");
 
   return (
     <div className="space-y-6">
@@ -113,6 +114,26 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
             />
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "kamar_asc", label: "Nama Kamar (A-Z)" },
+            { value: "kamar_desc", label: "Nama Kamar (Z-A)" },
+            { value: "tanggal_terakhir_desc", label: "Absensi Terakhir (Terbaru)" },
+            { value: "tanggal_terakhir_asc", label: "Absensi Terakhir (Terlama)" },
+            { value: "total_absensi_bulan_ini_desc", label: "Bulan Ini (Terbanyak)" },
+            { value: "total_absensi_bulan_ini_asc", label: "Bulan Ini (Tersedikit)" },
+            { value: "gender_asc", label: "Gender (A-Z)" },
+            { value: "gender_desc", label: "Gender (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

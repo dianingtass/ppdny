@@ -15,6 +15,7 @@ import FilterDropdown from "../../../components/FilterDropdown";
 import ProfileAvatar from "../../../components/ProfileAvatar";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function DataOrangtuaPage({ rolePrefix }) {
   const [ortuList, setOrtuList] = useState([]);
@@ -29,7 +30,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
     return item.hubungan === selectedHubungan;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredOrtuList, "nama");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredOrtuList, "nama");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -148,6 +149,24 @@ export default function DataOrangtuaPage({ rolePrefix }) {
             />
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_asc", label: "Nama (A-Z)" },
+            { value: "nama_desc", label: "Nama (Z-A)" },
+            { value: "email_asc", label: "Email (A-Z)" },
+            { value: "email_desc", label: "Email (Z-A)" },
+            { value: "jumlah_anak_desc", label: "Tanggungan (Terbanyak)" },
+            { value: "jumlah_anak_asc", label: "Tanggungan (Tersedikit)" }
+          ]}
+        />
       </div>
 
       {loading ? (

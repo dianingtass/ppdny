@@ -13,6 +13,7 @@ import FilterDropdown from "../../../components/FilterDropdown";
 import ProfileAvatar from "../../../components/ProfileAvatar";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 export default function DataUstadzPage({ rolePrefix }) {
   const [ustadzList, setUstadzList] = useState([]);
@@ -24,7 +25,7 @@ export default function DataUstadzPage({ rolePrefix }) {
     (item) => !selectedGender || item.jenis_kelamin === selectedGender
   );
 
-  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredUstadzList, "nama");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredUstadzList, "nama");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -129,6 +130,24 @@ export default function DataUstadzPage({ rolePrefix }) {
             />
           </div>
         </FilterDropdown>
+        <SortDropdown
+          className="md:hidden"
+          value={`${sortKey}_${sortDir}`}
+          onChange={(val) => {
+            const parts = val.split("_");
+            const dir = parts.pop();
+            const key = parts.join("_");
+            setSort(key, dir);
+          }}
+          options={[
+            { value: "nama_asc", label: "Nama (A-Z)" },
+            { value: "nama_desc", label: "Nama (Z-A)" },
+            { value: "email_asc", label: "Email (A-Z)" },
+            { value: "email_desc", label: "Email (Z-A)" },
+            { value: "jenis_kelamin_asc", label: "Jenis Kelamin (A-Z)" },
+            { value: "jenis_kelamin_desc", label: "Jenis Kelamin (Z-A)" }
+          ]}
+        />
       </div>
 
       {loading ? (

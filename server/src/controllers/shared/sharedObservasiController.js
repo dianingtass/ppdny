@@ -177,6 +177,79 @@ const normalizeTindakLanjutOptions = (rows = []) => {
   return withoutDuplicate.length > 0 ? withoutDuplicate : DEFAULT_TINDAK_LANJUT;
 };
 
+const getMonthBounds = () => {
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const endOfMonth = new Date();
+  endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+  endOfMonth.setDate(0);
+  endOfMonth.setHours(23, 59, 59, 999);
+
+  return { startOfMonth, endOfMonth };
+};
+
+const getSantriListSelect = (startOfMonth, endOfMonth) => ({
+  id: true,
+  nama: true,
+  nip: true,
+  foto_profil: true,
+  observasi_observasi_id_santriTousers: {
+    take: 1,
+    orderBy: { tanggal: "desc" },
+    include: {
+      detail_observasi: {
+        where: { is_active: true },
+        select: { jawaban: true }
+      }
+    }
+  },
+  _count: {
+    select: {
+      observasi_observasi_id_santriTousers: {
+        where: {
+          tanggal: {
+            gte: startOfMonth,
+            lte: endOfMonth
+          }
+        }
+      }
+    }
+  }
+});
+
+const mapSantriListItem = (item, { kategoriSkor, waktu }) => {
+  const latest = item.observasi_observasi_id_santriTousers?.[0] || null;
+  const totalSkor = latest?.skor_diperoleh
+    ?? latest?.detail_observasi?.reduce((sum, detail) => sum + (detail.jawaban ? 1 : 0), 0)
+    ?? 0;
+  const latestKategori = latest ? getObservasiCategory(totalSkor) : null;
+
+  if (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi" && latestKategori !== kategoriSkor) {
+    return null;
+  }
+
+  if (waktu && (!latest || latest.waktu !== waktu)) {
+    return null;
+  }
+
+  const { observasi_observasi_id_santriTousers, ...rest } = item;
+
+  return {
+    ...rest,
+    latest_observasi: latest
+      ? {
+          tanggal: latest.tanggal,
+          waktu: latest.waktu,
+          total_skor: totalSkor,
+          kategori_skor: latestKategori,
+          skor_label: `${totalSkor} - ${latestKategori}`
+        }
+      : null
+  };
+};
+
 const getTindakLanjutOptions = async () => {
   try {
     const rows = await prisma.$queryRawUnsafe(
@@ -217,81 +290,46 @@ const createObservasiController = ({ writableRoles = [] }) => {
           where.observasi_observasi_id_santriTousers = { some: observasiFilter };
         }
 
-        const startOfMonth = new Date();
-        startOfMonth.setDate(1);
-        startOfMonth.setHours(0, 0, 0, 0);
+        const { startOfMonth, endOfMonth } = getMonthBounds();
+        const limitNum = Number(limit);
+        const needsPostFilter = Boolean(
+          (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi") || waktu
+        );
+        const select = getSantriListSelect(startOfMonth, endOfMonth);
 
-        const endOfMonth = new Date();
-        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
-        endOfMonth.setDate(0);
-        endOfMonth.setHours(23, 59, 59, 999);
+        let mapped;
+        let total;
 
-        const [data, total] = await prisma.$transaction([
-          prisma.users.findMany({
+        if (needsPostFilter) {
+          const allData = await prisma.users.findMany({
             where,
-            skip,
-            take: Number(limit),
             orderBy: { nama: "asc" },
-            select: {
-              id: true,
-              nama: true,
-              nip: true,
-              foto_profil: true,
-              observasi_observasi_id_santriTousers: {
-                take: 1,
-                orderBy: { tanggal: "desc" },
-                include: {
-                  detail_observasi: {
-                    where: { is_active: true },
-                    select: { jawaban: true }
-                  }
-                }
-              },
-              _count: {
-                select: {
-                  observasi_observasi_id_santriTousers: {
-                    where: {
-                      tanggal: {
-                        gte: startOfMonth,
-                        lte: endOfMonth
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }),
-          prisma.users.count({ where })
-        ]);
+            select
+          });
 
-        const mapped = data.map((item) => {
-          const latest = item.observasi_observasi_id_santriTousers?.[0] || null;
-          const totalSkor = latest?.detail_observasi?.reduce((sum, detail) => sum + (detail.jawaban ? 1 : 0), 0) || 0;
-          const latestKategori = latest ? getObservasiCategory(totalSkor) : null;
+          const filtered = allData
+            .map((item) => mapSantriListItem(item, { kategoriSkor, waktu }))
+            .filter(Boolean);
 
-          // Filter kategori skor secara post-query (karena butuh join kalkulasi)
-          if (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi" && latestKategori !== kategoriSkor) {
-            return null;
-          }
+          total = filtered.length;
+          mapped = filtered.slice(skip, skip + limitNum);
+        } else {
+          const [data, dbTotal] = await prisma.$transaction([
+            prisma.users.findMany({
+              where,
+              skip,
+              take: limitNum,
+              orderBy: { nama: "asc" },
+              select
+            }),
+            prisma.users.count({ where })
+          ]);
 
-          // Filter waktu berdasarkan observasi terakhir
-          if (waktu && (!latest || latest.waktu !== waktu)) {
-            return null;
-          }
-
-          return {
-            ...item,
-            latest_observasi: latest
-              ? {
-                  tanggal: latest.tanggal,
-                  waktu: latest.waktu,
-                  total_skor: totalSkor,
-                  kategori_skor: latestKategori,
-                  skor_label: `${totalSkor} - ${latestKategori}`
-                }
-              : null
-          };
-        }).filter(Boolean);
+          mapped = data
+            .map((item) => mapSantriListItem(item, { kategoriSkor, waktu }))
+            .filter(Boolean);
+          total = dbTotal;
+        }
 
         res.json({
           success: true,
@@ -299,7 +337,7 @@ const createObservasiController = ({ writableRoles = [] }) => {
           pagination: {
             total,
             page: Number(page),
-            limit: Number(limit)
+            limit: limitNum
           }
         });
       } catch (error) {

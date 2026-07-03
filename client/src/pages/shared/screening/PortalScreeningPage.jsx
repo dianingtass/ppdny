@@ -11,6 +11,7 @@ import {
 import Pagination from "../../../components/pagination/Pagination";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
+import SortDropdown from "../../../components/SortDropdown";
 
 
 export default function PortalScreeningPage({
@@ -34,7 +35,7 @@ export default function PortalScreeningPage({
     const riwayat = useMemo(() => {
         return screening.filter(item => item.id_screening !== latest?.id_screening);
     }, [screening, latest]);
-    const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort } = useSort(riwayat, "tanggal", "desc");
+    const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(riwayat, "tanggal", "desc");
 
     const fetchDetail = async () => {
         try {
@@ -366,10 +367,29 @@ export default function PortalScreeningPage({
                     </table>
                     </div>
                     <div className="lg:hidden">
-                        {renderScreeningCards(
-                            sortedRiwayat,
-                            "Belum ada riwayat screening."
-                        )}
+                      <div className="p-3 border-b border-gray-100 flex justify-end">
+                        <SortDropdown
+                          value={`${sortKey}_${sortDir}`}
+                          onChange={(val) => {
+                            const parts = val.split("_");
+                            const dir = parts.pop();
+                            const key = parts.join("_");
+                            setSort(key, dir);
+                          }}
+                          options={[
+                            { value: "tanggal_desc", label: "Terbaru" },
+                            { value: "tanggal_asc", label: "Terlama" },
+                            { value: "diagnosa_asc", label: "Diagnosa (A-Z)" },
+                            { value: "diagnosa_desc", label: "Diagnosa (Z-A)" },
+                            { value: "users_screening_id_timkesTousers.nama_asc", label: "Pemeriksa (A-Z)" },
+                            { value: "users_screening_id_timkesTousers.nama_desc", label: "Pemeriksa (Z-A)" }
+                          ]}
+                        />
+                      </div>
+                      {renderScreeningCards(
+                          sortedRiwayat,
+                          "Belum ada riwayat screening."
+                      )}
                     </div>
                 </div>
                 <Pagination
