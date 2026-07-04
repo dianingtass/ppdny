@@ -104,8 +104,8 @@ export default function MateriView() {
 
   const sortMateriList = (list) => {
     return [...list].sort((a, b) => {
-      const dateA = new Date(a.created_at || a.tanggal_pengajuan || 0);
-      const dateB = new Date(b.created_at || b.tanggal_pengajuan || 0);
+      const dateA = new Date(a.tanggal_dibuat || a.created_at || a.tanggal_pengajuan || 0);
+      const dateB = new Date(b.tanggal_dibuat || b.created_at || b.tanggal_pengajuan || 0);
       if (sortBy === "terbaru") return dateB - dateA;
       if (sortBy === "terlama") return dateA - dateB;
       if (sortBy === "az") return (a.judul || "").localeCompare(b.judul || "");

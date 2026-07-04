@@ -11,5 +11,6 @@ router.get("/waktu", observasiController.getWaktuOptions);
 router.get("/tindak-lanjut", observasiController.getTindakLanjut);
 router.post("/create", observasiController.postObservasi);
 router.get("/:id", observasiController.getDetailObservasi);
+router.delete("/:id", observasiController.deleteObservasi);
 
 module.exports = router;

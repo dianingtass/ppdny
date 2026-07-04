@@ -197,6 +197,7 @@ const getSantriListSelect = (startOfMonth, endOfMonth) => ({
   foto_profil: true,
   observasi_observasi_id_santriTousers: {
     take: 1,
+    where: { is_active: true },
     orderBy: { tanggal: "desc" },
     include: {
       detail_observasi: {
@@ -209,6 +210,7 @@ const getSantriListSelect = (startOfMonth, endOfMonth) => ({
     select: {
       observasi_observasi_id_santriTousers: {
         where: {
+          is_active: true,
           tanggal: {
             gte: startOfMonth,
             lte: endOfMonth
@@ -267,13 +269,13 @@ const createObservasiController = ({ writableRoles = [] }) => {
   return {
     async getSantriList(req, res) {
       try {
-        const { search = "", page = 1, limit = 10, kategoriSkor, waktu, startDate, endDate } = req.query;
+        const { search = "", page = 1, limit = 10, kategoriSkor, waktu, startDate, endDate, sortBy = "nama", sortDir = "asc" } = req.query;
         const skip = (Number(page) - 1) * Number(limit);
 
         const where = getActiveSantriWhere(search);
 
         // Bangun filter observasi berdasarkan param yang dikirim
-        const observasiFilter = {};
+        const observasiFilter = { is_active: true };
         if (startDate || endDate) {
           observasiFilter.tanggal = {};
           if (startDate) observasiFilter.tanggal.gte = new Date(startDate);
@@ -286,54 +288,69 @@ const createObservasiController = ({ writableRoles = [] }) => {
 
         if (kategoriSkor === "Belum_Pernah_Observasi") {
           where.observasi_observasi_id_santriTousers = { none: {} };
-        } else if (Object.keys(observasiFilter).length > 0) {
+        } else if (Object.keys(observasiFilter).length > 1) {
           where.observasi_observasi_id_santriTousers = { some: observasiFilter };
         }
 
         const { startOfMonth, endOfMonth } = getMonthBounds();
         const limitNum = Number(limit);
-        const needsPostFilter = Boolean(
-          (kategoriSkor && kategoriSkor !== "Belum_Pernah_Observasi") || waktu
-        );
         const select = getSantriListSelect(startOfMonth, endOfMonth);
 
-        let mapped;
-        let total;
+        const allData = await prisma.users.findMany({
+          where,
+          select
+        });
 
-        if (needsPostFilter) {
-          const allData = await prisma.users.findMany({
-            where,
-            orderBy: { nama: "asc" },
-            select
-          });
+        const mapped = allData
+          .map((item) => {
+            const mappedItem = mapSantriListItem(item, { kategoriSkor, waktu });
+            if (!mappedItem) return null;
+            return {
+              ...mappedItem,
+              tanggal_terakhir: mappedItem.latest_observasi?.tanggal || null,
+              total_observasi: mappedItem._count?.observasi_observasi_id_santriTousers || 0
+            };
+          })
+          .filter(Boolean);
 
-          const filtered = allData
-            .map((item) => mapSantriListItem(item, { kategoriSkor, waktu }))
-            .filter(Boolean);
+        // In-memory Sorting
+        mapped.sort((a, b) => {
+          let aVal, bVal;
+          if (sortBy === "nama") {
+            aVal = a.nama;
+            bVal = b.nama;
+          } else if (sortBy === "tanggal_terakhir") {
+            aVal = a.tanggal_terakhir;
+            bVal = b.tanggal_terakhir;
+          } else if (sortBy === "total_observasi") {
+            aVal = a.total_observasi;
+            bVal = b.total_observasi;
+          } else {
+            aVal = a.nama;
+            bVal = b.nama;
+          }
 
-          total = filtered.length;
-          mapped = filtered.slice(skip, skip + limitNum);
-        } else {
-          const [data, dbTotal] = await prisma.$transaction([
-            prisma.users.findMany({
-              where,
-              skip,
-              take: limitNum,
-              orderBy: { nama: "asc" },
-              select
-            }),
-            prisma.users.count({ where })
-          ]);
+          if (aVal == null && bVal == null) return 0;
+          if (aVal == null) return 1;
+          if (bVal == null) return -1;
 
-          mapped = data
-            .map((item) => mapSantriListItem(item, { kategoriSkor, waktu }))
-            .filter(Boolean);
-          total = dbTotal;
-        }
+          if (typeof aVal === "number" && typeof bVal === "number") {
+            return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+          }
+
+          const aStr = String(aVal).toLowerCase();
+          const bStr = String(bVal).toLowerCase();
+          if (aStr < bStr) return sortDir === "asc" ? -1 : 1;
+          if (aStr > bStr) return sortDir === "asc" ? 1 : -1;
+          return 0;
+        });
+
+        const total = mapped.length;
+        const paginatedData = mapped.slice(skip, skip + limitNum);
 
         res.json({
           success: true,
-          data: mapped,
+          data: paginatedData,
           pagination: {
             total,
             page: Number(page),
@@ -592,8 +609,8 @@ const createObservasiController = ({ writableRoles = [] }) => {
     async getDetailObservasi(req, res) {
       try {
         const { id } = req.params;
-        const data = await prisma.observasi.findUnique({
-          where: { id_observasi: Number(id) },
+        const data = await prisma.observasi.findFirst({
+          where: { id_observasi: Number(id), is_active: true },
           include: {
             users_observasi_id_timkesTousers: {
               select: { id: true, nama: true }
@@ -628,6 +645,32 @@ const createObservasiController = ({ writableRoles = [] }) => {
         }
 
         res.json({ success: true, data: deriveObservasiSummary(data) });
+      } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+      }
+    },
+
+    async deleteObservasi(req, res) {
+      try {
+        if (req.user?.role !== "admin") {
+          return res.status(403).json({ success: false, message: "Akses ditolak" });
+        }
+        const { id } = req.params;
+
+        const existing = await prisma.observasi.findUnique({
+          where: { id_observasi: Number(id) }
+        });
+
+        if (!existing || !existing.is_active) {
+          return res.status(404).json({ success: false, message: "Data observasi tidak ditemukan" });
+        }
+
+        await prisma.observasi.update({
+          where: { id_observasi: Number(id) },
+          data: { is_active: false }
+        });
+
+        res.json({ success: true, message: "Data observasi berhasil dihapus" });
       } catch (error) {
         res.status(500).json({ success: false, message: error.message });
       }

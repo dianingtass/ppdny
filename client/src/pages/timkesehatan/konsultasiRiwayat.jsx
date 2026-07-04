@@ -2,6 +2,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
+import FilterDropdown from '../../components/FilterDropdown';
+import HybridSelect from '../../components/HybridSelect';
 
 const normalizeRoom = (room) => ({
   ...room,
@@ -62,23 +64,41 @@ const PAGE_SIZE = 6;
 export default function TimkesKonsultasiRiwayatPage() {
   const [rooms, setRooms] = useState([]);
   const [santriList, setSantriList] = useState([]);
-  const [selectedDate, setSelectedDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [selectedSantri, setSelectedSantri] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   
   const santriOptions = useMemo(() => {
-    return [...new Set(santriList.map((item) => item?.nama).filter(Boolean))];
+    return [...new Set(santriList.map((item) => item?.nama).filter(Boolean))].map(name => ({ value: name, label: name }));
   }, [santriList]);
 
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
-      const matchDate = !selectedDate || getDateKey(room.closed_at) === selectedDate;
+      let matchDate = true;
+      if (room.closed_at) {
+        const closedDate = new Date(room.closed_at);
+        closedDate.setHours(0,0,0,0);
+        if (startDate) {
+          const start = new Date(startDate);
+          start.setHours(0,0,0,0);
+          if (closedDate < start) matchDate = false;
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(0,0,0,0);
+          if (closedDate > end) matchDate = false;
+        }
+      } else {
+        if (startDate || endDate) matchDate = false;
+      }
+
       const santriName = getSantriName(room);
       const matchSantri = !selectedSantri || santriName === selectedSantri;
       return matchDate && matchSantri;
     });
-  }, [rooms, selectedDate, selectedSantri]);
+  }, [rooms, startDate, endDate, selectedSantri]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRooms.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -102,45 +122,69 @@ export default function TimkesKonsultasiRiwayatPage() {
       .catch((error) => console.error(error));
   }, []);
 
+  const activeFilterCount = [startDate, endDate, selectedSantri].filter(Boolean).length;
+
+  const handleReset = () => {
+    setStartDate('');
+    setEndDate('');
+    setSelectedSantri('');
+    setCurrentPage(1);
+  };
+
   return (
     <div className='p-4 bg-gray-50 min-h-[calc(100vh-80px)]'>
       <div className='max-w-5xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden'>
-        <div className='p-4 border-b border-gray-100 flex items-center gap-3'>
-          <button onClick={() => navigate('/timkesehatan/konsultasi')} className='p-2 rounded-full hover:bg-gray-100'><ArrowLeft size={18} /></button>
-          <div>
-            <h1 className='font-bold text-gray-800'>Riwayat Konsultasi</h1>
-            <p className='text-xs text-gray-500'>Menampilkan room dengan status closed.</p>
+        <div className='p-4 border-b border-gray-100 flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
+            <button onClick={() => navigate('/timkesehatan/konsultasi')} className='p-2 rounded-full hover:bg-gray-100'><ArrowLeft size={18} /></button>
+            <div>
+              <h1 className='font-bold text-gray-800'>Riwayat Konsultasi</h1>
+              <p className='text-xs text-gray-500'>Menampilkan room dengan status closed.</p>
+            </div>
           </div>
-        </div>
-        <div className='px-4 py-3 border-b border-gray-100 bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-3'>
-          <div>
-            <label className='text-xs font-medium text-gray-600 block mb-1'>Filter Tanggal</label>
-            <input
-              type='date'
-              value={selectedDate}
-              onChange={(e) => {
-                setSelectedDate(e.target.value);
-                setCurrentPage(1);
-              }}
-              className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-100'
-            />
-          </div>
-          <div>
-            <label className='text-xs font-medium text-gray-600 block mb-1'>Filter Nama Santri</label>
-            <select
-              value={selectedSantri}
-              onChange={(e) => {
-                setSelectedSantri(e.target.value);
-                setCurrentPage(1);
-              }}
-              className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-100 bg-white'
-            >
-              <option value=''>Semua Santri</option>
-              {santriOptions.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterDropdown
+            activeCount={activeFilterCount}
+            onReset={handleReset}
+          >
+            <div className="space-y-4">
+              <div>
+                <label className='text-xs font-semibold text-gray-700 block mb-1.5'>Nama Santri</label>
+                <HybridSelect
+                  value={selectedSantri}
+                  onChange={(e) => {
+                    setSelectedSantri(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  options={santriOptions}
+                  placeholder="Pilih nama santri..."
+                />
+              </div>
+              <div>
+                <label className='text-xs font-semibold text-gray-700 block mb-1.5'>Tanggal Mulai</label>
+                <input
+                  type='date'
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className='w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500'
+                />
+              </div>
+              <div>
+                <label className='text-xs font-semibold text-gray-700 block mb-1.5'>Tanggal Selesai</label>
+                <input
+                  type='date'
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className='w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500'
+                />
+              </div>
+            </div>
+          </FilterDropdown>
         </div>
         <div className='py-2'>
           {groupedRooms.map((group, groupIndex) => (
@@ -149,7 +193,7 @@ export default function TimkesKonsultasiRiwayatPage() {
                 {group.title}
               </div>
               {group.rooms.map((room) => (
-                <button key={room.id} onClick={() => navigate(`/timkesehatan/konsultasi?room=${room.id}`)} className='w-full p-4 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0'>
+                <button key={room.id} onClick={() => navigate(`/timkesehatan/konsultasi?room=${room.id}`)} className='w-full ml-4 p-4 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0'>
                   <div className='font-semibold text-gray-800'>{room.santri?.nama || '-'}</div>
                   <div className='text-xs text-gray-500 mt-1'>Ditutup: {formatRoomchatTime(room.closed_at)}</div>
                   <div className='text-xs text-gray-500 mt-1'>Alasan: {room.closed_reason_text || '-'}</div>

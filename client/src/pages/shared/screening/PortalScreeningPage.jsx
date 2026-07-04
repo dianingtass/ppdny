@@ -6,12 +6,14 @@ import {
   Loader2,
   Plus,
   History,
-  ClipboardList
+  ClipboardList,
+  Trash2
 } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
 import SortDropdown from "../../../components/SortDropdown";
+import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 
 
 export default function PortalScreeningPage({
@@ -30,12 +32,43 @@ export default function PortalScreeningPage({
     const [totalScreening, setTotalScreening] = useState(0);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedPemeriksa, setSelectedPemeriksa] = useState("");
 
     const limit = 10;
-    const riwayat = useMemo(() => {
-        return screening.filter(item => item.id_screening !== latest?.id_screening);
-    }, [screening, latest]);
-    const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(riwayat, "tanggal", "desc");
+
+    const pemeriksaList = useMemo(() => {
+        const names = new Set();
+        screening.forEach(item => {
+            const name = item.users_screening_id_timkesTousers?.nama;
+            if (name) names.add(name);
+        });
+        return Array.from(names);
+    }, [screening]);
+
+    const filteredRiwayat = useMemo(() => {
+        let data = screening.filter(item => item.id_screening !== latest?.id_screening);
+        if (selectedPemeriksa) {
+            data = data.filter(item => item.users_screening_id_timkesTousers?.nama === selectedPemeriksa);
+        }
+        return data;
+    }, [screening, latest, selectedPemeriksa]);
+
+    const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(filteredRiwayat, "tanggal", "desc");
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            await api.delete(`/admin/screening/${deleteModal.id}`);
+            setDeleteModal({ isOpen: false, id: null });
+            fetchDetail();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     const fetchDetail = async () => {
         try {
@@ -158,6 +191,14 @@ export default function PortalScreeningPage({
                             >
                                 Lihat
                             </button>
+                            {rolePrefix === "admin" && (
+                                <button
+                                    onClick={() => setDeleteModal({ isOpen: true, id: item.id_screening })}
+                                    className="px-3 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition flex items-center justify-center"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -262,7 +303,7 @@ export default function PortalScreeningPage({
                             onClick={() =>
                                 navigate(`/${rolePrefix}/daftarSantriScreening/${id}/create`)
                             }
-                            className="bg-green-600 hover:bg-green-700 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-medium flex items-center shadow-lg transition shrink-0 text-sm sm:text-base"
+                            className="bg-green-600 hover:bg-green-700 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition shrink-0 text-sm sm:text-base"
                             >
                             <Plus size={20} className="sm:mr-2" />
                             <span className="hidden sm:inline">Screening Baru</span>
@@ -275,10 +316,10 @@ export default function PortalScreeningPage({
                         <table className="w-full table-fixed border-collapse">
                             <thead>
                             <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                                <th className="p-4 pl-6 w-1/5">Tanggal</th>
-                                <th className="p-4 w-1/3">Diagnosa</th>
-                                <th className="p-4 w-1/4">Pemeriksa</th>
-                                <th className="p-4 pr-6 w-1/6 text-center">Aksi</th>
+                                <th className="p-4 pl-6 w-[15%]">Tanggal</th>
+                                <th className="p-4 w-[25%]">Diagnosa</th>
+                                <th className="p-4 w-[30%]">Pemeriksa</th>
+                                <th className="p-4 pr-6 w-[30%] text-center">Aksi</th>
                             </tr>
                             </thead>
 
@@ -313,6 +354,15 @@ export default function PortalScreeningPage({
                                     >
                                         Lihat
                                     </button>
+                                    {rolePrefix === "admin" && (
+                                        <button
+                                            onClick={() => setDeleteModal({ isOpen: true, id: latest.id_screening })}
+                                            className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition inline-flex items-center gap-1"
+                                        >
+                                            <Trash2 size={16} />
+                                            Hapus
+                                        </button>
+                                    )}
                                 </td>
                                 </tr>
                             ) : (
@@ -346,10 +396,10 @@ export default function PortalScreeningPage({
                     <table className="w-full table-fixed border-collapse">
                         <thead>
                         <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                            <SortableHeader label="Tanggal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-1/5 cursor-pointer text-left" />
-                            <SortableHeader label="Diagnosa" sortKey="diagnosa" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-1/3 cursor-pointer text-left" />
-                            <SortableHeader label="Pemeriksa" sortKey="users_screening_id_timkesTousers.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-1/4 cursor-pointer text-left" />
-                            <th className="p-4 pr-6 w-1/6 text-center">Aksi</th>
+                            <SortableHeader label="Tanggal" sortKey="tanggal" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] cursor-pointer text-left" />
+                            <SortableHeader label="Diagnosa" sortKey="diagnosa" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[25%] cursor-pointer text-left" />
+                            <SortableHeader label="Pemeriksa" sortKey="users_screening_id_timkesTousers.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[30%] cursor-pointer text-left" />
+                            <th className="p-4 pr-6 w-[30%] text-center">Aksi</th>
                         </tr>
                         </thead>
  
@@ -385,6 +435,15 @@ export default function PortalScreeningPage({
                                         >
                                             Lihat
                                         </button>
+                                        {rolePrefix === "admin" && (
+                                            <button
+                                                onClick={() => setDeleteModal({ isOpen: true, id: item.id_screening })}
+                                                className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition inline-flex items-center gap-1"
+                                            >
+                                                <Trash2 size={16} />
+                                                Hapus
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                                 ))
@@ -398,10 +457,20 @@ export default function PortalScreeningPage({
                             </tbody>
                     </table>
                     </div>
-                    <div className="lg:hidden">
-                      <div className="p-3 border-b border-gray-100 flex justify-end">
-                        <SortDropdown
-                          value={`${sortKey}_${sortDir}`}
+                     <div className="lg:hidden">
+                       <div className="p-3 border-b border-gray-100 flex justify-between items-center gap-3">
+                         <select
+                           value={selectedPemeriksa}
+                           onChange={(e) => setSelectedPemeriksa(e.target.value)}
+                           className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-700 flex-1 max-w-[200px]"
+                         >
+                           <option value="">Semua Pemeriksa</option>
+                           {pemeriksaList.map(name => (
+                             <option key={name} value={name}>{name}</option>
+                           ))}
+                         </select>
+                         <SortDropdown
+                           value={`${sortKey}_${sortDir}`}
                           onChange={(val) => {
                             const parts = val.split("_");
                             const dir = parts.pop();
@@ -438,6 +507,12 @@ export default function PortalScreeningPage({
 
             </div>
             {isScabiesShell && <div className="h-2" />}
+            <ConfirmDeleteModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, id: null })}
+                onConfirm={handleDelete}
+                loading={isDeleting}
+            />
         </div>
     );
 }

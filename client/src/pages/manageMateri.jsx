@@ -27,6 +27,7 @@ const STATUS_CFG = {
   ditinjau:  { label: "Ditinjau",  cls: "text-amber-600 bg-amber-50 border-amber-200" },
   disetujui: { label: "Disetujui", cls: "text-green-600 bg-green-50 border-green-200" },
   ditolak:   { label: "Ditolak",   cls: "text-red-600   bg-red-50   border-red-200"   },
+  dihapus:   { label: "Dihapus",   cls: "text-gray-500  bg-gray-50  border-gray-200"   },
 };
 
 function StatusBadge({ status }) {
@@ -137,8 +138,8 @@ export default function MateriManage() {
 
   const sortMateriList = (list) => {
     return [...list].sort((a, b) => {
-      const dateA = new Date(a.created_at || a.tanggal_pengajuan || 0);
-      const dateB = new Date(b.created_at || b.tanggal_pengajuan || 0);
+      const dateA = new Date(a.tanggal_dibuat || a.created_at || a.tanggal_pengajuan || 0);
+      const dateB = new Date(b.tanggal_dibuat || b.created_at || b.tanggal_pengajuan || 0);
       if (sortBy === "terbaru") return dateB - dateA;
       if (sortBy === "terlama") return dateA - dateB;
       if (sortBy === "az") return (a.judul || "").localeCompare(b.judul || "");

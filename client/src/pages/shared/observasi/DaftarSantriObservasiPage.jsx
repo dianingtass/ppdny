@@ -34,6 +34,14 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
   const navigate = useNavigate();
   const limit = 10;
 
+  const mappedSantri = santriList.map(item => ({
+    ...item,
+    tanggal_terakhir: item.latest_observasi?.tanggal || null,
+    total_observasi: item._count?.observasi_observasi_id_santriTousers || 0
+  }));
+
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedSantri, "nama");
+
   const formatLatestObservasiDateTime = (latestObservasi) => {
     if (!latestObservasi?.tanggal) return "-";
     const tanggal = new Date(latestObservasi.tanggal).toLocaleDateString("id-ID");
@@ -49,7 +57,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
   const prevFiltersRef = useRef(null);
 
   useEffect(() => {
-    const currentFilters = { debouncedSearch, kategoriSkor, waktu, startDate, endDate };
+    const currentFilters = { debouncedSearch, kategoriSkor, waktu, startDate, endDate, sortKey, sortDir };
     const prev = prevFiltersRef.current;
 
     // Jika filter berubah (bukan navigasi page), reset page ke 1
@@ -58,7 +66,9 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
       prev.kategoriSkor !== kategoriSkor ||
       prev.waktu !== waktu ||
       prev.startDate !== startDate ||
-      prev.endDate !== endDate
+      prev.endDate !== endDate ||
+      prev.sortKey !== sortKey ||
+      prev.sortDir !== sortDir
     );
 
     const pageToFetch = filterChanged ? 1 : page;
@@ -69,7 +79,17 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
       setLoading(true);
       try {
         const res = await api.get(`/${rolePrefix}/observasi/santri`, {
-          params: { search: debouncedSearch, page: pageToFetch, limit, kategoriSkor, waktu, startDate, endDate }
+          params: {
+            search: debouncedSearch,
+            page: pageToFetch,
+            limit,
+            kategoriSkor,
+            waktu,
+            startDate,
+            endDate,
+            sortBy: sortKey,
+            sortDir: sortDir
+          }
         });
         setSantriList(res.data.data || []);
         setTotalPages(Math.max(1, Math.ceil((res.data.pagination?.total || 0) / limit)));
@@ -82,17 +102,11 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
 
     fetchSantri();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, page, rolePrefix, kategoriSkor, waktu, startDate, endDate]);
+  }, [debouncedSearch, page, rolePrefix, kategoriSkor, waktu, startDate, endDate, sortKey, sortDir]);
 
   const activeFilterCount = [kategoriSkor, waktu, startDate, endDate].filter(Boolean).length;
 
-  const mappedSantri = santriList.map(item => ({
-    ...item,
-    tanggal_terakhir: item.latest_observasi?.tanggal || null,
-    total_observasi: item._count?.observasi_observasi_id_santriTousers || 0
-  }));
 
-  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedSantri, "nama");
 
   return (
     <div className="space-y-6">
@@ -201,7 +215,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {sortedData.length > 0 ? sortedData.map((item) => (
+                  {mappedSantri.length > 0 ? mappedSantri.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition">
                       <td className="p-4 align-top">
                         <div className="flex items-center gap-3">
@@ -246,7 +260,7 @@ export default function DaftarSantriObservasiPage({ rolePrefix }) {
           </div>
 
           <div className="md:hidden space-y-4">
-            {sortedData.map((item) => {
+            {mappedSantri.map((item) => {
               const latest = item.latest_observasi;
               const total = item._count?.observasi_observasi_id_santriTousers || 0;
 

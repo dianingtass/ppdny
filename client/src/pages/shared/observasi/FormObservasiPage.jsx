@@ -233,12 +233,7 @@ export default function FormObservasiPage({ rolePrefix }) {
                     {["ya", "tidak"].map((option) => (
                       <label
                         key={option}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition ${
-                          selected?.jawaban === (option === "ya")
-                            ? "border-green-500 bg-green-50 text-green-700"
-                            : "border-gray-200 hover:border-green-300"
-                        }`}
-                      >
+                        className="flex items-center gap-2 px-3 py-1 rounded-xl cursor-pointer transition">
                         <input
                           type="radio"
                           name={`pertanyaan-${item.id_pertanyaan_observasi}`}

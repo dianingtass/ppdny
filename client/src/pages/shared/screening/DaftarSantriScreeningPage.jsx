@@ -223,8 +223,8 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
                 </thead>
 
                 <tbody className="divide-y divide-gray-100">
-                  {sortedData.length > 0 ? (
-                    sortedData.map((item) => (
+                  {mappedSantri.length > 0 ? (
+                    mappedSantri.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50 transition">
                         
                         {/* NAMA */}
@@ -296,7 +296,7 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
           
           {/* MOBILE CARD */}
           <div className="md:hidden space-y-4">
-            {sortedData.map((item) => {
+            {mappedSantri.map((item) => {
               const total = item._count?.screening_screening_id_santriTousers || 0;
               const hasScreening = item.screening_screening_id_santriTousers?.[0];
  

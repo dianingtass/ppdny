@@ -199,7 +199,7 @@ export default function FormAbsensiPage({ rolePrefix }) {
                     {santri.map(s => (
                         <div
                             key={s.users.id}
-                            className="p-3 border rounded-lg"
+                            className="p-3 border border-gray-300 rounded-lg"
                         >
                             <p className="font-semibold">
                             {s.users.nama}

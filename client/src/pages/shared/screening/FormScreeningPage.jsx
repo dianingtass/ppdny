@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../config/api";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -46,6 +46,8 @@ export default function FormScreeningPage({ rolePrefix }) {
     bagianB: "",
     penanganan: ""
   });
+
+  const predileksiRef = useRef(null);
 
   const diagnosaOtomatis = useMemo(() => {
     const bagianBIds = bagianB.map((b) => b.id_pertanyaan_screening);
@@ -123,6 +125,14 @@ export default function FormScreeningPage({ rolePrefix }) {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    if (!loading && isEditMode && predileksiRef.current) {
+      setTimeout(() => {
+        predileksiRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, [loading, isEditMode]);
+
   const handleNumberChange = (idPertanyaan, value) => {
     if (isEditMode) return;
 
@@ -158,7 +168,7 @@ export default function FormScreeningPage({ rolePrefix }) {
   };
 
   const toggleAreaPredileksi = (key) => {
-    if (isEditMode) return;
+    if (isEditMode && !(rolePrefix === "admin" || rolePrefix === "timkesehatan")) return;
 
     setPredileksiMap((prev) => {
       const updated = { ...prev };
@@ -173,7 +183,7 @@ export default function FormScreeningPage({ rolePrefix }) {
   };
 
   const updateBentukKelainan = (key, bentuk) => {
-    if (isEditMode) return;
+    if (isEditMode && !(rolePrefix === "admin" || rolePrefix === "timkesehatan")) return;
     setPredileksiMap((prev) => ({ ...prev, [key]: bentuk }));
   };
 
@@ -214,13 +224,25 @@ export default function FormScreeningPage({ rolePrefix }) {
   };
 
   const handleSubmit = async () => {
-    if (isEditMode) {
+    if (isEditMode && !(rolePrefix === "admin" || rolePrefix === "timkesehatan")) {
       navigate(`/${rolePrefix}/daftarSantriScreening/${id}`);
       return;
     }
 
     try {
       setSubmitting(true);
+      if (isEditMode) {
+        const payload = {
+          predileksi: Object.entries(predileksiMap).map(([area, bentuk_kelainan]) => ({
+            area,
+            bentuk_kelainan
+          }))
+        };
+        await api.put(`/${rolePrefix}/screening/${screeningId}/predileksi`, payload);
+        navigate(`/${rolePrefix}/daftarSantriScreening/${id}`);
+        return;
+      }
+
       if (!validateForm()) {
         return;
       }
@@ -294,7 +316,8 @@ export default function FormScreeningPage({ rolePrefix }) {
           error={errors.bagianB}
         />
 
-        <Card title="Bagian C — Area Predileksi dan Bentuk Kelainan">
+        <div ref={predileksiRef} className="scroll-mt-2">
+          <Card title="Bagian C — Area Predileksi dan Bentuk Kelainan">
           <p className="text-sm text-gray-600 mb-4">
             Centang area anatomi yang terindikasi, lalu pilih bentuk kelainan kulit untuk tiap area yang dicentang.
           </p>
@@ -304,22 +327,22 @@ export default function FormScreeningPage({ rolePrefix }) {
                 const checked = Boolean(predileksiMap[item.key]);
 
                 return (
-                  <div key={item.key} className="border rounded-xl p-3 bg-gray-50">
+                  <div key={item.key} className="border border-gray-300 rounded-xl p-3 bg-gray-50">
                     <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
                       <input
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleAreaPredileksi(item.key)}
-                        disabled={isEditMode}
+                        disabled={isEditMode && !(rolePrefix === "admin" || rolePrefix === "timkesehatan")}
                       />
                       {item.label}
                     </label>
 
                     {checked && (
                       <select
-                        className="mt-2 w-full border rounded-lg px-3 py-2 text-sm"
+                        className="mt-2 w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm"
                         value={predileksiMap[item.key]}
-                        disabled={isEditMode}
+                        disabled={isEditMode && !(rolePrefix === "admin" || rolePrefix === "timkesehatan")}
                         onChange={(e) => updateBentukKelainan(item.key, e.target.value)}
                       >
                         {BENTUK_OPTIONS.map((bentuk) => (
@@ -337,13 +360,14 @@ export default function FormScreeningPage({ rolePrefix }) {
             <AnatomiPreview predileksiMap={predileksiMap} />
           </div>
         </Card>
+      </div>
 
         <Card title="Bagian D — Diagnosis">
           <select
             value={diagnosaManual}
             disabled={isEditMode}
             onChange={(e) => setDiagnosaManual(e.target.value)}
-            className="border rounded-lg px-4 py-2 w-full"
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full"
           >
             <option value="">Gunakan Rekomendasi Diagnosis</option>
             <option value="Scabies">Scabies</option>
@@ -354,8 +378,7 @@ export default function FormScreeningPage({ rolePrefix }) {
 
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm text-gray-600">Rekomendasi Sistem Berdasarkan Skor:</p>
-            <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-600">Rekomendasi Sistem Berdasarkan Skor:</p>
+            <div className="mt-4 p-4 bg-white border border-green-200 rounded-lg">
               <p className={getDiagnosaStyle(diagnosaOtomatis)}>
                 {diagnosaOtomatis.replaceAll("_", " ")}
               </p>
@@ -391,14 +414,14 @@ export default function FormScreeningPage({ rolePrefix }) {
           )}
         </Card>
 
-        {!isEditMode && (
+        {(!isEditMode || (isEditMode && (rolePrefix === "admin" || rolePrefix === "timkesehatan"))) && (
           <div className="flex justify-end">
             <button
               onClick={handleSubmit}
               disabled={submitting}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl disabled:opacity-50"
             >
-              {submitting ? "Menyimpan..." : "Simpan Screening"}
+              {submitting ? "Menyimpan..." : isEditMode ? "Simpan Perubahan" : "Simpan Screening"}
             </button>
           </div>
         )}
@@ -492,7 +515,7 @@ function NumberInput({ item, disabled, jawaban, handleNumberChange }) {
         min="0"
         max="30"
         placeholder="Max 30"
-        className="border border-r-0 border-gray-500 rounded-l-lg px-3 py-2 w-full outline-none placeholder:text-[14px] placeholder:italic"
+        className="border border-r-0 border-gray-300 rounded-l-lg px-3 py-2 w-full outline-none placeholder:text-[14px] placeholder:italic"
         disabled={disabled}
         value={selected?.nilai_number ?? ""}
         onChange={(e) => {
@@ -503,14 +526,12 @@ function NumberInput({ item, disabled, jawaban, handleNumberChange }) {
             return;
           }
 
-          const numberValue = Number(value);
-          if (numberValue <= 30) {
-            handleNumberChange(item.id_pertanyaan_screening, numberValue);
-          }
+          const numVal = Math.min(30, Math.max(0, parseInt(value, 10)));
+          handleNumberChange(item.id_pertanyaan_screening, numVal);
         }}
       />
-      <span className="bg-gray-100 border border-l-0 border-gray-500 rounded-r-lg px-3 py-2 text-gray-600">
-        hari
+      <span className="bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg px-3 py-2 text-gray-500 font-semibold select-none">
+        Hari
       </span>
     </div>
   );

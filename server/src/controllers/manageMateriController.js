@@ -139,10 +139,16 @@ exports.deleteManageMateri = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Materi tidak ditemukan' });
         }
 
-        await prisma.materi.update({
-            where: { id_materi: Number(id) },
-            data: { is_active: false }
-        });
+        await prisma.$transaction([
+            prisma.materi.update({
+                where: { id_materi: Number(id) },
+                data: { is_active: false }
+            }),
+            prisma.pengajuan_materi.updateMany({
+                where: { id_materi_hasil: Number(id) },
+                data: { status: 'dihapus' }
+            })
+        ]);
 
         res.status(200).json({ success: true, message: 'Materi berhasil dihapus' });
 

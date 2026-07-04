@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import api from "../../../config/api";
 import { exportObservasiPdf } from "../../../components/PdfObservasi";
+import PdfPreview from "../../../components/PdfPreview";
 
 export default function ViewObservasiPage({ rolePrefix, backPath, shellVariant = "default" }) {
   const { observasiId } = useParams();
@@ -100,15 +101,9 @@ export default function ViewObservasiPage({ rolePrefix, backPath, shellVariant =
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto h-[120vh] md:h-[280vh] sm:px-4">
+      <div className="max-w-3xl mx-auto sm:px-4">
         {pdfUrl && (
-          <iframe
-            src={`${pdfUrl}#toolbar=0&view=Fit`}
-            width="100%"
-            height="100%"
-            title="Preview PDF Observasi"
-            className="border-none w-full h-full shadow-lg bg-white"
-          />
+          <PdfPreview pdfUrl={pdfUrl} />
         )}
       </div>
 

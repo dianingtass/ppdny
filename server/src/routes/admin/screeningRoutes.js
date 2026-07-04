@@ -23,4 +23,15 @@ router.put(
   screeningController.updateFotoPredileksi
 );
 
+router.put(
+  "/:id/predileksi",
+  screeningController.updatePredileksi
+);
+
+router.delete(
+  "/:id",
+  screeningController.deleteScreening
+);
+
 module.exports = router;
+

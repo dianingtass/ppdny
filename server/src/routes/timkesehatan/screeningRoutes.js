@@ -12,5 +12,6 @@ router.get("/penanganan", screeningController.getPenanganan);
 
 router.post("/create", screeningController.postScreening);
 router.get("/:id", screeningController.getDetailScreening);
+router.put("/:id/predileksi", screeningController.updatePredileksi);
 
 module.exports = router;

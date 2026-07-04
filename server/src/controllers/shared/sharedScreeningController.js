@@ -29,6 +29,7 @@ const getSantriListSelect = () => ({
   foto_profil: true,
   screening_screening_id_santriTousers: {
     take: 1,
+    where: { is_active: true },
     orderBy: { tanggal: "desc" },
     select: {
       tanggal: true,
@@ -37,7 +38,9 @@ const getSantriListSelect = () => ({
   },
   _count: {
     select: {
-      screening_screening_id_santriTousers: true
+      screening_screening_id_santriTousers: {
+        where: { is_active: true }
+      }
     }
   }
 });
@@ -221,10 +224,10 @@ const getScreeningBySantri = async (req, res) => {
 
     const [total, data] = await Promise.all([
       prisma.screening.count({
-        where: { id_santri: Number(id) }
+        where: { id_santri: Number(id), is_active: true }
       }),
       prisma.screening.findMany({
-        where: { id_santri: Number(id) },
+        where: { id_santri: Number(id), is_active: true },
         orderBy: { tanggal: "desc" },
         skip,
         take: Number(limit),
@@ -434,8 +437,8 @@ const getDetailScreening = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const data = await prisma.screening.findUnique({
-      where: { id_screening: Number(id) },
+    const data = await prisma.screening.findFirst({
+      where: { id_screening: Number(id), is_active: true },
       include: {
         users_screening_id_timkesTousers: {
           select: { id: true, nama: true }
@@ -476,6 +479,10 @@ const getDetailScreening = async (req, res) => {
       }
     });
 
+    if (!data) {
+      return res.status(404).json({ success: false, message: "Data screening tidak ditemukan" });
+    }
+
     res.json({ success: true, data });
 
   } catch (error) {
@@ -488,7 +495,7 @@ const getLatestScreening = async (req, res) => {
     const { id } = req.params;
 
     const latest = await prisma.screening.findFirst({
-      where: { id_santri: Number(id) },
+      where: { id_santri: Number(id), is_active: true },
       orderBy: { tanggal: "desc" },
       include: {
         users_screening_id_timkesTousers: {
@@ -510,6 +517,75 @@ const getLatestScreening = async (req, res) => {
   }
 };
 
+const deleteScreening = async (req, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Akses ditolak" });
+    }
+    const { id } = req.params;
+
+    const existing = await prisma.screening.findUnique({
+      where: { id_screening: Number(id) }
+    });
+
+    if (!existing || !existing.is_active) {
+      return res.status(404).json({ success: false, message: "Data screening tidak ditemukan" });
+    }
+
+    await prisma.screening.update({
+      where: { id_screening: Number(id) },
+      data: { is_active: false }
+    });
+
+    res.json({ success: true, message: "Data screening berhasil dihapus" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updatePredileksi = async (req, res) => {
+  try {
+    if (!writableRoles.includes(req.user?.role)) {
+      return res.status(403).json({ success: false, message: "Akses ditolak" });
+    }
+    const { id } = req.params;
+    const predileksi = safeParseArray(req.body.predileksi);
+
+    const validBentuk = [
+      "Ruam_Merah",
+      "Bintil_Merah_Kecil",
+      "Terowongan_Kecil_di_Kulit",
+      "Bintil_Bernanah"
+    ];
+
+    const predileksiValid = Array.isArray(predileksi)
+      ? predileksi.filter((item) => item && item.area && validBentuk.includes(item.bentuk_kelainan))
+      : [];
+
+    await prisma.$transaction(async (tx) => {
+      await tx.screening_predileksi.updateMany({
+        where: { id_screening: Number(id), is_active: true },
+        data: { is_active: false }
+      });
+
+      if (predileksiValid.length > 0) {
+        await tx.screening_predileksi.createMany({
+          data: predileksiValid.map(p => ({
+            id_screening: Number(id),
+            area: p.area,
+            bentuk_kelainan: p.bentuk_kelainan,
+            is_active: true
+          }))
+        });
+      }
+    });
+
+    res.json({ success: true, message: "Data predileksi berhasil diperbarui" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
   return {
     getSantriList,
     getSantriDetail,
@@ -518,7 +594,9 @@ const getLatestScreening = async (req, res) => {
     getPertanyaan,
     getPenanganan,
     getDetailScreening,
-    getLatestScreening
+    getLatestScreening,
+    deleteScreening,
+    updatePredileksi
   };
 };
 

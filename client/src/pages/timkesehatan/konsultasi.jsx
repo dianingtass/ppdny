@@ -54,6 +54,7 @@ export default function TimkesKonsultasiPage() {
   const navigate = useNavigate();
   const chatContainerRef = useRef(null);
   const lastMarkedReadRef = useRef({});
+  const hasInitializedRef = useRef(false);
   const [isMobileView, setIsMobileView] = useState(() => (typeof window !== 'undefined'
     ? window.matchMedia('(max-width: 767px)').matches
     : false));
@@ -75,13 +76,15 @@ export default function TimkesKonsultasiPage() {
     const items = (data?.data || []).map(normalizeRoom);
     const visibleRooms = items.filter((room) => room?.last_message?.id);
     setRooms(visibleRooms);
-    if (!selectedRoomId) {
+
+    if (!hasInitializedRef.current) {
       const fromQuery = Number(searchParams.get('room'));
       if (fromQuery) {
         setSelectedRoomId(fromQuery);
       } else if (!isMobileView && visibleRooms[0]?.id) {
         setSelectedRoomId(visibleRooms[0].id);
       }
+      hasInitializedRef.current = true;
       return;
     }
 
@@ -261,7 +264,7 @@ export default function TimkesKonsultasiPage() {
           <div className='p-4 border-b border-gray-100 flex items-center justify-between'>
             <div className='flex items-center gap-2 min-w-0'>
               {isMobileView && selectedRoomId && (
-                <button type='button' onClick={() => setSelectedRoomId(null)} className='p-2 rounded-lg hover:bg-gray-100 text-gray-600'>
+                <button type='button' onClick={() => { setSelectedRoomId(null); navigate(window.location.pathname); }} className='p-2 rounded-lg hover:bg-gray-100 text-gray-600'>
                   <ArrowLeft size={18} />
                 </button>
               )}

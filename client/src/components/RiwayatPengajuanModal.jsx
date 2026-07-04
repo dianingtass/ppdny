@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { X, Clock, CheckCircle, XCircle, Loader2, FileText } from "lucide-react";
+import { X, Clock, CheckCircle, XCircle, Loader2, FileText, Trash2 } from "lucide-react";
 import api from "../config/api";
 
 const STATUS_CONFIG = {
   ditinjau:  { label: "Ditinjau",  icon: Clock,         className: "text-amber-600  bg-amber-50  border-amber-200"  },
   disetujui: { label: "Disetujui", icon: CheckCircle,   className: "text-green-600  bg-green-50  border-green-200"  },
   ditolak:   { label: "Ditolak",   icon: XCircle,       className: "text-red-600    bg-red-50    border-red-200"    },
+  dihapus:   { label: "Dihapus",   icon: Trash2,        className: "text-gray-500   bg-gray-50   border-gray-200"   },
 };
 
 function StatusBadge({ status }) {
