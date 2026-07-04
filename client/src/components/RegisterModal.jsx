@@ -78,11 +78,11 @@ export default function RegisterModal({ open, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-green-600 to-green-500 lg:bg-black/60 lg:backdrop-blur-sm lg:from-transparent lg:to-transparent transition-all duration-300">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-green-600 to-green-500 lg:bg-black/60 lg:backdrop-blur-sm lg:from-transparent lg:to-transparent transition-all duration-300">
       <div className="absolute inset-0 hidden lg:block" onClick={onClose} />
 
       {/* CARD MODAL */}
-      <div className="relative w-full max-w-2xl rounded-2xl shadow-lg p-8 lg:p-12 animate-in fade-in zoom-in-95 duration-200 bg-white/10 backdrop-blur-md border border-white/20 lg:bg-white lg:border-none lg:backdrop-blur-none">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default relative w-full max-w-2xl rounded-2xl shadow-lg p-8 lg:p-12 animate-in fade-in zoom-in-95 duration-200 bg-white/10 backdrop-blur-md border border-white/20 lg:bg-white lg:border-none lg:backdrop-blur-none">
         <button onClick={onClose} className="absolute top-4 right-4 lg:top-6 lg:right-6 text-2xl cursor-pointer transition-colors text-white/70 hover:text-white lg:text-gray-400 lg:hover:text-gray-600" disabled={loading}>
           ✕
         </button>

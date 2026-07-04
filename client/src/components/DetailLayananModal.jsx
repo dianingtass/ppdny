@@ -5,8 +5,8 @@ const DetailLayananModal = ({ isOpen, onClose, layanan, onAjukan }) => {
   if (!isOpen || !layanan) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">{layanan.nama_layanan}</h2>

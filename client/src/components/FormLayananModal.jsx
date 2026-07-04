@@ -80,8 +80,8 @@ export default function FormLayananModal({ isOpen, onClose, layanan, onSuccess }
   if (!isOpen || !layanan) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <AlertToast message={message} onClose={clearAlert} />
         <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
           <div>

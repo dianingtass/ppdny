@@ -90,8 +90,8 @@ export default function InputRiwayatLayananModal({ isOpen, onClose, onSubmit, is
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/55 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 bg-black/55 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
 
         {/* Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">

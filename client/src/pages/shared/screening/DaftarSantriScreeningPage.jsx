@@ -24,6 +24,14 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
   const [totalPages, setTotalPages] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  const mappedSantri = santriList.map(item => ({
+    ...item,
+    tanggal_terakhir: item.screening_screening_id_santriTousers?.[0]?.tanggal || null,
+    total_screening: item._count?.screening_screening_id_santriTousers || 0
+  }));
+
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedSantri, "nama");
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -45,7 +53,9 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
           startDate,
           endDate,
           page: pageToFetch,
-          limit
+          limit,
+          sortBy: sortKey,
+          sortDir: sortDir
         }
       });
 
@@ -65,15 +75,17 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
   const prevFiltersRef = useRef(null);
 
   useEffect(() => {
-    const currentFilters = { debouncedSearch, selectedRisiko, startDate, endDate };
+    const currentFilters = { debouncedSearch, selectedRisiko, startDate, endDate, sortKey, sortDir };
     const prev = prevFiltersRef.current;
 
-    // Jika filter berubah (bukan navigasi page), paksa fetch dari page 1
+    // Jika filter atau sort berubah (bukan navigasi page), paksa fetch dari page 1
     const filterChanged = prev && (
       prev.debouncedSearch !== debouncedSearch ||
       prev.selectedRisiko !== selectedRisiko ||
       prev.startDate !== startDate ||
-      prev.endDate !== endDate
+      prev.endDate !== endDate ||
+      prev.sortKey !== sortKey ||
+      prev.sortDir !== sortDir
     );
 
     const pageToFetch = filterChanged ? 1 : page;
@@ -82,15 +94,9 @@ export default function DaftarSantriScreeningPage({ rolePrefix }) {
 
     fetchSantri(pageToFetch);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, page, selectedRisiko, startDate, endDate]);
+  }, [debouncedSearch, page, selectedRisiko, startDate, endDate, sortKey, sortDir]);
 
-  const mappedSantri = santriList.map(item => ({
-    ...item,
-    tanggal_terakhir: item.screening_screening_id_santriTousers?.[0]?.tanggal || null,
-    total_screening: item._count?.screening_screening_id_santriTousers || 0
-  }));
 
-  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(mappedSantri, "nama");
 
   const getDiagnosaStyle = (diagnosa) => {
     if (!diagnosa) return "text-gray-500";

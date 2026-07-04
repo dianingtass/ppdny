@@ -109,8 +109,8 @@ const ReviewPengajuanModal = ({ isOpen, pengajuan, onClose, onUpdate }) => {
   const hdr = STATUS_HEADER[pengajuan.status] || STATUS_HEADER.ditinjau;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 sm:px-6">

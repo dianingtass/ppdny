@@ -108,9 +108,10 @@ export default function UstadzPengaduan() {
           </div>
           <button 
                 onClick={() => setIsCreateOpen(true)}
-                className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold transition items-center shadow-md border border-orange-400"
+                className="flex bg-orange-500 hover:bg-orange-600 text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl font-bold transition items-center shadow-md border border-orange-400 shrink-0"
             >
-                <Plus size={20} className="mr-2" /> Buat Laporan Baru
+                <Plus size={20} className="sm:mr-2" />
+                <span className="hidden sm:inline">Buat Laporan Baru</span>
             </button>
         </div>
       </div>
@@ -118,13 +119,7 @@ export default function UstadzPengaduan() {
       {/* Content Area */}
       <div className="max-w-4xl mx-auto px-4 -mt-32 relative z-10 md:-mt-24 space-y-4">
         
-        {/* Mobile Create Button */}
-        <button 
-            onClick={() => setIsCreateOpen(true)}
-            className="w-full md:hidden flex justify-center bg-orange-500 hover:bg-orange-600 text-white px-4 py-3.5 rounded-xl font-bold transition items-center shadow-lg"
-        >
-            <Plus size={20} className="mr-2" /> Buat Laporan Baru
-        </button>
+
 
         {/* Search Bar */}
         <div className="flex gap-3 items-center justify-between w-full">

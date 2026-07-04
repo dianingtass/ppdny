@@ -29,8 +29,8 @@ export default function ProsesLayananModal({ isOpen, onClose, data, onSubmit, sa
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col">
         <AlertToast message={message} onClose={clearAlert} />
         
         {/* Header */}

@@ -122,16 +122,17 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     <div className="space-y-6 relative">
       <AlertToast message={message} onClose={clearAlert} />
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Riwayat Layanan</h1>
           <p className="text-gray-500 text-sm">Monitoring pengajuan layanan santri</p>
         </div>
         <button
           onClick={() => setIsInputOpen(true)}
-          className="flex bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium items-center shadow-lg transition-all"
+          className="flex bg-green-600 hover:bg-green-700 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-medium items-center shadow-lg transition-all shrink-0"
         >
-          <Plus size={20} className="mr-2" /> Tambah Riwayat Layanan
+          <Plus size={20} className="sm:mr-2" />
+          <span className="hidden sm:inline">Tambah Riwayat Layanan</span>
         </button>
       </div>
 

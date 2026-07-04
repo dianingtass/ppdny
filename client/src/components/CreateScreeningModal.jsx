@@ -33,8 +33,8 @@ function CreateScreeningModal({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-6">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-xl rounded-2xl shadow-2xl p-6">
         <h2 className="text-xl font-bold mb-4">Pilih Santri</h2>
         <div className="max-h-96 overflow-y-auto space-y-1">
           {santri.map((item) => (

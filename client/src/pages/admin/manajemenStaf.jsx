@@ -33,6 +33,7 @@ export default function ManajemenStaf() {
 
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("Semua");
+  const [filterStatus, setFilterStatus] = useState("Semua");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -72,9 +73,14 @@ export default function ManajemenStaf() {
         filterRole === "Semua" ||
         item.roles.some((r) => r.toLowerCase() === filterRole.toLowerCase());
 
-      return matchSearch && matchRole;
+      const matchStatus =
+        filterStatus === "Semua" ||
+        (filterStatus === "Aktif" && item.is_active) ||
+        (filterStatus === "Nonaktif" && !item.is_active);
+
+      return matchSearch && matchRole && matchStatus;
     });
-  }, [dataList, search, filterRole]);
+  }, [dataList, search, filterRole, filterStatus]);
 
   const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "nama");
 
@@ -85,7 +91,7 @@ export default function ManajemenStaf() {
 
   useEffect(() => {
     jump(1);
-  }, [filterRole, search, dataList]);
+  }, [filterRole, filterStatus, search, dataList]);
 
   const handleAdd = () => {
     setIsEditing(false);
@@ -187,17 +193,13 @@ export default function ManajemenStaf() {
 
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">Manajemen Staf</h1>
-          <p className="text-gray-500 text-sm">Kelola akun administrator, pimpinan, tim kesehatan, dan pengurus</p>
+          <h1 className="text-2xl font-bold text-gray-800">Manajemen Staf</h1>
+          <p className="text-gray-500 text-sm">Kelola akun pengguna internal</p>
         </div>
-        <button onClick={handleAdd} className="hidden md:flex bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium items-center shadow-lg hover:shadow-green-500/30 transition-all">
-          <Plus size={20} className="mr-2" /> Tambah Staf Baru
+        <button onClick={handleAdd} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center shadow-lg hover:shadow-green-500/30 transition shrink-0">
+          <Plus size={20} /><span className="ml-2 hidden md:inline">Tambah Staf Baru</span>
         </button>
       </div>
-
-      <button onClick={handleAdd} className="w-full md:hidden flex justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-medium transition items-center shadow-lg">
-        <Plus size={20} className="mr-2" /> Tambah Staf Baru
-      </button>
 
       <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar
@@ -207,25 +209,58 @@ export default function ManajemenStaf() {
           onClear={() => setSearch("")}
           className="flex-1"
         />
-        <FilterDropdown
-          activeCount={filterRole !== "Semua" ? 1 : 0}
-          onReset={() => setFilterRole("Semua")}
-        >
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Role / Hak Akses</label>
-            <FilterSelect
-              placeholder="Semua Role"
-              value={filterRole === "Semua" ? "" : filterRole}
-              onChange={(e) => setFilterRole(e.target.value || "Semua")}
-              options={[
-                { value: "Admin", label: "Admin" },
-                { value: "Pimpinan", label: "Pimpinan" },
-                { value: "Tim Kesehatan", label: "Tim Kesehatan" },
-                { value: "Pengurus", label: "Pengurus" },
-              ]}
-            />
-          </div>
-        </FilterDropdown>
+        <div className="flex gap-2 items-center">
+          <SortDropdown
+            className="md:hidden"
+            value={`${sortKey}_${sortDir}`}
+            onChange={(val) => {
+              const parts = val.split("_");
+              const dir = parts.pop();
+              const key = parts.join("_");
+              setSort(key, dir);
+            }}
+            options={[
+              { value: "nama_asc", label: "Nama (A-Z)" },
+              { value: "nama_desc", label: "Nama (Z-A)" },
+            ]}
+          />
+          <FilterDropdown
+            activeCount={(filterRole !== "Semua" ? 1 : 0) + (filterStatus !== "Semua" ? 1 : 0)}
+            onReset={() => {
+              setFilterRole("Semua");
+              setFilterStatus("Semua");
+            }}
+          >
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Role / Hak Akses</label>
+                <FilterSelect
+                  placeholder="Semua Role"
+                  value={filterRole === "Semua" ? "" : filterRole}
+                  onChange={(e) => setFilterRole(e.target.value || "Semua")}
+                  options={[
+                    { value: "Admin", label: "Admin" },
+                    { value: "Pimpinan", label: "Pimpinan" },
+                    { value: "Tim Kesehatan", label: "Tim Kesehatan" },
+                    { value: "Pengurus", label: "Pengurus" },
+                  ]}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Status Keaktifan</label>
+                <FilterSelect
+                  placeholder="Semua Status"
+                  value={filterStatus === "Semua" ? "" : filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value || "Semua")}
+                  options={[
+                    { value: "Aktif", label: "Aktif" },
+                    { value: "Nonaktif", label: "Nonaktif" },
+                  ]}
+                />
+              </div>
+            </div>
+          </FilterDropdown>
+        </div>
       </div>
 
       {loading ? (

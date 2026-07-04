@@ -26,7 +26,8 @@ import {
   BarChart3,
   UserPlus,
   ClipboardCheck,
-  MessageCircle
+  MessageCircle,
+  User
 } from "lucide-react";
 
 export default function GlobalLayout() {
@@ -425,7 +426,18 @@ export default function GlobalLayout() {
 
         </nav>
 
-        <div className="p-4 border-t border-green-500/30">
+        <div className="p-4 border-t border-green-500/30 space-y-1">
+
+          <button
+            onClick={() => {
+              navigate(`${rolePrefix}/profil`);
+              setIsSidebarOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-green-100 hover:bg-green-600/50 hover:text-white transition-colors"
+          >
+            <User size={20} />
+            <span>Edit Profil</span>
+          </button>
 
           <button
             onClick={handleLogout}

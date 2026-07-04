@@ -26,8 +26,8 @@ export default function FeedbackModal({ isOpen, onClose, item, onSubmit, saving 
   };
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 relative">
         <AlertToast message={message} onClose={clearAlert} />
 
         <div className="flex justify-between items-center mb-6 pt-4">

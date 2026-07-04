@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../config/api";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { exportScreeningPdf } from "../../../components/PdfScreening";
+import PdfPreview from "../../../components/PdfPreview";
 
 export default function ViewScreeningPage({ rolePrefix, backPath, shellVariant = "default" }) {
   const { screeningId } = useParams();
@@ -118,15 +119,9 @@ export default function ViewScreeningPage({ rolePrefix, backPath, shellVariant =
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto h-[120vh] md:h-[280vh] sm:px-4">
+      <div className="max-w-3xl mx-auto sm:px-4">
         {pdfUrl && (
-          <iframe
-            src={`${pdfUrl}#toolbar=0&view=Fit`}
-            width="100%"
-            height="100%"
-            title="Preview PDF"
-            className="border-none w-full h-full shadow-lg bg-white"
-          />
+          <PdfPreview pdfUrl={pdfUrl} />
         )}
       </div>
 

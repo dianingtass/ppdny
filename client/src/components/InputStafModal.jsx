@@ -15,7 +15,7 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
   const { message, showAlert, clearAlert } = useAlert();
 
   const [formData, setFormData] = useState(initialForm);
-  const availableRoles = ["Admin", "Pimpinan", "Tim Kesehatan", "Pengurus", "Ustadz"];
+  const availableRoles = ["Admin", "Pimpinan", "Tim Kesehatan", "Pengurus"];
   const isReadOnly = !!viewOnly;
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
   const inputClass = "w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-50 disabled:text-gray-500";
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         <AlertToast message={message} onClose={clearAlert} />
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
           <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
@@ -126,23 +126,23 @@ export default function InputStafModal({ isOpen, onClose, isEditing, editData, o
           </form>
         </div>
 
-        <div className="p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center">
+        <div className="p-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
           {viewOnly ? (
             <>
-              <div />
-              <button onClick={onClose} type="button" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Tutup</button>
+              <div className="hidden sm:block" />
+              <button onClick={onClose} type="button" className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Tutup</button>
             </>
           ) : (
             <>
               {isEditing ? (
-                <button type="button" onClick={() => onResetPassword(editData.id)} className="px-4 py-2 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-semibold text-sm rounded-xl transition flex items-center">
+                <button type="button" onClick={() => onResetPassword(editData.id)} className="w-full sm:w-auto justify-center px-4 py-2.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-semibold text-sm rounded-xl transition flex items-center">
                   <KeyRound size={16} className="mr-2" /> Reset Password
                 </button>
-              ) : <div />}
+              ) : <div className="hidden sm:block" />}
 
-              <div className="flex gap-3">
-                <button onClick={onClose} type="button" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Batal</button>
-                <button form="stafForm" type="submit" disabled={saving} className="px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition flex items-center disabled:opacity-70 shadow-lg">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button onClick={onClose} type="button" className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Batal</button>
+                <button form="stafForm" type="submit" disabled={saving} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition flex items-center disabled:opacity-70 shadow-lg">
                   {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />}
                   {saving ? "Menyimpan..." : "Simpan Data"}
                 </button>

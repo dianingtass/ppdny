@@ -6,8 +6,8 @@ export default function DetailSantriModal({ isOpen, onClose, data }) {
   if (!isOpen || !data) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
         <div className="bg-[url('/header.png')] bg-cover bg-center p-6 relative text-center">
           <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white bg-black/10 p-2 rounded-full transition"><X size={20} /></button>
           <ProfileAvatar

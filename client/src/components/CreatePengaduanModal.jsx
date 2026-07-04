@@ -37,8 +37,8 @@ export default function CreatePengaduanModal({ isOpen, onClose, onSubmit, isSavi
     const isSantriDisabled = role === "orangtua" && santris.length <= 1;
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div>
                         <h3 className="font-bold text-gray-800 text-lg">Buat Pengaduan Baru</h3>

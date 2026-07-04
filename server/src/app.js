@@ -94,6 +94,7 @@ app.use('/api/global/faq',          require('./routes/faqRoutes'));
 app.use('/api/global/riwayatPengajuanMateri', pengajuanGlobalRouter);
 
 app.use('/api/pengurus/dashboard',          require('./routes/pengurus/dashboardRoutes'));
+app.use('/api/pengurus/profile',            require('./routes/pengurus/profileRoutes'));
 app.use('/api/pengurus/santri',             require('./routes/pengurus/santriRoutes'));
 app.use('/api/pengurus/orangtua',           require('./routes/pengurus/orangtuaRoutes'));
 app.use('/api/pengurus/ustadz',             require('./routes/pengurus/ustadzRoutes'));
@@ -122,6 +123,7 @@ app.use('/api/ustadz/santri',    require('./routes/ustadz/santriRoutes'));
 app.use('/api/ustadz/pengaduan', require('./routes/ustadz/pengaduanRoutes'));
 
 app.use('/api/pimpinan/dashboard', require('./routes/pimpinan/dashboardRoutes'));
+app.use('/api/pimpinan/profile',   require('./routes/pimpinan/profileRoutes'));
 app.use('/api/pimpinan/santri',    require('./routes/pimpinan/santriRoutes'));
 app.use('/api/pimpinan/ustadz',    require('./routes/pimpinan/ustadzRoutes'));
 app.use('/api/pimpinan/pengaduan', require('./routes/pimpinan/pengaduanRoutes'));
@@ -138,6 +140,7 @@ app.use('/api/pimpinan/riwayat-layanan', require('./routes/pimpinan/riwayatLayan
 app.use('/api/pimpinan/absensi',       require('./routes/pimpinan/absensiRoutes'));
 
 app.use('/api/admin/dashboard',          require('./routes/admin/dashboardRoutes'));
+app.use('/api/admin/profile',            require('./routes/admin/profileRoutes'));
 app.use('/api/admin/staf',               require('./routes/admin/stafRoutes'));
 app.use('/api/admin/santri',             require('./routes/admin/santriRoutes'));
 app.use('/api/admin/orangtua',           require('./routes/admin/orangtuaRoutes'));
@@ -159,6 +162,7 @@ app.use('/api/admin/observasi',          require('./routes/admin/observasiRoutes
 app.use('/api/admin/absensi',            require('./routes/admin/absensiRoutes'));
 
 app.use('/api/timkesehatan/dashboard',       require('./routes/timkesehatan/dashboardRoutes'));
+app.use('/api/timkesehatan/profile',         require('./routes/timkesehatan/profileRoutes'));
 app.use('/api/timkesehatan/screening',       require('./routes/timkesehatan/screeningRoutes'));
 app.use('/api/timkesehatan/absensi',         require('./routes/timkesehatan/absensiRoutes'));
 app.use('/api/timkesehatan/observasi',       require('./routes/timkesehatan/observasiRoutes'));

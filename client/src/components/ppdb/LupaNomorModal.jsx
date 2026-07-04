@@ -33,8 +33,8 @@ export default function LupaNomorModal({ isOpen, onClose, onUseNumber }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
         <div className="flex justify-between items-center mb-5">
           <h3 className="text-lg font-bold text-gray-800">Cari Nomor Pendaftaran</h3>
           <button onClick={handleClose} className="p-1.5 hover:bg-gray-100 rounded-full text-gray-400 transition">

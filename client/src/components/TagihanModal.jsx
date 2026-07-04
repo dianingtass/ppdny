@@ -32,8 +32,8 @@ export default function TagihanModal({ isOpen, onClose, data, onPayClick, userRo
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
           <div>
             <h3 className="font-bold text-gray-900 text-xl">Rincian Tagihan</h3>

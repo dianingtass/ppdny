@@ -29,6 +29,7 @@ const SantriScabiesKonsultasiRoom = lazy(() => import("./pages/santri/scabiesKon
 // General / Shared
 const MateriManage = lazy(() => import("./pages/manageMateri"));
 const FaqPage = lazy(() => import("./pages/faq"));
+const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
 
 // Pengurus Pages
 const PengurusDashboard = lazy(() => import("./pages/pengurus/dashboard"));
@@ -136,6 +137,8 @@ const PpdbDashboard = lazy(() => import("./pages/ppdb/adminDashboard"));
 const Pendaftar = lazy(() => import("./pages/ppdb/adminPendaftar"));
 const Seleksi = lazy(() => import("./pages/ppdb/panitiaSeleksi"));
 
+const NotFound = lazy(() => import("./pages/NotFound"));
+
 function App() {
   return (
     <AuthProvider>
@@ -193,6 +196,7 @@ function App() {
               <Route path="ppdb/pendaftar" element={<Pendaftar />} />
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
+              <Route path="profil" element={<ProfilePage role="pengurus" />} />
             </Route>
           </Route>
 
@@ -245,6 +249,7 @@ function App() {
 
               {/* FAQ */}
               <Route path="faq" element={<FaqPage />} />
+              <Route path="profil" element={<ProfilePage role="timkesehatan" />} />
             </Route>
           </Route>
 
@@ -305,6 +310,7 @@ function App() {
               <Route path="daftarSantriObservasi/:id" element={<PimpinanDetailObservasi />} />
               <Route path="daftarSantriObservasi/:id/view/:observasiId" element={<PimpinanViewObservasi />} />
               <Route path="faq" element={<FaqPage />} />
+              <Route path="profil" element={<ProfilePage role="pimpinan" />} />
             </Route>
           </Route>
 
@@ -351,9 +357,11 @@ function App() {
               <Route path="ppdb/pendaftar" element={<Pendaftar />} />
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
+              <Route path="profil" element={<ProfilePage role="admin" />} />
             </Route>
           </Route>
 
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

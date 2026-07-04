@@ -153,10 +153,10 @@ export default function DetailPengaduanModal({
   if (!idAduan) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <AlertToast message={message} onClose={clearAlert} />
 
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden relative">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden relative">
         {/* HEADER MODAL */}
         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
           <div>

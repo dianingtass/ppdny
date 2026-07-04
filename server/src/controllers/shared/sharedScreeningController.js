@@ -57,7 +57,7 @@ const mapSantriListItem = (item, { diagnosa }) => {
 const createScreeningController = ({ writableRoles = ['timkesehatan'] } = {}) => {
 const getSantriList = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 10, diagnosa, startDate, endDate } = req.query;
+    const { search = "", page = 1, limit = 10, diagnosa, startDate, endDate, sortBy = "nama", sortDir = "asc" } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
     const limitNum = Number(limit);
@@ -100,46 +100,66 @@ const getSantriList = async (req, res) => {
       }
     }
 
-    const needsPostFilter = Boolean(diagnosa && diagnosa !== "Belum_Pernah_Screening");
     const select = getSantriListSelect();
 
-    let filteredData;
-    let total;
+    // Fetch all matching data to allow proper sorting on calculated fields (tanggal_terakhir, total_screening)
+    const allData = await prisma.users.findMany({
+      where: whereCondition,
+      select
+    });
 
-    if (needsPostFilter) {
-      const allData = await prisma.users.findMany({
-        where: whereCondition,
-        orderBy: { nama: "asc" },
-        select
-      });
+    // Map and filter based on diagnosa if needed
+    const mapped = allData
+      .map((item) => {
+        const mappedItem = mapSantriListItem(item, { diagnosa });
+        if (!mappedItem) return null;
+        
+        return {
+          ...mappedItem,
+          tanggal_terakhir: mappedItem.screening_screening_id_santriTousers?.[0]?.tanggal || null,
+          total_screening: mappedItem._count?.screening_screening_id_santriTousers || 0
+        };
+      })
+      .filter(Boolean);
 
-      const filtered = allData
-        .map((item) => mapSantriListItem(item, { diagnosa }))
-        .filter(Boolean);
+    // Apply sorting to the entire matched dataset
+    mapped.sort((a, b) => {
+      let aVal, bVal;
+      if (sortBy === "nama") {
+        aVal = a.nama;
+        bVal = b.nama;
+      } else if (sortBy === "tanggal_terakhir") {
+        aVal = a.tanggal_terakhir;
+        bVal = b.tanggal_terakhir;
+      } else if (sortBy === "total_screening") {
+        aVal = a.total_screening;
+        bVal = b.total_screening;
+      } else {
+        aVal = a.nama;
+        bVal = b.nama;
+      }
 
-      total = filtered.length;
-      filteredData = filtered.slice(skip, skip + limitNum);
-    } else {
-      const [data, dbTotal] = await prisma.$transaction([
-        prisma.users.findMany({
-          where: whereCondition,
-          skip,
-          take: limitNum,
-          orderBy: { nama: "asc" },
-          select
-        }),
-        prisma.users.count({ where: whereCondition })
-      ]);
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1;
+      if (bVal == null) return -1;
 
-      filteredData = data
-        .map((item) => mapSantriListItem(item, { diagnosa }))
-        .filter(Boolean);
-      total = dbTotal;
-    }
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+      }
+
+      const aStr = String(aVal).toLowerCase();
+      const bStr = String(bVal).toLowerCase();
+      if (aStr < bStr) return sortDir === "asc" ? -1 : 1;
+      if (aStr > bStr) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    const total = mapped.length;
+    const paginatedData = mapped.slice(skip, skip + limitNum);
 
     res.json({
       success: true,
-      data: filteredData,
+      data: paginatedData,
       pagination: {
         total,
         page: Number(page),
@@ -148,6 +168,7 @@ const getSantriList = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Error getSantriList:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

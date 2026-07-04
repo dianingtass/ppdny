@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Lock, X, Loader2, AlertTriangle, CheckCircle } from "lucide-react";
+import { Lock, X, Loader2, AlertTriangle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 
 export default function PasswordModal({ isOpen, onClose, onSubmit, saving }) {
   const [passwordBaru, setPasswordBaru] = useState("");
   const [konfirmasiPassword, setKonfirmasiPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showKonfirmasi, setShowKonfirmasi] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
 
   if (!isOpen) return null;
@@ -25,11 +27,13 @@ export default function PasswordModal({ isOpen, onClose, onSubmit, saving }) {
     // Reset form
     setPasswordBaru("");
     setKonfirmasiPassword("");
+    setShowPassword(false);
+    setShowKonfirmasi(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 relative">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 relative">
         <AlertToast message={message} onClose={clearAlert} />
 
         <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50">
@@ -49,25 +53,43 @@ export default function PasswordModal({ isOpen, onClose, onSubmit, saving }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Kata Sandi Baru
             </label>
-            <input
-              type="password"
-              placeholder="Minimal 6 karakter"
-              value={passwordBaru}
-              onChange={(e) => setPasswordBaru(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Minimal 6 karakter"
+                value={passwordBaru}
+                onChange={(e) => setPasswordBaru(e.target.value)}
+                className="w-full p-3 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Konfirmasi Kata Sandi
             </label>
-            <input
-              type="password"
-              placeholder="Ulangi kata sandi baru"
-              value={konfirmasiPassword}
-              onChange={(e) => setKonfirmasiPassword(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showKonfirmasi ? "text" : "password"}
+                placeholder="Ulangi kata sandi baru"
+                value={konfirmasiPassword}
+                onChange={(e) => setKonfirmasiPassword(e.target.value)}
+                className="w-full p-3 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKonfirmasi(!showKonfirmasi)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+              >
+                {showKonfirmasi ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -93,4 +115,4 @@ export default function PasswordModal({ isOpen, onClose, onSubmit, saving }) {
       </div>
     </div>
   );
-}
+}

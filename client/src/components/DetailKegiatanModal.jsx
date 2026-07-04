@@ -5,8 +5,8 @@ export default function DetailKegiatanModal({ isOpen, onClose, data, onFeedbackC
   if (!isOpen || !data) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="h-40 bg-green-50 w-full flex-shrink-0 flex items-center justify-center text-green-500 relative">
           <Calendar size={100} strokeWidth={2} />
           <button onClick={onClose} className="absolute top-4 right-4 bg-black/10 hover:bg-black/20 text-gray-700 p-2 rounded-full transition backdrop-blur-sm">

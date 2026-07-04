@@ -207,37 +207,37 @@ export default function PortalAbsensiPage({ rolePrefix }) {
 
         {/* ABSENSI TERAKHIR */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center flex-wrap gap-3">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center">
-              <ClipboardList className="mr-2 text-green-600" size={24}/>
-              Absensi Terakhir
+          <div className="flex justify-between items-center gap-3 w-full">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center min-w-0">
+              <ClipboardList className="mr-2 text-green-600 flex-shrink-0" size={24}/>
+              <span className="truncate">Absensi Terakhir</span>
             </h2>
-
-            <div className="flex w-full sm:w-auto gap-3">
+ 
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() =>
                   navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/laporan`)
                 }
-                className="w-full sm:w-auto px-4 py-2.5 border border-green-200 text-green-600 rounded-xl font-medium flex items-center justify-center hover:bg-green-50 transition"
+                className="px-3 py-2.5 sm:px-4 sm:py-2.5 border border-green-200 text-green-600 rounded-xl font-medium flex items-center justify-center hover:bg-green-50 transition text-sm sm:text-base shrink-0"
               >
                 Lihat Laporan
               </button>
-
+ 
               {rolePrefix !== "pimpinan" && (
                 <button
                   disabled={isTodayAbsensi}
                   onClick={() =>
                     navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/create`)
                   }
-                  className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition
+                  className={`p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition shrink-0 text-sm sm:text-base
                   ${
                     isTodayAbsensi
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-green-600 hover:bg-green-700 text-white"
                   }`}
                 >
-                  <Plus size={20} className="mr-2"/>
-                  Absensi Baru
+                  <Plus size={20} className="sm:mr-2"/>
+                  <span className="hidden sm:inline">Absensi Baru</span>
                 </button>
               )}
             </div>

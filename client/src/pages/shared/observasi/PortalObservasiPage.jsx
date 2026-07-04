@@ -172,18 +172,18 @@ export default function PortalObservasiPage({
         </div>
 
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center">
-              <ClipboardList className="mr-2 text-green-600" size={24} />
-              Observasi Terakhir
+          <div className="flex justify-between items-center gap-4 w-full">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center min-w-0">
+              <ClipboardList className="mr-2 text-green-600 flex-shrink-0" size={24} />
+              <span className="truncate">Observasi Terakhir</span>
             </h2>
             {canCreate && (
               <button
                 onClick={() => navigate(`/${rolePrefix}/daftarSantriObservasi/${id}/create`)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition"
+                className="bg-green-600 hover:bg-green-700 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-medium flex items-center justify-center shadow-lg transition shrink-0 text-sm sm:text-base"
               >
-                <Plus size={20} className="mr-2" />
-                Observasi Baru
+                <Plus size={20} className="sm:mr-2" />
+                <span className="hidden sm:inline">Observasi Baru</span>
               </button>
             )}
           </div>

@@ -87,16 +87,15 @@ export default function OrangTuaPengaduan() {
               <p className="text-green-100 text-sm truncate">Daftar laporan terkait santri untuk didiskusikan</p>
             </div>
           </div>
-          <button onClick={() => setIsCreateOpen(true)} className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold transition items-center shadow-md border border-orange-400">
-            <Plus size={20} className="mr-2" /> Buat Laporan Baru
+          <button onClick={() => setIsCreateOpen(true)} className="flex bg-orange-500 hover:bg-orange-600 text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl font-bold transition items-center shadow-md border border-orange-400 shrink-0">
+            <Plus size={20} className="sm:mr-2" />
+            <span className="hidden sm:inline">Buat Laporan Baru</span>
           </button>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 -mt-32 relative z-10 md:-mt-24 space-y-4">
-        <button onClick={() => setIsCreateOpen(true)} className="w-full md:hidden flex justify-center bg-orange-500 hover:bg-orange-600 text-white px-4 py-3.5 rounded-xl font-bold transition items-center shadow-lg">
-            <Plus size={20} className="mr-2" /> Buat Laporan Baru
-        </button>
+
 
         <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari laporan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />

@@ -50,7 +50,7 @@ export default function KegiatanPage({ rolePrefix }) {
     return true;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "tanggal");
+  const { sortedData, sortKey, sortDir, handleSort } = useSort(filteredData, "tanggal");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -131,19 +131,16 @@ export default function KegiatanPage({ rolePrefix }) {
     <div className="space-y-6 relative">
       <AlertToast message={message} onClose={clearAlert} />
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Kegiatan</h1>
           <p className="text-gray-500 text-sm">Kelola agenda global dan kegiatan kelas pesantren</p>
         </div>
-        <button onClick={handleOpenCreateForm} className="hidden md:flex bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium items-center shadow-lg transition-all">
-          <Plus size={20} className="mr-2" /> Tambah Kegiatan
+        <button onClick={handleOpenCreateForm} className="flex bg-green-600 hover:bg-green-700 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-medium items-center shadow-lg transition-all shrink-0">
+          <Plus size={20} className="sm:mr-2" />
+          <span className="hidden sm:inline">Tambah Kegiatan</span>
         </button>
       </div>
-
-      <button onClick={handleOpenCreateForm} className="w-full md:hidden flex justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-medium transition items-center shadow-lg">
-        <Plus size={20} className="mr-2" /> Tambah Kegiatan
-      </button>
 
       <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari nama kegiatan atau lokasi..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />

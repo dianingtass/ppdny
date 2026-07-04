@@ -35,8 +35,8 @@ export default function PendaftarDetailModal({ isOpen, data, onClose, onRefresh 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:none]">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:none]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div>
             <h3 className="font-bold text-gray-800 text-lg">Detail Pendaftar</h3>

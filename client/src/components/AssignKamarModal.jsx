@@ -77,9 +77,9 @@ export default function AssignKamarModal({
     editData?.kamar?.lokasi || preSelectedKamar?.lokasi || "";
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <AlertToast message={message} onClose={clearAlert} />
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
           <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
             <Home className="text-green-600" size={20} />{" "}

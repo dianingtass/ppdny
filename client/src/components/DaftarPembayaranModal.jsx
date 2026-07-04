@@ -65,8 +65,8 @@ export default function ListPembayaranModal({ isOpen, onClose, idTagihan, userRo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
+    <div onClick={onClose} className="fixed cursor-pointer inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div onClick={(e) => e.stopPropagation()} className="cursor-default bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
         <AlertToast message={message} onClose={clearAlert} />
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
             <div><h3 className="font-bold text-gray-800 text-lg">Riwayat Pembayaran</h3>{tagihanInfo && <div className="flex items-center gap-2 mt-1"><span className="text-xs text-gray-500">Status:</span>{isReadOnly ? <span className={`text-xs font-bold px-2 py-1 rounded ${tagihanInfo.status === 'Lunas' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{tagihanInfo.status}</span> : <select value={tagihanInfo.status || 'Aktif'} onChange={handleUpdateStatusTagihan} className={`text-xs font-bold px-2 py-1 rounded outline-none ${tagihanInfo.status === 'Lunas' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}><option value="Aktif">Aktif</option><option value="Lunas">Lunas</option></select>}</div>}</div>

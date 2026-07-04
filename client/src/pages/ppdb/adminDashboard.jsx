@@ -147,7 +147,7 @@ export default function AdminPpdbDashboard() {
       <div className="">
         <AlertToast message={message} onClose={clearAlert} />
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-start sm:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Dashboard PPDB</h1>
             <p className="text-sm text-gray-500">Penerimaan Peserta Didik Baru</p>
@@ -155,9 +155,10 @@ export default function AdminPpdbDashboard() {
           {!isPimpinan && (
             <button
               onClick={openCreate}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100"
+              className="flex items-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100 shrink-0"
             >
-              <Plus size={18} /> Tambah Gelombang
+              <Plus size={18} className="sm:mr-1" />
+              <span className="hidden sm:inline">Tambah Gelombang</span>
             </button>
           )}
         </div>
