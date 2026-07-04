@@ -31,7 +31,7 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
 
   const confirmRemove = async () => {
     try {
-      await api.delete(`/${rolePrefix}/orangtua/assign/${confirmRelasi.id}`);
+      await api.delete(`/${rolePrefix}/orangtua/relasi/${confirmRelasi.id}`);
       setConfirmRelasi({ open: false, id: null });
       fetchAnak();
     } catch (err) {
@@ -82,23 +82,24 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
             <h3 className="font-bold text-gray-800 text-lg">Daftar Anak / Tanggungan</h3>
             <p className="text-xs text-gray-500">Wali: {ortuData?.nama}</p>
           </div>
-          <div className="inline-flex items-center gap-2">
-            {rolePrefix !== "pimpinan" && onAssignClick && (
-              <button
-                onClick={() => onAssignClick(ortuData)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-md shadow-green-100"
-              >
-                <Plus size={18} /> Tambah Anak
-              </button>
-            )}
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-200 rounded-full transition text-gray-400"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {rolePrefix !== "pimpinan" && onAssignClick && (
+          <div className="p-4 border-b border-gray-100 flex justify-end bg-white">
             <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-200 rounded-full transition text-gray-400"
+              onClick={() => onAssignClick(ortuData)}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-md shadow-green-100"
             >
-              <X size={20} />
+              <Plus size={18} /> Tambah Anak
             </button>
           </div>
-        </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-4 [scrollbar-width:none]">
           {loading ? (
@@ -123,8 +124,11 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
                   </div>
                   {rolePrefix !== "pimpinan" && (
                     <button
-                      onClick={() => handleRemove(item.id_relasi)}
-                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-0 group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(item.id_relasi);
+                      }}
+                      className="p-2 text-red-500 md:text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                     >
                       <Trash2 size={16} />
                     </button>

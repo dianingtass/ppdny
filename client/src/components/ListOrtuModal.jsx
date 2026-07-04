@@ -31,7 +31,7 @@ export default function ListOrtuModal({ isOpen, onClose, santriData, onAssignCli
 
   const confirmRemove = async () => {
     try {
-      await api.delete(`/${rolePrefix}/orangtua/assign/${confirmRelasi.id}`);
+      await api.delete(`/${rolePrefix}/orangtua/relasi/${confirmRelasi.id}`);
       setConfirmRelasi({ open: false, id: null });
       fetchOrtu();
     } catch (err) {
@@ -121,8 +121,11 @@ export default function ListOrtuModal({ isOpen, onClose, santriData, onAssignCli
                     </div>
                   </div>
                   <button
-                    onClick={() => handleRemove(item.id_relasi)}
-                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-0 group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(item.id_relasi);
+                    }}
+                    className="p-2 text-red-500 md:text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                   >
                     <Trash2 size={16} />
                   </button>

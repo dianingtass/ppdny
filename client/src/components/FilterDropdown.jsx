@@ -46,7 +46,7 @@ const FilterDropdown = ({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
           {/* Modal Card container */}
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 max-w-md w-full overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 max-w-md w-full flex flex-col animate-in fade-in zoom-in-95 duration-150">
             
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
@@ -64,7 +64,7 @@ const FilterDropdown = ({
             </div>
 
             {/* Content Body */}
-            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-visible">
               {children}
             </div>
 

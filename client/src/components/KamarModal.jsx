@@ -3,6 +3,7 @@ import { X, Save, Loader2, BedDouble, MapPin, User } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import api from "../config/api";
+import HybridSelect from "./HybridSelect";
 
 export default function KamarModal({ isOpen, onClose, isEditing, editData, onSubmit, saving, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({ kamar: "", kapasitas: "", gender: "Laki_laki", lokasi: "", id_wali: "" });
@@ -83,15 +84,12 @@ export default function KamarModal({ isOpen, onClose, isEditing, editData, onSub
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Wali Kamar (Ustadz)</label>
-            <div className="relative">
-              <select name="id_wali" className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl outline-none bg-white focus:ring-2 focus:ring-green-500" value={formData.id_wali} onChange={handleChange}>
-                <option value="">— Tidak Ada Wali —</option>
-                {waliOptions.map(w => (
-                  <option key={w.id} value={w.id}>{w.nama} ({w.nip})</option>
-                ))}
-              </select>
-              <User className="absolute left-3 top-3 text-gray-400" size={16} />
-            </div>
+            <HybridSelect
+              value={formData.id_wali}
+              onChange={(e) => setFormData(prev => ({ ...prev, id_wali: e.target.value }))}
+              options={waliOptions.map(w => ({ value: w.id, label: `${w.nama} (${w.nip || "-"})` }))}
+              placeholder="— Tidak Ada Wali —"
+            />
           </div>
           <div className="pt-4 flex gap-3">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 bg-gray-100 rounded-xl hover:bg-gray-200">Batal</button>

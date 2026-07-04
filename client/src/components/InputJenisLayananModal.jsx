@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Save, Loader2, List, FileText, CreditCard, Plus, Trash2 } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
@@ -14,9 +14,38 @@ export default function InputJenisLayananModal({ isOpen, onClose, isEditing, edi
 
   const [fields, setFields] = useState(() => (
     (isEditing && editData?.formulir_layanan) || [
-      { name: "deskripsi", label: "Keterangan / Keperluan", type: "textarea", placeholder: "Jelaskan keperluan Anda...", required: true }
+      { name: "", label: "", type: "text", placeholder: "", required: true }
     ]
   ));
+
+  const [shouldScroll, setShouldScroll] = useState(false);
+  const fieldsContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        nama_layanan: (isEditing && editData?.nama_layanan) || "",
+        estimasi: (isEditing && editData?.estimasi) || "",
+        deskripsi: (isEditing && editData?.deskripsi) || ""
+      });
+      setFields((isEditing && editData?.formulir_layanan) || [
+        { name: "", label: "", type: "text", placeholder: "", required: true }
+      ]);
+    }
+  }, [isOpen, isEditing, editData]);
+
+  useEffect(() => {
+    if (shouldScroll && fieldsContainerRef.current) {
+      const children = fieldsContainerRef.current.children;
+      if (children.length > 0) {
+        const lastChild = children[children.length - 1];
+        setTimeout(() => {
+          lastChild.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 80);
+      }
+      setShouldScroll(false);
+    }
+  }, [fields, shouldScroll]);
 
   if (!isOpen) return null;
 
@@ -26,6 +55,7 @@ export default function InputJenisLayananModal({ isOpen, onClose, isEditing, edi
 
   const handleAddField = () => {
     setFields(prev => [...prev, { name: "", label: "", type: "text", placeholder: "", required: true }]);
+    setShouldScroll(true);
   };
 
   const handleFieldChange = (index, key, value) => {
@@ -45,6 +75,10 @@ export default function InputJenisLayananModal({ isOpen, onClose, isEditing, edi
     e.preventDefault();
     if (!formData.nama_layanan || !formData.estimasi) {
       return showAlert("error", "Nama layanan dan estimasi wajib diisi");
+    }
+
+    if (fields.length === 0) {
+      return showAlert("error", "Jenis layanan wajib memiliki minimal 1 pertanyaan");
     }
 
     // Validasi input fields dinamis
@@ -141,9 +175,10 @@ export default function InputJenisLayananModal({ isOpen, onClose, isEditing, edi
                 <button
                   type="button"
                   onClick={handleAddField}
-                  className="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition"
+                  className="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 transition"
                 >
-                  <Plus size={14} /> Tambah Pertanyaan
+                  <Plus size={14} /> 
+                  <span className="sm:block hidden">Tambah Pertanyaan</span>
                 </button>
               </div>
 
@@ -156,7 +191,7 @@ export default function InputJenisLayananModal({ isOpen, onClose, isEditing, edi
                 )}
 
                 {fields.length > 0 ? (
-                  <div className="space-y-3 sm:space-y-0 sm:bg-gray-50 sm:rounded-2xl sm:border sm:border-gray-200 sm:divide-y sm:divide-gray-100 overflow-hidden">
+                  <div ref={fieldsContainerRef} className="space-y-3 sm:space-y-0 sm:bg-gray-50 sm:rounded-2xl sm:border sm:border-gray-200 sm:divide-y sm:divide-gray-100 overflow-hidden">
                     {fields.map((field, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row gap-3 bg-gray-50 sm:bg-transparent p-4 sm:p-3.5 rounded-xl sm:rounded-none border border-gray-200 sm:border-0 relative group sm:items-center">
                         {/* Header bar for Mobile Card view */}

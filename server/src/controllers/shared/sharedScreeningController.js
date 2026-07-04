@@ -256,9 +256,6 @@ const postScreening = async (req, res) => {
     if (!writableRoles.includes(req.user?.role)) {
       return res.status(403).json({ success: false, message: "Akses ditolak" });
     }
-    if (req.user.role !== "timkesehatan") {
-      return res.status(403).json({ success: false, message: "Akses ditolak" });
-    }
 
     const id_timkes = req.user.id;
     const id_santri = Number(req.body.id_santri);

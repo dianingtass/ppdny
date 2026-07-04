@@ -125,9 +125,19 @@ function DetailMateri() {
 
   const shouldShowComments = !isPublicMateriPage && role !== "pimpinan";
 
-  if (role === "timkesehatan") {
+  if (role === "timkesehatan" || role === "admin") {
     return (
       <div className="space-y-6">
+        <div className="flex items-center mb-6">
+          <button
+            onClick={handleBack}
+            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition flex-shrink-0"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-800 ml-2">Detail Materi</h1>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
           {materi.gambar ? (
             <img

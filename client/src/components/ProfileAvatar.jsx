@@ -6,20 +6,15 @@ import { getImageUrl } from '../utils/imageUrl';
  * Warna avatar berdasarkan hash nama — konsisten per user.
  */
 const AVATAR_COLORS = [
-  'bg-emerald-500',
-  'bg-blue-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-500',
-  'bg-orange-500',
-  'bg-teal-500',
+  { bg: 'bg-emerald-800', text: 'text-emerald-300' },
+  { bg: 'bg-blue-800', text: 'text-blue-300' },
+  { bg: 'bg-violet-800', text: 'text-violet-300' },
+  { bg: 'bg-amber-800', text: 'text-amber-300' },
+  { bg: 'bg-rose-800', text: 'text-rose-300' },
+  { bg: 'bg-cyan-800', text: 'text-cyan-300' },
+  { bg: 'bg-orange-800', text: 'text-orange-300' },
+  { bg: 'bg-teal-800', text: 'text-teal-300' },
 ];
-
-function getAvatarColor(name = '') {
-  const hash = [...String(name)].reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
 
 /**
  * Normalisasi nilai foto_profil:
@@ -54,10 +49,14 @@ export default function ProfileAvatar({
   fotoProfil,
   nama = '',
   className = '',
-  iconSize = 18,
+  iconSize = 24,
   rounded = true,
 }) {
   const [imgError, setImgError] = useState(false);
+  const [avatarColor] = useState(() => {
+    return AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+  });
+
   const src = resolveSrc(fotoProfil);
   const roundedClass = rounded ? 'rounded-full' : 'rounded-xl';
 
@@ -75,11 +74,11 @@ export default function ProfileAvatar({
   // Fallback: lingkaran berwarna + ikon User
   return (
     <div
-      className={`${className} ${roundedClass} flex items-center justify-center text-white ${getAvatarColor(nama)}`}
+      className={`${className} ${roundedClass} flex items-center justify-center ${avatarColor.bg}`}
       aria-label={nama || 'Profil'}
       role="img"
     >
-      <User size={iconSize} />
+      <User size={iconSize} className={avatarColor.text} />
     </div>
   );
 }

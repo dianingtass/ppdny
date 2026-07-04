@@ -236,7 +236,7 @@ export default function PortalObservasiPage({
             Riwayat Observasi
           </h2>
  
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full table-fixed border-collapse">
                 <thead>

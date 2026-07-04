@@ -3,6 +3,7 @@ import api from "../config/api";
 import { X, Save, Loader2, Home, User } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import HybridSelect from "./HybridSelect";
 
 export default function AssignKamarModal({
   isOpen,
@@ -125,27 +126,15 @@ export default function AssignKamarModal({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Pilih Santri
                 </label>
-                <div className="relative">
-                  <select
-                    className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white disabled:bg-gray-100"
-                    value={formData.id_santri}
-                    onChange={(e) =>
-                      setFormData({ ...formData, id_santri: e.target.value })
-                    }
-                    disabled={isEditing}
-                  >
-                    <option value="">-- Cari Nama Santri --</option>
-                    {santriOptions.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.nama} ({s.nip})
-                      </option>
-                    ))}
-                  </select>
-                  <User
-                    className="absolute left-3 top-3 text-gray-400"
-                    size={16}
-                  />
-                </div>
+                <HybridSelect
+                  value={formData.id_santri}
+                  onChange={(e) =>
+                    setFormData({ ...formData, id_santri: e.target.value })
+                  }
+                  options={santriOptions.map((s) => ({ value: s.id, label: `${s.nama} (${s.nip})` }))}
+                  placeholder="-- Cari Nama Santri --"
+                  disabled={isEditing}
+                />
               </div>
             </>
           )}

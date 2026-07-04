@@ -3,6 +3,7 @@ import api from "../../../config/api";
 import { Plus, Edit2, Trash2, Users, Loader2 } from "lucide-react";
 import KelasModal from "../../../components/KelasModal";
 import KelasSantriModal from "../../../components/KelasSantriModal";
+import HybridSelect from "../../../components/HybridSelect";
 import AssignKelasModal from "../../../components/AssignKelasModal";
 import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 import AlertToast from "../../../components/AlertToast";
@@ -22,13 +23,22 @@ export default function DataKelasPage({ rolePrefix }) {
   const [search, setSearch] = useState("");
   const [refreshListKey, setRefreshListKey] = useState(0);
   const [selectedTahun, setSelectedTahun] = useState("");
+  const [selectedWaliKelas, setSelectedWaliKelas] = useState("");
 
   const tahunOptions = Array.from(
     new Set(dataList.map((item) => item.tahun_ajaran).filter(Boolean))
   ).map((yr) => ({ value: yr, label: yr }));
 
-  const filteredData = dataList.filter((item) => !selectedTahun || item.tahun_ajaran === selectedTahun);
-  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "kelas");
+  const waliKelasOptions = Array.from(
+    new Set(dataList.map((item) => item.users?.nama).filter(Boolean))
+  ).map((name) => ({ value: name, label: name }));
+
+  const filteredData = dataList.filter((item) => {
+    const matchTahun = !selectedTahun || item.tahun_ajaran === selectedTahun;
+    const matchWali = !selectedWaliKelas || item.users?.nama === selectedWaliKelas;
+    return matchTahun && matchWali;
+  });
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "kelas", "asc", ["kelas"]);
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -78,7 +88,7 @@ export default function DataKelasPage({ rolePrefix }) {
     }
   };
 
-  const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: `Kelas ${item.kelas}` });
+  const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: item.kelas });
 
   const confirmDelete = async () => {
     setIsDeleting(true);
@@ -128,17 +138,32 @@ export default function DataKelasPage({ rolePrefix }) {
           className="flex-1"
         />
         <FilterDropdown
-          activeCount={selectedTahun ? 1 : 0}
-          onReset={() => setSelectedTahun("")}
+          activeCount={(selectedTahun ? 1 : 0) + (selectedWaliKelas ? 1 : 0)}
+          onReset={() => {
+            setSelectedTahun("");
+            setSelectedWaliKelas("");
+            jump(1);
+          }}
         >
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Tahun Ajaran</label>
-            <FilterSelect
-              placeholder="Semua Tahun"
-              value={selectedTahun}
-              onChange={(e) => setSelectedTahun(e.target.value)}
-              options={tahunOptions}
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Tahun Ajaran</label>
+              <FilterSelect
+                placeholder="Semua Tahun"
+                value={selectedTahun}
+                onChange={(e) => { setSelectedTahun(e.target.value); jump(1); }}
+                options={tahunOptions}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Wali Kelas</label>
+              <HybridSelect
+                placeholder="Semua Wali Kelas"
+                value={selectedWaliKelas}
+                onChange={(e) => { setSelectedWaliKelas(e.target.value); jump(1); }}
+                options={waliKelasOptions}
+              />
+            </div>
           </div>
         </FilterDropdown>
         <SortDropdown
@@ -154,9 +179,7 @@ export default function DataKelasPage({ rolePrefix }) {
             { value: "kelas_asc", label: "Nama Kelas (A-Z)" },
             { value: "kelas_desc", label: "Nama Kelas (Z-A)" },
             { value: "tahun_ajaran_desc", label: "Tahun Ajaran (Terbaru)" },
-            { value: "tahun_ajaran_asc", label: "Tahun Ajaran (Terlama)" },
-            { value: "users.nama_asc", label: "Wali Kelas (A-Z)" },
-            { value: "users.nama_desc", label: "Wali Kelas (Z-A)" }
+            { value: "tahun_ajaran_asc", label: "Tahun Ajaran (Terlama)" }
           ]}
         />
       </div>

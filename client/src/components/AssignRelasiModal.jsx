@@ -22,8 +22,9 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
     no_hp: "",
     hubungan: ""
   });
+  const [selectedRelasiOption, setSelectedRelasiOption] = useState("");
+  const [customHubungan, setCustomHubungan] = useState("");
 
-  // Reset state setiap modal dibuka
   useEffect(() => {
     if (isOpen) {
       setFormData({ id_selected: null, nama: "", no_hp: "", hubungan: "" });
@@ -31,6 +32,8 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
       setSearchResults([]);
       setFormStep(1);
       setIsManualInput(false);
+      setSelectedRelasiOption("");
+      setCustomHubungan("");
     }
   }, [isOpen]);
 
@@ -235,15 +238,44 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Hubungan</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Ayah Kandung, Ibu, Wali"
-                  value={formData.hubungan}
-                  onChange={(e) => setFormData({ ...formData, hubungan: e.target.value })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-                  autoFocus
-                />
+                <select
+                  value={selectedRelasiOption}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSelectedRelasiOption(val);
+                    if (val !== "Lainnya") {
+                      setFormData(prev => ({ ...prev, hubungan: val }));
+                    } else {
+                      setFormData(prev => ({ ...prev, hubungan: customHubungan }));
+                    }
+                  }}
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white"
+                  required
+                >
+                  <option value="" disabled>-- Pilih Hubungan --</option>
+                  <option value="Ayah">Ayah</option>
+                  <option value="Ibu">Ibu</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
               </div>
+
+              {selectedRelasiOption === "Lainnya" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Hubungan</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Paman, Tante, Kakek"
+                    value={customHubungan}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCustomHubungan(val);
+                      setFormData(prev => ({ ...prev, hubungan: val }));
+                    }}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+                    required
+                  />
+                </div>
+              )}
 
               <div className="flex gap-3 pt-2">
                 <button

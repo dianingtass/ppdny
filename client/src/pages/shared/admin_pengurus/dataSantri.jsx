@@ -199,9 +199,7 @@ export default function DataSantriPage({ rolePrefix }) {
           }}
           options={[
             { value: "nama_asc", label: "Nama (A-Z)" },
-            { value: "nama_desc", label: "Nama (Z-A)" },
-            { value: "email_asc", label: "Email (A-Z)" },
-            { value: "email_desc", label: "Email (Z-A)" }
+            { value: "nama_desc", label: "Nama (Z-A)" }
           ]}
         />
       </div>

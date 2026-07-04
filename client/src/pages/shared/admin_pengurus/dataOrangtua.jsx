@@ -50,7 +50,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
       const res = await api.get(`/${rolePrefix}/orangtua`, { params: { search } });
       setOrtuList(res.data.data);
     } catch {
-      showAlert("error", "Gagal memuat data orang tua");
+      showAlert("error", "Gagal memuat data wali santri");
     } finally {
       setLoading(false);
     }
@@ -101,7 +101,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
   const handleAssignSubmit = async (formData) => {
     setIsSaving(true);
     try {
-      await api.post(`/${rolePrefix}/relasi-keluarga`, formData);
+      await api.post(`/${rolePrefix}/orangtua/assign`, formData);
       showAlert("success", "Relasi keluarga diperbarui");
       setAssignModal({ isOpen: false, data: null });
       setRefreshListKey((prev) => prev + 1);
@@ -161,8 +161,6 @@ export default function DataOrangtuaPage({ rolePrefix }) {
           options={[
             { value: "nama_asc", label: "Nama (A-Z)" },
             { value: "nama_desc", label: "Nama (Z-A)" },
-            { value: "email_asc", label: "Email (A-Z)" },
-            { value: "email_desc", label: "Email (Z-A)" },
             { value: "jumlah_anak_desc", label: "Tanggungan (Terbanyak)" },
             { value: "jumlah_anak_asc", label: "Tanggungan (Tersedikit)" }
           ]}
@@ -216,7 +214,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
                         </div>
                       </td>
                     </tr>
-                  )) : <tr><td colSpan="4" className="p-8 text-center text-gray-500">Data orang tua tidak ditemukan.</td></tr>}
+                  )) : <tr><td colSpan="4" className="p-8 text-center text-gray-500">Data wali santri tidak ditemukan.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -246,7 +244,7 @@ export default function DataOrangtuaPage({ rolePrefix }) {
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 bg-white rounded-xl text-gray-500">Data orang tua tidak ditemukan.</div>
+              <div className="text-center p-8 bg-white rounded-xl text-gray-500">Data wali santri tidak ditemukan.</div>
             )}
           </div>
 

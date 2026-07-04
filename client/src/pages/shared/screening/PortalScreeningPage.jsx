@@ -139,14 +139,26 @@ export default function PortalScreeningPage({
                             </div>
                         </div>
 
-                        <button
-                            onClick={() =>
-                                navigate(`/${rolePrefix}/daftarSantriScreening/${id}/view/${item.id_screening}`)
-                            }
-                            className="mt-4 w-full px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
-                        >
-                            Lihat
-                        </button>
+                        <div className="mt-4 flex gap-2">
+                            {canCreate && (
+                                <button
+                                    onClick={() =>
+                                        navigate(`/${rolePrefix}/daftarSantriScreening/${id}/edit/${item.id_screening}`)
+                                    }
+                                    className="flex-1 px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                                >
+                                    Edit
+                                </button>
+                            )}
+                            <button
+                                onClick={() =>
+                                    navigate(`/${rolePrefix}/daftarSantriScreening/${id}/view/${item.id_screening}`)
+                                }
+                                className="flex-1 px-4 py-2 border border-green-200 text-green-600 rounded-lg text-sm hover:bg-green-50 transition"
+                            >
+                                Lihat
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -283,6 +295,16 @@ export default function PortalScreeningPage({
                                     {latest.users_screening_id_timkesTousers?.nama || "-"}
                                 </td>
                                 <td className="text-center space-x-2">
+                                    {canCreate && (
+                                        <button
+                                            onClick={() =>
+                                            navigate(`/${rolePrefix}/daftarSantriScreening/${id}/edit/${latest.id_screening}`)
+                                            }
+                                            className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() =>
                                         navigate(`/${rolePrefix}/daftarSantriScreening/${id}/view/${latest.id_screening}`)
@@ -319,7 +341,7 @@ export default function PortalScreeningPage({
                     Riwayat Hasil Screening
                 </h2>
  
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
                     <div className="hidden lg:block overflow-x-auto">
                     <table className="w-full table-fixed border-collapse">
                         <thead>
@@ -345,6 +367,16 @@ export default function PortalScreeningPage({
                                         {item.users_screening_id_timkesTousers?.nama || "-"}
                                     </td>
                                     <td className="text-center space-x-2">
+                                        {canCreate && (
+                                            <button
+                                                onClick={() =>
+                                                navigate(`/${rolePrefix}/daftarSantriScreening/${id}/edit/${item.id_screening}`)
+                                                }
+                                                className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                                            >
+                                                Edit
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() =>
                                             navigate(`/${rolePrefix}/daftarSantriScreening/${id}/view/${item.id_screening}`)

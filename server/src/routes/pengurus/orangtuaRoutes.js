@@ -10,6 +10,7 @@ router.get('/search',              ctrl.searchUser);
 router.get('/:id/anak',            ctrl.getAnakByOrtu);
 router.post('/',                   ctrl.createOrangTua);
 router.post('/relasi',             ctrl.assignRelasi);
+router.post('/assign',             ctrl.assignRelasi);
 router.put('/:id',                 ctrl.updateOrangTua);
 router.delete('/:id',              ctrl.deleteOrangTua);
 router.delete('/relasi/:id_relasi',ctrl.removeRelasi);

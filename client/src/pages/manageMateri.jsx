@@ -4,6 +4,7 @@
 // - Tab "Pengajuan Masuk": daftar pengajuan user dengan aksi Setujui / Tolak / Edit
 
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../config/api";
 import {
   Search, Plus, CheckCircle, XCircle, Edit2, Trash2,
@@ -38,6 +39,13 @@ function StatusBadge({ status }) {
 }
 
 export default function MateriManage() {
+  const { pathname } = useLocation();
+  const detailBasePath = pathname;
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const role = user?.role?.trim().toLowerCase();
+  const isAdmin = role === "admin";
+
   // ── State: Daftar Materi ──────────────────────────────────
   const [materi, setMateri]               = useState([]);
   const [search, setSearch]               = useState("");
@@ -89,8 +97,10 @@ export default function MateriManage() {
 
   useEffect(() => {
     fetchMateri();
-    fetchPengajuan();
-  }, []);
+    if (!isAdmin) {
+      fetchPengajuan();
+    }
+  }, [isAdmin]);
 
   // ── Alert helper ──────────────────────────────────────────
   const showAlert = (message, type = "success") => {
@@ -152,8 +162,7 @@ export default function MateriManage() {
       {/* Alert */}
       {alert.show && (
         <AlertToast
-          message={alert.message}
-          type={alert.type}
+          message={{ text: alert.message, type: alert.type }}
           onClose={() => setAlert({ show: false, message: "", type: "success" })}
         />
       )}
@@ -177,35 +186,37 @@ export default function MateriManage() {
       </div>
 
       {/* ── Tab Bar ────────────────────────────────────────── */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
-        <button
-          onClick={() => setActiveTab(TAB_MATERI)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-            activeTab === TAB_MATERI
-              ? "bg-white text-gray-800 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <BookOpen size={16} />
-          Daftar Materi
-        </button>
-        <button
-          onClick={() => setActiveTab(TAB_PENGAJUAN)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-            activeTab === TAB_PENGAJUAN
-              ? "bg-white text-gray-800 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <ClipboardList size={16} />
-          Pengajuan Masuk
-          {countDitinjau > 0 && (
-            <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
-              {countDitinjau}
-            </span>
-          )}
-        </button>
-      </div>
+      {!isAdmin && (
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
+          <button
+            onClick={() => setActiveTab(TAB_MATERI)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === TAB_MATERI
+                ? "bg-white text-gray-800 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <BookOpen size={16} />
+            Daftar Materi
+          </button>
+          <button
+            onClick={() => setActiveTab(TAB_PENGAJUAN)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === TAB_PENGAJUAN
+                ? "bg-white text-gray-800 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <ClipboardList size={16} />
+            Pengajuan Masuk
+            {countDitinjau > 0 && (
+              <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
+                {countDitinjau}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════ */}
       {/* TAB: DAFTAR MATERI                                  */}
@@ -274,7 +285,7 @@ export default function MateriManage() {
                         key={item.id}
                         materi={item}
                         isManage={true}
-                        detailBasePath="/timkesehatan/manageMateri"
+                        detailBasePath={detailBasePath}
                         onDelete={(id) => { setDeleteId(id); setShowDeleteModal(true); }}
                         onEdit={(m) => { setMateriToEdit(m); setIsCreateOpen(true); }}
                       />
@@ -298,7 +309,7 @@ export default function MateriManage() {
                         key={item.id}
                         materi={item}
                         isManage={true}
-                        detailBasePath="/timkesehatan/manageMateri"
+                        detailBasePath={detailBasePath}
                         onDelete={(id) => { setDeleteId(id); setShowDeleteModal(true); }}
                         onEdit={(m) => { setMateriToEdit(m); setIsCreateOpen(true); }}
                       />

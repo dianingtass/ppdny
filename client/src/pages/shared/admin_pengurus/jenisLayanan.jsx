@@ -109,9 +109,7 @@ export default function JenisLayananPage({ rolePrefix }) {
             { value: "nama_layanan_asc", label: "Jenis Layanan (A-Z)" },
             { value: "nama_layanan_desc", label: "Jenis Layanan (Z-A)" },
             { value: "estimasi_asc", label: "Estimasi Waktu (Tercepat)" },
-            { value: "estimasi_desc", label: "Estimasi Waktu (Terlama)" },
-            { value: "deskripsi_asc", label: "Deskripsi (A-Z)" },
-            { value: "deskripsi_desc", label: "Deskripsi (Z-A)" }
+            { value: "estimasi_desc", label: "Estimasi Waktu (Terlama)" }
           ]}
         />
       </div>

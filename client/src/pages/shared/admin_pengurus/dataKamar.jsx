@@ -3,6 +3,7 @@ import api from "../../../config/api";
 import { Plus, Edit2, Trash2, Users, Loader2, MapPin } from "lucide-react";
 import KamarModal from "../../../components/KamarModal";
 import KamarSantriModal from "../../../components/KamarSantriModal";
+import HybridSelect from "../../../components/HybridSelect";
 import AssignKamarModal from "../../../components/AssignKamarModal";
 import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 import AlertToast from "../../../components/AlertToast";
@@ -22,8 +23,17 @@ export default function DataKamarPage({ rolePrefix }) {
   const [search, setSearch] = useState("");
   const [refreshListKey, setRefreshListKey] = useState(0);
   const [selectedGender, setSelectedGender] = useState("");
+  const [selectedWaliKamar, setSelectedWaliKamar] = useState("");
 
-  const filteredData = dataList.filter(item => !selectedGender || item.gender === selectedGender);
+  const waliKamarOptions = Array.from(
+    new Set(dataList.map((item) => item.users?.nama).filter(Boolean))
+  ).map((name) => ({ value: name, label: name }));
+
+  const filteredData = dataList.filter(item => {
+    const matchGender = !selectedGender || item.gender === selectedGender;
+    const matchWali = !selectedWaliKamar || item.users?.nama === selectedWaliKamar;
+    return matchGender && matchWali;
+  });
   const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "kamar");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
@@ -74,7 +84,7 @@ export default function DataKamarPage({ rolePrefix }) {
     }
   };
 
-  const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: `Kamar ${item.kamar}` });
+  const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: item.kamar });
 
   const confirmDelete = async () => {
     setIsDeleting(true);
@@ -124,20 +134,35 @@ export default function DataKamarPage({ rolePrefix }) {
           className="flex-1"
         />
         <FilterDropdown
-          activeCount={selectedGender ? 1 : 0}
-          onReset={() => setSelectedGender("")}
+          activeCount={(selectedGender ? 1 : 0) + (selectedWaliKamar ? 1 : 0)}
+          onReset={() => {
+            setSelectedGender("");
+            setSelectedWaliKamar("");
+            jump(1);
+          }}
         >
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Gender Kamar</label>
-            <FilterSelect
-              placeholder="Semua Gender"
-              value={selectedGender}
-              onChange={(e) => setSelectedGender(e.target.value)}
-              options={[
-                { value: "Laki_laki", label: "Laki-laki" },
-                { value: "Perempuan", label: "Perempuan" },
-              ]}
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Gender Kamar</label>
+              <FilterSelect
+                placeholder="Semua Gender"
+                value={selectedGender}
+                onChange={(e) => { setSelectedGender(e.target.value); jump(1); }}
+                options={[
+                  { value: "Laki_laki", label: "Laki-laki" },
+                  { value: "Perempuan", label: "Perempuan" },
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Wali Kamar</label>
+              <HybridSelect
+                placeholder="Semua Wali Kamar"
+                value={selectedWaliKamar}
+                onChange={(e) => { setSelectedWaliKamar(e.target.value); jump(1); }}
+                options={waliKamarOptions}
+              />
+            </div>
           </div>
         </FilterDropdown>
         <SortDropdown

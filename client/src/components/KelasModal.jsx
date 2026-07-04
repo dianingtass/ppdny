@@ -3,6 +3,7 @@ import api from "../config/api";
 import { X, Save, Loader2, BookOpen, User } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import HybridSelect from "./HybridSelect";
 
 export default function ModalKelas({ isOpen, onClose, isEditing, editData, onSubmit, saving, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({ kelas: "", tahun_ajaran: "", id_wali: "" });
@@ -61,14 +62,30 @@ export default function ModalKelas({ isOpen, onClose, isEditing, editData, onSub
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tahun Ajaran</label>
-                <input type="text" name="tahun_ajaran" className="w-full p-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: 2023/2024" value={formData.tahun_ajaran} onChange={handleChange} />
+                <HybridSelect
+                    value={formData.tahun_ajaran}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tahun_ajaran: e.target.value }))}
+                    options={(() => {
+                        const currentYear = new Date().getFullYear();
+                        const startYear = currentYear - 1;
+                        const yearsOptions = [];
+                        for (let i = 0; i < 3; i++) {
+                            const yr = startYear + i;
+                            yearsOptions.push(`${yr}/${yr + 1}`);
+                        }
+                        return yearsOptions;
+                    })()}
+                    placeholder="-- Pilih Tahun Ajaran --"
+                />
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Wali Kelas</label>
-                <select name="id_wali" className="w-full p-2.5 border border-gray-200 rounded-xl outline-none bg-white" value={formData.id_wali} onChange={handleChange}>
-                    <option value="" disabled>-- Pilih Wali --</option>
-                    {waliOptions.map(w => <option key={w.id} value={w.id}>{w.nama}</option>)}
-                </select>
+                <HybridSelect
+                    value={formData.id_wali}
+                    onChange={(e) => setFormData(prev => ({ ...prev, id_wali: e.target.value }))}
+                    options={waliOptions.map(w => ({ value: w.id, label: w.nama }))}
+                    placeholder="-- Pilih Wali --"
+                />
             </div>
             <div className="pt-4 flex gap-3">
                 <button type="button" onClick={onClose} className="flex-1 py-2.5 bg-gray-100 rounded-xl hover:bg-gray-200">Batal</button>

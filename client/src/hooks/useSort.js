@@ -9,7 +9,7 @@ import { useState, useMemo } from "react";
  *
  * @returns {{ sortedData, sortKey, sortDir, handleSort }}
  */
-export default function useSort(data, defaultKey = "", defaultDir = "asc") {
+export default function useSort(data, defaultKey = "", defaultDir = "asc", naturalSortKeys = []) {
   const [sortKey, setSortKey] = useState(defaultKey);
   const [sortDir, setSortDir] = useState(defaultDir);
 
@@ -49,13 +49,18 @@ export default function useSort(data, defaultKey = "", defaultDir = "asc") {
       }
 
       // String / lainnya
+      if (naturalSortKeys.includes(sortKey)) {
+        const comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true, sensitivity: 'base' });
+        return sortDir === "asc" ? comparison : -comparison;
+      }
+
       const aStr = String(aVal).toLowerCase();
       const bStr = String(bVal).toLowerCase();
       if (aStr < bStr) return sortDir === "asc" ? -1 : 1;
       if (aStr > bStr) return sortDir === "asc" ? 1 : -1;
       return 0;
     });
-  }, [data, sortKey, sortDir]);
+  }, [data, sortKey, sortDir, naturalSortKeys]);
 
   return { sortedData, sortKey, sortDir, handleSort, setSort };
 }

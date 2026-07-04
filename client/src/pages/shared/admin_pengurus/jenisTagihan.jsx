@@ -107,9 +107,7 @@ export default function JenisTagihanPage({ rolePrefix }) {
           }}
           options={[
             { value: "jenis_tagihan_asc", label: "Jenis Tagihan (A-Z)" },
-            { value: "jenis_tagihan_desc", label: "Jenis Tagihan (Z-A)" },
-            { value: "deskripsi_asc", label: "Deskripsi (A-Z)" },
-            { value: "deskripsi_desc", label: "Deskripsi (Z-A)" }
+            { value: "jenis_tagihan_desc", label: "Jenis Tagihan (Z-A)" }
           ]}
         />
       </div>

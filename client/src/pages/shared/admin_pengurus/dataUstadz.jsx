@@ -141,11 +141,7 @@ export default function DataUstadzPage({ rolePrefix }) {
           }}
           options={[
             { value: "nama_asc", label: "Nama (A-Z)" },
-            { value: "nama_desc", label: "Nama (Z-A)" },
-            { value: "email_asc", label: "Email (A-Z)" },
-            { value: "email_desc", label: "Email (Z-A)" },
-            { value: "jenis_kelamin_asc", label: "Jenis Kelamin (A-Z)" },
-            { value: "jenis_kelamin_desc", label: "Jenis Kelamin (Z-A)" }
+            { value: "nama_desc", label: "Nama (Z-A)" }
           ]}
         />
       </div>
@@ -234,7 +230,7 @@ export default function DataUstadzPage({ rolePrefix }) {
         </>
       )}
 
-      <InputUstadzModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} />
+      <InputUstadzModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} userRole={rolePrefix} />
       <ConfirmDeleteModal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} onConfirm={confirmDelete} loading={isDeleting} itemName={deleteModal.name} />
     </div>
   );
