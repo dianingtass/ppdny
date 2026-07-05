@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, X, Smartphone } from 'lucide-react';
+import { Download, X, Smartphone, Zap, WifiOff, Bell } from 'lucide-react';
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -60,7 +60,7 @@ export default function InstallPrompt() {
         <div className="mx-3 mb-4 rounded-2xl bg-white shadow-2xl overflow-hidden">
 
           {/* Header hijau */}
-          <div className="bg-gradient-to-r from-green-700 to-green-600 px-5 py-4 flex items-center justify-between">
+          <div className="bg-green-600 px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                 <Smartphone size={20} className="text-white" />
@@ -85,7 +85,7 @@ export default function InstallPrompt() {
               <img
                 src="/pwa-192x192.png"
                 alt="Logo SIM-Tren"
-                className="w-14 h-14 rounded-2xl object-contain flex-shrink-0 shadow-sm"
+                className="w-14 h-14 rounded-2xl object-contain flex-shrink-0 p-1 shadow-sm"
               />
               <div>
                 <p className="text-gray-800 font-medium text-sm mb-1">
@@ -99,12 +99,17 @@ export default function InstallPrompt() {
 
             {/* Fitur singkat */}
             <div className="flex gap-2 mb-4">
-              {['⚡ Cepat', '📶 Offline', '🔔 Notifikasi'].map((f) => (
+              {[
+                { icon: <Zap size={13} className="text-yellow-600 shrink-0" />, label: 'Cepat' },
+                { icon: <WifiOff size={13} className="text-yellow-600 shrink-0" />, label: 'Offline' },
+                { icon: <Bell size={13} className="text-yellow-600 shrink-0" />, label: 'Notifikasi' }
+              ].map((f) => (
                 <span
-                  key={f}
-                  className="text-xs bg-green-50 text-green-700 border border-green-100 rounded-full px-2.5 py-1 font-medium"
+                  key={f.label}
+                  className="inline-flex items-center gap-1.5 text-xs bg-green-50 text-green-700 border border-green-100 rounded-full px-2.5 py-1 font-medium"
                 >
-                  {f}
+                  {f.icon}
+                  <span>{f.label}</span>
                 </span>
               ))}
             </div>

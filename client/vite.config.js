@@ -105,6 +105,9 @@ export default defineConfig({
   },
 
   build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     // Naikkan warning limit agar tidak spam pesan chunk besar
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
