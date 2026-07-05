@@ -572,12 +572,12 @@ function ScabiesChartCard({
           <h3 className="text-lg font-bold text-gray-900">{title}</h3>
           <p className="text-xs text-gray-500 mt-1">{description}</p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={onExport}
             disabled={isExporting}
-            className="inline-flex flex-shrink-0 items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
           >
             {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
             {isExporting ? "Mencetak..." : "Cetak ke PDF"}
@@ -585,7 +585,7 @@ function ScabiesChartCard({
           <button
             type="button"
             onClick={onAction}
-            className="flex-shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+            className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition w-full sm:w-auto"
           >
             {actionLabel}
           </button>
