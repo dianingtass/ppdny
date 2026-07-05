@@ -104,6 +104,10 @@ export default defineConfig({
     include: ['quill'],
   },
 
+  esbuild: {
+    pure: ['console.log', 'console.warn', 'console.error', 'console.debug', 'console.info'],
+  },
+
   build: {
     commonjsOptions: {
       transformMixedEsModules: true,
