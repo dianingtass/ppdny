@@ -157,7 +157,7 @@ export default function Dashboard() {
           {/* Welcome Card */}
           <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-2xl">
             <p className="text-green-100 mb-1">Ahlan wa Sahlan,</p>
-            <h2 className="text-3xl font-bold mb-4">Ustadz {ustadz.nama}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Ustadz {ustadz.nama}</h2>
             <div className="flex flex-wrap gap-3">
               {ustadz.jabatan.map((jabatanItem, index) => (
                 <div key={index} className="bg-white/10 border border-white/20 px-4 py-2 rounded-xl flex items-center shadow-xs">

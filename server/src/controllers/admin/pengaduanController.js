@@ -9,12 +9,14 @@ const formatDate = (date) => {
 
 exports.getDaftarPengaduan = async (req, res) => {
   try {
-    const { rolePelapor, startDate, endDate } = req.query;
+    const { rolePelapor, startDate, endDate, idPelapor } = req.query;
 
     const where = { is_active: true };
 
-    // Filter berdasarkan role pelapor
-    if (rolePelapor === "ustadz") {
+    // Filter berdasarkan pelapor spesifik atau role pelapor
+    if (idPelapor) {
+      where.id_pelapor = parseInt(idPelapor);
+    } else if (rolePelapor === "ustadz") {
       where.users_pengaduan_id_pelaporTousers = {
         user_role: { some: { id_role: 3, is_active: true } }
       };
@@ -52,6 +54,7 @@ exports.getDaftarPengaduan = async (req, res) => {
 
     const formattedData = pengaduan.map((item) => ({
       id: item.id,
+      id_pelapor: item.id_pelapor,
       judul: item.judul || "Tanpa Judul",
       deskripsi: item.deskripsi,
       waktu: formatDate(item.waktu_aduan),

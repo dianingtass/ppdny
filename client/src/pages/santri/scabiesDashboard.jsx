@@ -185,28 +185,28 @@ export default function SantriScabiesDashboard() {
                 <h3 className="text-lg font-bold text-gray-800">Menu</h3>
                 <span className="text-xs font-medium text-gray-500 bg-gray-100 rounded-full px-3 py-1">Akses Cepat</span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <button
                   onClick={() => navigate("/santri/scabies/viewMateri", { state: { from: "/santri/scabies", rootFrom: "/santri/scabies" } })}
-                  className="text-left bg-white rounded-2xl border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition cursor-pointer"
+                  className="text-left bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-5 hover:border-green-300 hover:shadow-md transition cursor-pointer"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center mb-3">
-                    <BookOpen size={22} />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center mb-2 sm:mb-3">
+                    <BookOpen className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
                   </div>
-                  <h4 className="font-bold text-gray-800 text-lg">Lihat Materi</h4>
-                  <p className="text-sm text-gray-500 mt-1">Akses seluruh materi edukasi scabies dan pencegahannya.</p>
+                  <h4 className="font-bold text-gray-800 text-sm sm:text-base md:text-lg">Lihat Materi</h4>
+                  <p className="text-[11px] sm:text-xs md:text-sm text-gray-500 mt-0.5 sm:mt-1 leading-normal">Akses seluruh materi edukasi scabies dan pencegahannya.</p>
                 </button>
 
                 <button
                   onClick={handleOpenConsultation}
                   disabled={openingConsultation}
-                  className="text-left bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-300 hover:shadow-md transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="text-left bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-5 hover:border-emerald-300 hover:shadow-md transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
-                    <MessageCircleHeart size={22} />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2 sm:mb-3">
+                    <MessageCircleHeart className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
                   </div>
-                  <h4 className="font-bold text-gray-800 text-lg">Konsultasi Timkes</h4>
-                  <p className="text-sm text-gray-500 mt-1">{openingConsultation ? 'Membuka konsultasi...' : 'Tombol menuju halaman konsultasi dengan tim kesehatan.'}</p>
+                  <h4 className="font-bold text-gray-800 text-sm sm:text-base md:text-lg">Konsultasi Timkes</h4>
+                  <p className="text-[11px] sm:text-xs md:text-sm text-gray-500 mt-0.5 sm:mt-1 leading-normal">{openingConsultation ? 'Membuka konsultasi...' : 'Tombol menuju halaman konsultasi dengan tim kesehatan.'}</p>
                 </button>
               </div>
             </section>
@@ -255,30 +255,36 @@ export default function SantriScabiesDashboard() {
                   Lihat Materi Lainnya
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {materiPreview.map((item) => (
-                  <article key={item.id} className="rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition">
-                    {item.gambar ? (
-                      <img src={getImageUrl(item.gambar)} alt={item.judul} className="w-full h-40 object-cover" />
-                    ) : (
-                      <div className="w-full h-40 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-                        <Microscope className="text-emerald-600" size={32} />
+                  <article key={item.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition flex flex-row lg:flex-col h-44 sm:h-40 lg:h-auto">
+                    <div className="relative w-32 sm:w-40 lg:w-full h-full lg:h-48 flex-shrink-0">
+                      {item.gambar ? (
+                        <img src={getImageUrl(item.gambar)} alt={item.judul} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+                          <Microscope className="text-emerald-600" size={30} />
+                        </div>
+                      )}
+                      <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                      <h2 className="hidden lg:block absolute bottom-3 left-4 text-white font-semibold text-lg px-2 line-clamp-1">{item.judul}</h2>
+                    </div>
+                    <div className="p-3.5 lg:p-5 flex flex-col justify-between lg:justify-start flex-1 min-w-0">
+                      <div className="space-y-1 lg:space-y-0 lg:mb-4 min-w-0">
+                        <h2 className="text-gray-900 font-bold text-sm sm:text-base truncate lg:hidden" title={item.judul}>{item.judul}</h2>
+                        <p className="text-gray-500 lg:text-gray-900 text-xs lg:text-sm line-clamp-2">{item.ringkasan || "Pelajari materi ini untuk memahami penanganan dan pencegahan scabies."}</p>
                       </div>
-                    )}
-                    <div className="p-4">
-                      <h4 className="font-semibold text-gray-800 line-clamp-2">{item.judul}</h4>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.ringkasan || "Pelajari materi ini untuk memahami penanganan dan pencegahan scabies."}</p>
-                      <div className="mt-3 flex items-center justify-between gap-2">
+                      <div className="flex w-full gap-2 mt-2 lg:mt-auto">
                         <button
                           onClick={() => navigate(`/santri/scabies/viewMateri/${item.id}`, { state: { from: "/santri/scabies", rootFrom: "/santri/scabies" } })}
-                          className="inline-flex items-center gap-1 text-sm font-semibold text-green-600 hover:text-green-700 cursor-pointer"
+                          className="py-1.5 lg:py-2 px-1 bg-green-50 text-green-600 rounded-xl font-semibold text-xs lg:text-sm transition hover:bg-green-700 hover:text-white text-center flex-1"
                         >
-                          Baca Selengkapnya <ArrowRight size={14} />
+                          Baca
                         </button>
                         <button
                           onClick={handleOpenConsultation}
                           disabled={openingConsultation}
-                          className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                          className="py-1.5 lg:py-2 px-1 border border-emerald-200 text-emerald-700 hover:bg-emerald-50 rounded-xl font-semibold text-xs lg:text-sm transition text-center flex-2 md:flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           Tanya Timkes
                         </button>

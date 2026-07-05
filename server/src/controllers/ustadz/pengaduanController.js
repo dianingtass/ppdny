@@ -16,7 +16,7 @@ exports.getDaftarPengaduan = async (req, res) => {
             where: { id_pelapor: ustadzId, is_active: true },
             orderBy: { waktu_aduan: 'desc' },
             include: {
-                users_pengaduan_id_santriTousers: { select: { nama: true, nip: true, kelas_santri: { include: { kelas: true }, take: 1 } } },
+                users_pengaduan_id_santriTousers: { select: { nama: true, nip: true, foto_profil: true, kelas_santri: { include: { kelas: true }, take: 1 } } },
                 _count: { select: { tanggapan_aduan: { where: { is_active: true } } } }
             }
         });
@@ -30,6 +30,7 @@ exports.getDaftarPengaduan = async (req, res) => {
             santri: {
                 nama: item.users_pengaduan_id_santriTousers?.nama || "Tidak diketahui",
                 nip: item.users_pengaduan_id_santriTousers?.nip || "-",
+                foto_profil: item.users_pengaduan_id_santriTousers?.foto_profil || null,
                 kelas: item.users_pengaduan_id_santriTousers?.kelas_santri[0]?.kelas?.kelas || "-"
             },
             jumlah_tanggapan: item._count.tanggapan_aduan

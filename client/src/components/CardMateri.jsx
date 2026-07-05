@@ -30,9 +30,9 @@ function CardMateri({ materi, isManage, onDelete, onEdit, detailBasePath, fromPa
           <h2 className="text-gray-900 font-bold text-sm sm:text-base truncate md:hidden" title={materi.judul}>{materi.judul}</h2>
           <p className="text-gray-500 md:text-gray-900 text-xs md:text-sm line-clamp-2">{materi.ringkasan}</p>
           <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] md:text-xs text-gray-400 md:mt-2 md:space-y-1 md:flex-col">
-            <span>Penulis: {materi.penulis}</span>
+            <span>{materi.penulis}</span>
             <span className="md:hidden">•</span>
-            <span>Tanggal: {tanggalMateri}</span>
+            <span>{tanggalMateri}</span>
           </div>
         </div>
         <div className="flex flex-col md:w-full gap-2 mt-2 md:mt-auto">

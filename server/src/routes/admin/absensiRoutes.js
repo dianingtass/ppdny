@@ -53,4 +53,9 @@ router.put(
   absensiController.updateAbsensi
 );
 
+router.delete(
+  "/:id_heading",
+  absensiController.deleteAbsensi
+);
+
 module.exports = router;

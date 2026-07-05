@@ -216,7 +216,7 @@ const addChartImage = (doc, cursorY, imageData) => {
   if (!imageData) return cursorY;
 
   const imgProps = doc.getImageProperties(imageData);
-  const width = 160;
+  const width = 120;
   const height = (imgProps.height * width) / imgProps.width;
   const startX = (PAGE_WIDTH - width) / 2;
 

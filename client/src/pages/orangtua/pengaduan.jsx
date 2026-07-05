@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
-import { ArrowLeft, User, Loader2, Plus, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, User, Loader2, Plus, CheckCircle, AlertTriangle, MessageSquareText } from 'lucide-react';
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailPengaduanModal from '../../components/DetailPengaduanModal'; 
@@ -11,6 +11,7 @@ import { getImageUrl } from '../../utils/imageUrl';
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 
 const formatTime = (dateString) => {
@@ -132,9 +133,7 @@ export default function OrangTuaPengaduan() {
                 <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.status === 'Selesai' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 <div className="flex gap-4 items-start pl-2">
                   <div className="flex-shrink-0 pt-1">
-                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center border border-green-100 overflow-hidden">
-                      {item.pelapor?.foto ? <img src={getImageUrl(item.pelapor.foto)} alt="ava" className="w-full h-full object-cover"/> : <User size={20} className="text-green-500" />}
-                    </div>
+                    <ProfileAvatar fotoProfil={item.pelapor?.foto} nama={item.pelapor?.nama} className="w-10 h-10 border border-green-100 flex-shrink-0" iconSize={20} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
@@ -146,11 +145,18 @@ export default function OrangTuaPengaduan() {
                         </div>
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-3 mt-1">{item.deskripsi}</p>
-                    <div className="flex items-center gap-4 pt-2 border-t border-gray-50 mt-2">
-                      <div className={`flex items-center text-xs font-medium px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50' : 'text-yellow-700 bg-yellow-50'}`}>
-                        {item.status || 'Aktif'}
+                    <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-between pt-2 border-t border-gray-50 mt-2 text-xs">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className={`flex items-center text-xs font-medium px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50 border border-green-100' : 'text-yellow-700 bg-yellow-50 border border-yellow-100'}`}>
+                          {item.status || 'Aktif'}
+                        </div>
+                        {item.jumlah_tanggapan > 0 && (
+                          <div className="text-xs text-gray-400 flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100 font-medium gap-1">
+                            <MessageSquareText size={14} className="text-gray-400" />
+                            <span>{item.jumlah_tanggapan}</span>
+                          </div>
+                        )}
                       </div>
-                      {item.jumlah_tanggapan > 0 && <div className="text-xs text-gray-400 ml-auto">💬 {item.jumlah_tanggapan} Tanggapan</div>}
                     </div>
                   </div>
                 </div>

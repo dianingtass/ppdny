@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../config/api';
 import { 
-  ArrowLeft, User, Loader2, Plus, CheckCircle, Search, AlertTriangle 
+  ArrowLeft, User, Loader2, Plus, CheckCircle, Search, AlertTriangle, MessageSquareText
 } from 'lucide-react';
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
@@ -13,6 +13,7 @@ import CreatePengaduanModal from '../../components/CreatePengaduanModal';
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
+import ProfileAvatar from '../../components/ProfileAvatar';
 
 
 export default function UstadzPengaduan() {
@@ -162,13 +163,11 @@ export default function UstadzPengaduan() {
                 {/* Garis Status Kiri */}
                 <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.status === 'Selesai' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
 
-                <div className="flex gap-4 items-start pl-2">
+                 <div className="flex gap-4 items-start pl-2">
                   
                   {/* Foto Santri (Menggantikan foto pelapor karena Ustadz ingin lihat siapa yang dilaporkan) */}
                   <div className="flex-shrink-0 pt-1">
-                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center border border-orange-100 overflow-hidden">
-                       <User size={20} className="text-orange-500" />
-                    </div>
+                    <ProfileAvatar fotoProfil={item.santri.foto_profil} nama={item.santri.nama} className="w-10 h-10 border border-orange-100 flex-shrink-0" iconSize={20} />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -189,15 +188,18 @@ export default function UstadzPengaduan() {
                       {item.deskripsi}
                     </p>
 
-                    <div className="flex items-center gap-4 pt-2 border-t border-gray-50 mt-2">
-                      <div className={`flex items-center text-[10px] font-bold uppercase px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50' : 'text-orange-700 bg-orange-50'}`}>
-                        {item.status || 'Aktif'}
-                      </div>
-                      {item.jumlah_tanggapan > 0 && (
-                        <div className="text-xs font-medium text-gray-400 ml-auto flex items-center">
-                            💬 {item.jumlah_tanggapan} Diskusi
+                    <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-between pt-2 border-t border-gray-50 mt-2 text-xs">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className={`flex items-center text-[10px] font-bold uppercase px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50 border border-green-100' : 'text-orange-700 bg-orange-50 border border-orange-100'}`}>
+                          {item.status || 'Aktif'}
                         </div>
-                      )}
+                        {item.jumlah_tanggapan > 0 && (
+                          <div className="text-xs font-medium text-gray-400 flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100 gap-1">
+                             <MessageSquareText size={14} className="text-gray-400" />
+                             <span>{item.jumlah_tanggapan}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

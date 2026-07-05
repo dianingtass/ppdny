@@ -2,11 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    viteCommonjs(),
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -97,6 +99,10 @@ export default defineConfig({
       },
     }),
   ],
+
+  optimizeDeps: {
+    include: ['quill'],
+  },
 
   build: {
     // Naikkan warning limit agar tidak spam pesan chunk besar

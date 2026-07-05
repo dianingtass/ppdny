@@ -172,7 +172,7 @@ export default function AdminPendaftar() {
           {!isPimpinan && (
             <button
               onClick={() => setShowManual(true)}
-              className="flex items-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100 shrink-0"
+              className="flex items-center justify-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100 shrink-0"
             >
               <Plus size={18} className="sm:mr-1" />
               <span className="hidden sm:inline">Input Manual</span>
@@ -190,8 +190,8 @@ export default function AdminPendaftar() {
                 options={[
                   { value: "terbaru", label: "Terbaru" },
                   { value: "terlama", label: "Terlama" },
-                  { value: "az", label: "A-Z" },
-                  { value: "za", label: "Z-A" }
+                  { value: "az", label: "Nama Pendaftar (A-Z)" },
+                  { value: "za", label: "Nama Pendaftar (Z-A)" }
                 ]}
               />
             </div>

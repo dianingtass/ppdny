@@ -187,9 +187,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
             { value: "waktu_desc", label: "Waktu (Terbaru)" },
             { value: "waktu_asc", label: "Waktu (Terlama)" },
             { value: "users.nama_asc", label: "Santri (A-Z)" },
-            { value: "users.nama_desc", label: "Santri (Z-A)" },
-            { value: "status_sesudah_asc", label: "Status (A-Z)" },
-            { value: "status_sesudah_desc", label: "Status (Z-A)" }
+            { value: "users.nama_desc", label: "Santri (Z-A)" }
           ]}
         />
       </div>
@@ -208,7 +206,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm uppercase">
                     <SortableHeader label="Waktu & Layanan" sortKey="waktu" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
                     <SortableHeader label="Santri" sortKey="users.nama" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[40%] cursor-pointer" />
-                    <SortableHeader label="Status" sortKey="status_sesudah" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[10%] cursor-pointer" />
+                    <th className="p-4 w-[10%] font-semibold">Status</th>
                     <th className="p-4 text-center w-[20%]">Rating</th>
                     <th className="p-4 text-center w-[10%]">Aksi</th>
                   </tr>

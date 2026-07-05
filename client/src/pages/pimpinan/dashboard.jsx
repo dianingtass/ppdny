@@ -381,7 +381,7 @@ export default function PimpinanDashboard() {
                 <h3 className="font-bold text-gray-900">Tabel Rekap Tahunan Screening Terakhir</h3>
                 <p className="text-xs text-gray-500 mt-1">Dipakai untuk membaca beban kasus dan tren keamanan per tahun.</p>
               </div>
-              <div className="overflow-x-auto bg-white">
+              <div className="overflow-x-auto bg-white hidden md:block">
                 <table className="w-full min-w-[760px] text-sm">
                   <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wide">
                     <tr>
@@ -412,6 +412,44 @@ export default function PimpinanDashboard() {
                   </tbody>
                 </table>
               </div>
+              {/* Mobile Card View for Rekap Tahunan */}
+              <div className="md:hidden divide-y divide-gray-100 bg-white">
+                {yearlyDetail.map((row, index) => {
+                  const ratio = row.total ? `${Math.round((row.terkena_scabies / row.total) * 100)}%` : "0%";
+                  return (
+                    <div key={row.year} className="p-4 space-y-3">
+                      <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+                        <div>
+                          <span className="text-[10px] text-gray-400 font-bold uppercase">Tahun</span>
+                          <h4 className="font-bold text-gray-800 text-sm">{row.year}</h4>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-gray-400 font-bold uppercase">Rasio Scabies</span>
+                          <p className="font-semibold text-gray-800 text-sm">{ratio}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <p className="text-[10px] text-gray-400 font-medium">Total Screening</p>
+                          <p className="font-semibold text-gray-700 mt-0.5">{formatNumber(row.total)} santri</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-red-400 font-medium">Terkena Scabies</p>
+                          <p className="font-semibold text-red-600 mt-0.5">{formatNumber(row.terkena_scabies)} santri</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-amber-400 font-medium">Perlu Evaluasi</p>
+                          <p className="font-semibold text-amber-600 mt-0.5">{formatNumber(row.perlu_evaluasi)} santri</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-green-400 font-medium">Bukan Scabies</p>
+                          <p className="font-semibold text-green-600 mt-0.5">{formatNumber(row.tidak_terpapar)} santri</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="rounded-2xl border border-gray-100 overflow-hidden">
@@ -419,7 +457,7 @@ export default function PimpinanDashboard() {
                 <h3 className="font-bold text-gray-900">Tabel Prioritas Tahunan</h3>
                 <p className="text-xs text-gray-500 mt-1">Indikator cepat untuk membaca tahun yang perlu perhatian pimpinan.</p>
               </div>
-              <div className="overflow-x-auto bg-white">
+              <div className="overflow-x-auto bg-white hidden md:block">
                 <table className="w-full min-w-[720px] text-sm">
                   <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wide">
                     <tr>
@@ -442,6 +480,33 @@ export default function PimpinanDashboard() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              {/* Mobile Card View for Prioritas Tahunan */}
+              <div className="md:hidden divide-y divide-gray-100 bg-white">
+                {yearlyPriorityRows.map((row, index) => (
+                  <div key={row.indikator} className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div className="pr-4">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">Indikator</span>
+                        <h4 className="font-bold text-gray-800 text-sm mt-0.5">{row.indikator}</h4>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">Tahun</span>
+                        <p className="font-semibold text-gray-700 text-sm mt-0.5">{row.tahun}</p>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1.5 text-xs">
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-medium">Nilai Indikator</p>
+                        <p className="font-semibold text-gray-800 mt-0.5">{formatNumber(row.nilai)} santri</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-medium">Catatan</p>
+                        <p className="text-gray-600 mt-0.5 leading-relaxed">{row.keterangan}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -502,7 +567,7 @@ function ScabiesChartCard({
 }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-      <div className="mb-4 flex items-start justify-between gap-4">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-gray-900">{title}</h3>
           <p className="text-xs text-gray-500 mt-1">{description}</p>
@@ -515,7 +580,7 @@ function ScabiesChartCard({
             className="inline-flex flex-shrink-0 items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-            {isExporting ? "Mengekspor..." : "Export PDF"}
+            {isExporting ? "Mencetak..." : "Cetak ke PDF"}
           </button>
           <button
             type="button"
@@ -649,7 +714,8 @@ function StatusSection({ title, rows, tone, onOpenSantri }) {
         <h3 className="font-bold">{title}</h3>
         <p className="text-xs mt-1">Total {formatNumber(rows.length)} santri</p>
       </div>
-      <div className="overflow-x-auto">
+      {/* Desktop Table View */}
+      <div className="overflow-x-auto hidden md:block">
         <table className="w-full min-w-[760px] text-sm">
           <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wide">
             <tr>
@@ -674,7 +740,7 @@ function StatusSection({ title, rows, tone, onOpenSantri }) {
                     <button
                       type="button"
                       onClick={() => onOpenSantri(row.id_santri)}
-                      className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+                      className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition cursor-pointer"
                     >
                       Buka Portal
                     </button>
@@ -690,6 +756,43 @@ function StatusSection({ title, rows, tone, onOpenSantri }) {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card List View */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {rows.length > 0 ? (
+          rows.map((row, index) => (
+            <div key={`${row.id_santri}-${row.tanggal}`} className="p-4 bg-white space-y-2.5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="text-xs text-gray-400 font-bold">#{index + 1}</span>
+                  <h4 className="font-bold text-gray-800 text-sm mt-0.5">{row.nama}</h4>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onOpenSantri(row.id_santri)}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+                >
+                  Portal
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium uppercase">Tanggal Screening</p>
+                  <p className="font-semibold text-gray-700 mt-0.5">{formatDate(row.tanggal)}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium uppercase">Kamar & Kelas</p>
+                  <p className="font-semibold text-gray-700 mt-0.5">{row.kamar} • {row.kelas}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="p-6 text-center text-gray-500 text-sm">
+            Tidak ada data santri untuk status ini.
+          </div>
+        )}
       </div>
     </div>
   );

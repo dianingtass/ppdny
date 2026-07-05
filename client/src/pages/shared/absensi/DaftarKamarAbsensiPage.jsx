@@ -129,9 +129,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
             { value: "tanggal_terakhir_desc", label: "Absensi Terakhir (Terbaru)" },
             { value: "tanggal_terakhir_asc", label: "Absensi Terakhir (Terlama)" },
             { value: "total_absensi_bulan_ini_desc", label: "Bulan Ini (Terbanyak)" },
-            { value: "total_absensi_bulan_ini_asc", label: "Bulan Ini (Tersedikit)" },
-            { value: "gender_asc", label: "Gender (A-Z)" },
-            { value: "gender_desc", label: "Gender (Z-A)" }
+            { value: "total_absensi_bulan_ini_asc", label: "Bulan Ini (Tersedikit)" }
           ]}
         />
       </div>
@@ -155,7 +153,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
                         <SortableHeader label="Nama Kamar" sortKey="kamar" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
                         <SortableHeader label="Absensi Terakhir" sortKey="tanggal_terakhir" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] cursor-pointer" />
                         <SortableHeader label="Total Absensi Bulan Ini" sortKey="total_absensi_bulan_ini" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[20%] text-center cursor-pointer" />
-                        <SortableHeader label="Gender" sortKey="gender" activeSortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="w-[15%] text-center cursor-pointer" />
+                        <th className="p-4 font-semibold text-center w-[15%]">Gender</th>
                         <th className="p-4 font-semibold text-center w-[20%]">Aksi</th>
                     </tr>
                     </thead>
@@ -214,7 +212,7 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
                     ) : (
                         <tr>
                         <td colSpan="5" className="p-8 text-center text-gray-500">
-                            Data kamar tidak ditemukan.
+                            Data tidak ditemukan
                         </td>
                         </tr>
                     )}
@@ -229,57 +227,57 @@ export default function DaftarKamarAbsensiPage({ rolePrefix }) {
 
           {/* MOBILE CARD */}
           <div className="md:hidden space-y-4">
-            {sortedData.map((item) => {
-
+            {sortedData.length > 0 ? (
+              sortedData.map((item) => {
                 const latest = item.heading_absensi?.[0];
 
                 return (
-                <div
+                  <div
                     key={item.id}
                     className="bg-white p-4 rounded-2xl shadow-sm space-y-3"
-                >
-
-                    <div className="flex justify-between items-center">
-
-                    <div>
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
                         <p className="font-semibold text-gray-800">
-                        {item.kamar}
+                          {item.kamar}
                         </p>
-
                         <span className={`px-2 py-1 rounded text-xs font-bold ${item.gender === 'Laki_laki' ? 'bg-green-100 text-green-700' : 'bg-pink-100 text-pink-700'}`}>{item.gender === 'Laki_laki' ? 'Laki-laki' : 'Perempuan'}</span>
-                          
-                    </div>
-
-                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-sm font-semibold">
-                        {item.total_absensi_bulan_ini || 0}
-                    </span>
-
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold">
+                          {item.total_absensi_bulan_ini || 0}
+                        </span>
+                        <p className="text-[10px] text-gray-400 mt-1">riwayat bulan ini</p>
+                      </div>
                     </div>
 
                     {latest ? (
-                    <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500">
                         Absensi terakhir: {new Date(latest.tanggal).toLocaleDateString("id-ID")}
-                    </p>
+                      </p>
                     ) : (
-                    <p className="text-gray-400 text-sm">
+                      <p className="text-gray-400 text-sm">
                         Belum ada absensi
-                    </p>
+                      </p>
                     )}
 
                     <button
-                    onClick={() =>
+                      onClick={() =>
                         navigate(`/${rolePrefix}/daftarAbsensiKamar/${item.id}`)
-                    }
-                    className="w-full px-4 py-2 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition"
+                      }
+                      className="w-full px-4 py-2 bg-green-50 text-green-600 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-green-100 transition"
                     >
-                    Portal Absensi
+                      Portal Absensi
                     </button>
-
-                </div>
+                  </div>
                 );
-
-            })}
-            </div>
+              })
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                Data tidak ditemukan
+              </div>
+            )}
+          </div>
 
           {/* PAGINATION */}
           <Pagination

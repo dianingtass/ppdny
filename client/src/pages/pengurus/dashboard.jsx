@@ -81,9 +81,10 @@ export default function Dashboard() {
                 
                 {/* Hover Piutang Area */}
                 <div 
-                    className="p-5 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl text-white transition-all hover:border-red-200"
+                    className="p-5 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl text-white transition-all hover:border-red-200 cursor-pointer"
                     onMouseEnter={() => setShowPiutangList(true)}
                     onMouseLeave={() => setShowPiutangList(false)}
+                    onClick={() => setShowPiutangList(!showPiutangList)}
                 >
                     <div className="flex justify-between items-center mb-1">
                         <p className="text-xs opacity-80">Total Tagihan Aktif</p>

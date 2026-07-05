@@ -125,7 +125,7 @@ function DetailMateri() {
 
   const shouldShowComments = !isPublicMateriPage && role !== "pimpinan";
 
-  if (role === "timkesehatan" || role === "admin") {
+  if (role === "timkesehatan" || role === "admin" || role === "pimpinan") {
     return (
       <div className="space-y-6">
         <div className="flex items-center mb-6">
@@ -161,15 +161,17 @@ function DetailMateri() {
               </div>
               {/* PATCH: __html sekarang disanitasi dengan DOMPurify */}
               <div
-                className="prose prose-base sm:prose-lg max-w-none text-justify
-                          [&_h3]:leading-snug
-                          [&_h4]:leading-snug
-                          [&_p]:leading-relaxed
-                          [&_ul]:leading-relaxed
-                          [&_ol]:leading-relaxed
-                          [&_h1]:my-2
-                          [&_h2]:my-2
-                          [&_h3]:my-2"
+                className="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-justify
+                          [&_p]:text-sm [&_p]:sm:text-base [&_p]:leading-relaxed
+                          [&_li]:text-sm [&_li]:sm:text-base [&_li]:leading-relaxed
+                          [&_ol]:text-sm [&_ol]:sm:text-base [&_ol]:leading-relaxed
+                          [&_ul]:text-sm [&_ul]:sm:text-base [&_ul]:leading-relaxed
+                          [&_h1]:text-lg [&_h1]:sm:text-2xl [&_h1]:font-bold [&_h1]:my-2
+                          [&_h2]:text-base [&_h2]:sm:text-xl [&_h2]:font-bold [&_h2]:my-2
+                          [&_h3]:text-sm [&_h3]:sm:text-lg [&_h3]:font-bold [&_h3]:my-2
+                          [&_h4]:text-sm [&_h4]:sm:text-base [&_h4]:font-bold [&_h4]:leading-snug
+                          [&_h3]:leading-snug [&_h4]:leading-snug
+                          [&_ul]:leading-relaxed [&_ol]:leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: safeHtml }}
               />
               <div className="mt-6 pt-4 text-gray-500 text-sm">Penulis: {materi.penulis}</div>
@@ -203,9 +205,9 @@ function DetailMateri() {
         >
           <ArrowLeft size={22} />
         </button>
-        <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl font-bold truncate">
-            Jendela Ilmu Pengetahuan Tentang Scabies
+        <div className="min-w-0 flex-1">
+          <h1 className="text-base sm:text-xl md:text-2xl font-bold break-words leading-tight">
+            {materi.judul_materi}
           </h1>
         </div>
       </div>
@@ -232,15 +234,17 @@ function DetailMateri() {
             <div className="w-full lg:w-2/3">
               {/* PATCH: __html sekarang disanitasi dengan DOMPurify */}
               <div
-                className="prose prose-base sm:prose-lg max-w-none text-justify
-                          [&_h3]:leading-snug
-                          [&_h4]:leading-snug
-                          [&_p]:leading-relaxed
-                          [&_ul]:leading-relaxed
-                          [&_ol]:leading-relaxed
-                          [&_h1]:my-2
-                          [&_h2]:my-2
-                          [&_h3]:my-2"
+                className="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-justify
+                          [&_p]:text-sm [&_p]:sm:text-base [&_p]:leading-relaxed
+                          [&_li]:text-sm [&_li]:sm:text-base [&_li]:leading-relaxed
+                          [&_ol]:text-sm [&_ol]:sm:text-base [&_ol]:leading-relaxed
+                          [&_ul]:text-sm [&_ul]:sm:text-base [&_ul]:leading-relaxed
+                          [&_h1]:text-lg [&_h1]:sm:text-2xl [&_h1]:font-bold [&_h1]:my-2
+                          [&_h2]:text-base [&_h2]:sm:text-xl [&_h2]:font-bold [&_h2]:my-2
+                          [&_h3]:text-sm [&_h3]:sm:text-lg [&_h3]:font-bold [&_h3]:my-2
+                          [&_h4]:text-sm [&_h4]:sm:text-base [&_h4]:font-bold [&_h4]:leading-snug
+                          [&_h3]:leading-snug [&_h4]:leading-snug
+                          [&_ul]:leading-relaxed [&_ol]:leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: safeHtml }}
               />
               <div className="mt-6 pt-4 text-gray-600 text-sm">Penulis: {materi.penulis}</div>

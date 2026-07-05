@@ -166,7 +166,7 @@ export default function OrangTuaDashboard() {
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
               <h3 className="font-bold text-gray-800 mb-4 px-2">Menu Wali</h3>
-              <div className="grid grid-cols-5 gap-1.5 md:gap-2 text-white">
+              <div className="grid grid-cols-5 gap-1 md:gap-2 text-white">
                 <MenuButton icon={<Wallet />} label="Keuangan" onClick={() => navigate("/orangtua/keuangan")} color="bg-green-500" />
                 <MenuButton icon={<Calendar />} label="Kegiatan" onClick={() => navigate("/orangtua/kegiatan")} color="bg-purple-500" />
                 <MenuButton icon={<AlertCircle />} label="Aduan" onClick={() => navigate("/orangtua/pengaduan")} color="bg-orange-500" />
@@ -272,9 +272,9 @@ export default function OrangTuaDashboard() {
 
 function MenuButton({ icon, label, onClick, color }) {
   return (
-    <button onClick={onClick} className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
-      <div className={`w-12 h-12 rounded-2xl md:rounded-full flex items-center justify-center mb-3 ${color} md:w-14 md:h-14`}>{icon}</div>
-      <span className="text-xs md:text-sm font-medium text-gray-700">{label}</span>
+    <button onClick={onClick} className="flex flex-col items-center justify-center p-1.5 sm:p-4 rounded-2xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100 min-w-0">
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl md:rounded-full flex items-center justify-center mb-2 sm:mb-3 ${color} md:w-14 md:h-14 flex-shrink-0 text-white`}>{icon}</div>
+      <span className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-700 text-center leading-tight break-words w-full">{label}</span>
     </button>
   );
 }

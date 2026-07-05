@@ -48,7 +48,9 @@ export default function AdminPpdbDashboard() {
     if (val === "terbaru") { setSortKey("id"); setSortDir("desc"); }
     else if (val === "terlama") { setSortKey("id"); setSortDir("asc"); }
     else if (val === "kuotaDesc") { setSortKey("kuota"); setSortDir("desc"); }
+    else if (val === "kuotaAsc") { setSortKey("kuota"); setSortDir("asc"); }
     else if (val === "pendaftarDesc") { setSortKey("pendaftar"); setSortDir("desc"); }
+    else if (val === "pendaftarAsc") { setSortKey("pendaftar"); setSortDir("asc"); }
   };
 
   const handleSort = (key) => {
@@ -56,8 +58,8 @@ export default function AdminPpdbDashboard() {
     setSortKey(key);
     setSortDir(dir);
     if (key === "id") setSortBy(dir === "desc" ? "terbaru" : "terlama");
-    if (key === "kuota") setSortBy("kuotaDesc");
-    if (key === "pendaftar") setSortBy("pendaftarDesc");
+    if (key === "kuota") setSortBy(dir === "desc" ? "kuotaDesc" : "kuotaAsc");
+    if (key === "pendaftar") setSortBy(dir === "desc" ? "pendaftarDesc" : "pendaftarAsc");
   };
 
   const sortedTahunList = [...tahunList]
@@ -155,7 +157,7 @@ export default function AdminPpdbDashboard() {
           {!isPimpinan && (
             <button
               onClick={openCreate}
-              className="flex items-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100 shrink-0"
+              className="flex items-center justify-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-100 shrink-0"
             >
               <Plus size={18} className="sm:mr-1" />
               <span className="hidden sm:inline">Tambah Gelombang</span>
@@ -180,7 +182,9 @@ export default function AdminPpdbDashboard() {
                   { value: "terbaru", label: "Terbaru" },
                   { value: "terlama", label: "Terlama" },
                   { value: "kuotaDesc", label: "Kuota Terbanyak" },
-                  { value: "pendaftarDesc", label: "Pendaftar Terbanyak" }
+                  { value: "kuotaAsc", label: "Kuota Tersedikit" },
+                  { value: "pendaftarDesc", label: "Pendaftar Terbanyak" },
+                  { value: "pendaftarAsc", label: "Pendaftar Tersedikit" }
                 ]}
               />
             </div>

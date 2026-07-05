@@ -11,6 +11,7 @@ import Pagination from "../../../components/pagination/Pagination";
 import SearchBar from "../../../components/SearchBar";
 import FilterSelect from "../../../components/FilterSelect";
 import FilterDropdown from "../../../components/FilterDropdown";
+import HybridSelect from "../../../components/HybridSelect";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
 import SortDropdown from "../../../components/SortDropdown";
@@ -29,18 +30,27 @@ export default function KeuanganPage({ rolePrefix }) {
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedJenis, setSelectedJenis] = useState("");
+  const [jenisTagihanList, setJenisTagihanList] = useState([]);
+  const [selectedSantri, setSelectedSantri] = useState("");
+  const [santriList, setSantriList] = useState([]);
 
   const jenisOptions = Array.from(
-    new Set(dataList.map((item) => item.jenis_tagihan?.jenis_tagihan).filter(Boolean))
+    new Set(jenisTagihanList.map((item) => item.jenis_tagihan).filter(Boolean))
   ).map((j) => ({ value: j, label: j }));
+
+  const santriOptions = santriList.map((s) => ({
+    value: s.id,
+    label: `${s.nama} (${s.nip || "-"})`
+  }));
 
   const filteredData = dataList.filter((item) => {
     const matchStatus = !selectedStatus || item.status === selectedStatus;
     const matchJenis = !selectedJenis || item.jenis_tagihan?.jenis_tagihan === selectedJenis;
-    return matchStatus && matchJenis;
+    const matchSantri = !selectedSantri || item.id_santri === parseInt(selectedSantri);
+    return matchStatus && matchJenis && matchSantri;
   });
 
-  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "nama_tagihan");
+  const { sortedData, sortKey, sortDir, handleSort, setSort } = useSort(filteredData, "batas_pembayaran", "desc");
   const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(sortedData);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -63,6 +73,19 @@ export default function KeuanganPage({ rolePrefix }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const res = await api.get(`/${rolePrefix}/keuangan/options`);
+        setJenisTagihanList(res.data.jenis_tagihan || []);
+        setSantriList(res.data.santri || []);
+      } catch (err) {
+        console.error("Gagal memuat opsi keuangan:", err);
+      }
+    };
+    fetchOptions();
+  }, [rolePrefix]);
 
   useEffect(() => {
     const t = setTimeout(() => { fetchData(); jump(1); }, 500);
@@ -117,10 +140,19 @@ export default function KeuanganPage({ rolePrefix }) {
       <div className="flex gap-3 items-center justify-between w-full">
         <SearchBar placeholder="Cari tagihan..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <FilterDropdown
-          activeCount={(selectedStatus ? 1 : 0) + (selectedJenis ? 1 : 0)}
-          onReset={() => { setSelectedStatus(""); setSelectedJenis(""); jump(1); }}
+          activeCount={(selectedStatus ? 1 : 0) + (selectedJenis ? 1 : 0) + (selectedSantri ? 1 : 0)}
+          onReset={() => { setSelectedStatus(""); setSelectedJenis(""); setSelectedSantri(""); jump(1); }}
         >
           <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Santri</label>
+              <HybridSelect
+                placeholder="Semua Santri"
+                value={selectedSantri}
+                onChange={(e) => { setSelectedSantri(e.target.value); jump(1); }}
+                options={santriOptions}
+              />
+            </div>
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pembayaran</label>
               <FilterSelect
@@ -162,9 +194,7 @@ export default function KeuanganPage({ rolePrefix }) {
             { value: "nominal_desc", label: "Nominal (Terbanyak)" },
             { value: "nominal_asc", label: "Nominal (Tersedikit)" },
             { value: "batas_pembayaran_desc", label: "Jatuh Tempo (Terbaru)" },
-            { value: "batas_pembayaran_asc", label: "Jatuh Tempo (Terlama)" },
-            { value: "status_asc", label: "Status (A-Z)" },
-            { value: "status_desc", label: "Status (Z-A)" }
+            { value: "batas_pembayaran_asc", label: "Jatuh Tempo (Terlama)" }
           ]}
         />
       </div>

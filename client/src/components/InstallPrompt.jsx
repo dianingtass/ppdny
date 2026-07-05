@@ -1,25 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
 
-/**
- * InstallPrompt — Banner install PWA ke homescreen (khusus mobile)
- *
- * Logika:
- * - Menangkap event `beforeinstallprompt` dari browser (Chrome Android)
- * - Hanya tampil di perangkat mobile (layar ≤ 768px)
- * - Tidak tampil kalau sudah diinstall (display-mode: standalone)
- * - Tidak tampil lagi kalau user sudah dismiss (disimpan di localStorage)
- * - Setelah 3 detik baru muncul agar tidak mengganggu splash/loading
- */
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Jangan tampil kalau:
-    // 1. Sudah running sebagai installed PWA (standalone mode)
-    // 2. User sebelumnya sudah dismiss
-    // 3. Bukan mobile
     const alreadyInstalled = window.matchMedia('(display-mode: standalone)').matches;
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -71,7 +57,7 @@ export default function InstallPrompt() {
         className="fixed bottom-0 left-0 right-0 z-[9999] animate-slide-up"
         style={{ fontFamily: '"Geist", sans-serif' }}
       >
-        <div className="mx-3 mb-4 rounded-2xl bg-white shadow-2xl border border-green-100 overflow-hidden">
+        <div className="mx-3 mb-4 rounded-2xl bg-white shadow-2xl overflow-hidden">
 
           {/* Header hijau */}
           <div className="bg-gradient-to-r from-green-700 to-green-600 px-5 py-4 flex items-center justify-between">
@@ -99,7 +85,7 @@ export default function InstallPrompt() {
               <img
                 src="/pwa-192x192.png"
                 alt="Logo SIM-Tren"
-                className="w-14 h-14 rounded-2xl object-contain flex-shrink-0 shadow-sm border border-gray-100"
+                className="w-14 h-14 rounded-2xl object-contain flex-shrink-0 shadow-sm"
               />
               <div>
                 <p className="text-gray-800 font-medium text-sm mb-1">

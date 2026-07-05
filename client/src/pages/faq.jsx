@@ -182,7 +182,7 @@ export default function FaqPage() {
       <AlertToast message={message} onClose={clearAlert} />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">FAQ Pesantren</h1>
           <p className="text-gray-500 text-sm">Pertanyaan yang sering ditanyakan seputar sistem dan modul kesehatan.</p>
@@ -190,9 +190,10 @@ export default function FaqPage() {
         {isManageable && (
           <button
             onClick={handleCreateClick}
-            className="px-4 py-2.5 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition flex items-center gap-2 active:scale-95 shadow-sm"
+            className="flex items-center justify-center bg-green-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-sm font-semibold hover:bg-green-700 transition active:scale-95 shadow-sm shrink-0"
           >
-            <Plus size={18} /> Tambah FAQ
+            <Plus size={18} className="sm:mr-1" />
+            <span className="hidden sm:inline">Tambah FAQ</span>
           </button>
         )}
       </div>

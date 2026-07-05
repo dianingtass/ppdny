@@ -514,6 +514,32 @@ const getLaporanAbsensi = async(req,res)=>{
 }
 
 
+const deleteAbsensi = async (req, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Akses ditolak" });
+    }
+    const { id_heading } = req.params;
+
+    const existing = await prisma.heading_absensi.findUnique({
+      where: { id_heading: Number(id_heading) }
+    });
+
+    if (!existing || !existing.is_active) {
+      return res.status(404).json({ success: false, message: "Data absensi tidak ditemukan" });
+    }
+
+    await prisma.heading_absensi.update({
+      where: { id_heading: Number(id_heading) },
+      data: { is_active: false }
+    });
+
+    res.json({ success: true, message: "Data absensi berhasil dihapus" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
   return {
     getKamarList,
     getKamarDetail,
@@ -524,7 +550,8 @@ const getLaporanAbsensi = async(req,res)=>{
     getSantriByKamar,
     getItemKebersihan,
     createAbsensi,
-    getLaporanAbsensi
+    getLaporanAbsensi,
+    deleteAbsensi
   };
 };
 

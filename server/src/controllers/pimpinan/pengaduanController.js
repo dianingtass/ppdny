@@ -13,11 +13,13 @@ const formatDate = (date) => {
 // 1. GET: Daftar Pengaduan (Semua Pengaduan Aktif)
 exports.getDaftarPengaduan = async (req, res) => {
   try {
-    const { rolePelapor, startDate, endDate } = req.query;
+    const { rolePelapor, startDate, endDate, idPelapor } = req.query;
 
     const where = { is_active: true };
 
-    if (rolePelapor === "ustadz") {
+    if (idPelapor) {
+      where.id_pelapor = parseInt(idPelapor);
+    } else if (rolePelapor === "ustadz") {
       where.users_pengaduan_id_pelaporTousers = {
         user_role: { some: { id_role: 3, is_active: true } }
       };

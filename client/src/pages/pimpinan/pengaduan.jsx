@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../config/api';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, MessageSquareText } from 'lucide-react';
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailPengaduanModal from '../../components/DetailPengaduanModal';
@@ -9,6 +9,7 @@ import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
 import FilterDropdown from "../../components/FilterDropdown";
 import SortDropdown from '../../components/SortDropdown';
+import HybridSelect from "../../components/HybridSelect";
 
 export default function PimpinanPengaduan() {
   const [data, setData] = useState([]);
@@ -17,6 +18,9 @@ export default function PimpinanPengaduan() {
 
   const [search, setSearch] = useState("");
   const [rolePelapor, setRolePelapor] = useState("");
+  const [selectedPelaporId, setSelectedPelaporId] = useState("");
+  const [ustadzList, setUstadzList] = useState([]);
+  const [ortuList, setOrtuList] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("Semua");
@@ -24,14 +28,30 @@ export default function PimpinanPengaduan() {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
+    const loadFilters = async () => {
+      try {
+        const [resUstadz, resOrtu] = await Promise.all([
+          api.get("/pimpinan/ustadz"),
+          api.get("/pimpinan/orangtua")
+        ]);
+        if (resUstadz.data.success) setUstadzList(resUstadz.data.data);
+        if (resOrtu.data.success) setOrtuList(resOrtu.data.data);
+      } catch (err) {
+        console.error("Gagal memuat filter user:", err);
+      }
+    };
+    loadFilters();
+  }, []);
+
+  useEffect(() => {
     fetchData();
-  }, [rolePelapor, startDate, endDate]);
+  }, [rolePelapor, selectedPelaporId, startDate, endDate]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const res = await api.get("/pimpinan/pengaduan", {
-        params: { rolePelapor, startDate, endDate }
+        params: { rolePelapor, startDate, endDate, idPelapor: selectedPelaporId }
       });
       if (res.data.success) {
         setData(res.data.data);
@@ -42,6 +62,11 @@ export default function PimpinanPengaduan() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRolePelaporChange = (val) => {
+    setRolePelapor(val);
+    setSelectedPelaporId("");
   };
 
   const sortedData = [...data]
@@ -56,6 +81,8 @@ export default function PimpinanPengaduan() {
       const dateB = new Date(b.waktu_raw || 0);
       if (sortBy === "terbaru") return dateB - dateA;
       if (sortBy === "terlama") return dateA - dateB;
+      if (sortBy === "diskusi-banyak") return (b.jumlah_tanggapan || 0) - (a.jumlah_tanggapan || 0);
+      if (sortBy === "diskusi-sedikit") return (a.jumlah_tanggapan || 0) - (b.jumlah_tanggapan || 0);
       return 0;
     });
 
@@ -79,13 +106,16 @@ export default function PimpinanPengaduan() {
               onChange={setSortBy}
               options={[
                 { value: "terbaru", label: "Terbaru" },
-                { value: "terlama", label: "Terlama" }
+                { value: "terlama", label: "Terlama" },
+                { value: "diskusi-banyak", label: "Diskusi Terbanyak" },
+                { value: "diskusi-sedikit", label: "Diskusi Tersedikit" }
               ]}
             />
             <FilterDropdown
-              activeCount={(rolePelapor ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0) + (filterStatus !== "Semua" ? 1 : 0)}
+              activeCount={(rolePelapor ? 1 : 0) + (selectedPelaporId ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0) + (filterStatus !== "Semua" ? 1 : 0)}
               onReset={() => {
                 setRolePelapor("");
+                setSelectedPelaporId("");
                 setStartDate("");
                 setEndDate("");
                 setFilterStatus("Semua");
@@ -95,7 +125,6 @@ export default function PimpinanPengaduan() {
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 mb-1">Status Pengaduan</label>
                   <FilterSelect
-                    placeholder="Semua Status"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value || "Semua")}
                     options={[
@@ -110,13 +139,35 @@ export default function PimpinanPengaduan() {
                   <FilterSelect
                     placeholder="Semua Pembuat"
                     value={rolePelapor}
-                    onChange={(e) => setRolePelapor(e.target.value)}
+                    onChange={(e) => handleRolePelaporChange(e.target.value)}
                     options={[
                       { value: "ustadz", label: "Ustadz / Wali Kelas" },
                       { value: "orangtua", label: "Orang Tua" },
                     ]}
                   />
                 </div>
+                {rolePelapor === "ustadz" && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1 font-medium">Pilih Ustadz</label>
+                    <HybridSelect
+                      value={selectedPelaporId}
+                      onChange={(e) => setSelectedPelaporId(e.target.value)}
+                      options={ustadzList.map(u => ({ value: u.id, label: u.nama }))}
+                      placeholder="Cari & Pilih Ustadz..."
+                    />
+                  </div>
+                )}
+                {rolePelapor === "orangtua" && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1 font-medium">Pilih Orang Tua/Wali</label>
+                    <HybridSelect
+                      value={selectedPelaporId}
+                      onChange={(e) => setSelectedPelaporId(e.target.value)}
+                      options={ortuList.map(o => ({ value: o.id, label: o.nama }))}
+                      placeholder="Cari & Pilih Orang Tua..."
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-gray-500">Rentang Tanggal</label>
                   <div className="grid grid-cols-1 gap-2">
@@ -184,18 +235,22 @@ export default function PimpinanPengaduan() {
                     {item.deskripsi}
                   </p>
 
-                  <div className="flex items-center gap-4 pt-2 border-t border-gray-50 mt-2">
-                    <div className={`flex items-center text-[10px] font-bold uppercase px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50 border border-green-100' : 'text-orange-700 bg-orange-50 border border-orange-100'}`}>
-                      {item.status || 'Aktif'}
-                    </div>
-                    <div className="text-xs font-medium text-gray-500 flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                      Dilaporkan oleh: {item.pelapor}
-                    </div>
-                    {item.jumlah_tanggapan > 0 && (
-                      <div className="text-xs font-medium text-gray-400 ml-auto flex items-center">
-                        💬 {item.jumlah_tanggapan} Diskusi
+                  <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-between pt-2 border-t border-gray-50 mt-2 text-xs">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className={`flex items-center text-[10px] font-bold uppercase px-2.5 py-1 rounded-md ${item.status === 'Selesai' ? 'text-green-700 bg-green-50 border border-green-100' : 'text-orange-700 bg-orange-50 border border-orange-100'}`}>
+                        {item.status || 'Aktif'}
                       </div>
-                    )}
+                      <div className="text-xs font-medium text-gray-500 flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100">
+                        Oleh: {item.pelapor}
+                      </div>
+
+                      {item.jumlah_tanggapan > 0 && (
+                        <div className="text-xs font-medium text-gray-400 flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100 gap-1">
+                          <MessageSquareText size={14} className="text-gray-400" />
+                          <span>{item.jumlah_tanggapan}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

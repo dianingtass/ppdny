@@ -161,84 +161,122 @@ export default function Log() {
                 </FilterDropdown>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                {loading ? (
-                    <div className="p-12 text-center flex flex-col items-center justify-center">
-                        <Loader2 className="animate-spin text-green-500 mb-2" size={32} />
-                        <p className="text-gray-500">Memuat data log...</p>
-                    </div>
-                ) : dataList.length === 0 ? (
-                    <div className="p-12 text-center text-gray-400">
-                        Tidak ada log aktivitas yang tercatat
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead>
-                                <tr className="text-gray-500 border-b border-gray-100 bg-gray-50 uppercase tracking-wider text-[11px] font-bold">
-                                    <th className="px-6 py-4">Waktu</th>
-                                    <th className="px-6 py-4">Pengguna</th>
-                                    <th className="px-6 py-4">Role</th>
-                                    <th className="px-6 py-4">Aksi</th>
-                                    <th className="px-6 py-4">Entitas</th>
-                                    <th className="px-6 py-4">Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {dataList.map((log) => (
-                                    <tr key={log.id} className="hover:bg-gray-50/50 transition">
-                                        <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap">
-                                            <div className="flex items-center gap-1.5">
-                                                <Clock size={14} className="text-gray-400" />
-                                                {formatDateTime(log.created_at)}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 font-bold text-gray-800">{log.nama_user}</td>
-                                        <td className="px-6 py-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                {log.role_user}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
-                                                log.aksi === 'CREATE' ? 'bg-green-50 text-green-700 border border-green-100' :
-                                                log.aksi === 'UPDATE' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                                                'bg-red-50 text-red-700 border border-red-100'
-                                            }`}>
-                                                {log.aksi}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-1.5">
-                                                <Activity size={14} className="text-gray-400" />
-                                                <span className="font-semibold text-gray-700 uppercase text-[10px]">
-                                                    {formatEntitas(log.entitas)}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-600 font-medium max-w-xs truncate" title={log.keterangan}>
-                                            {log.keterangan}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-
-            {meta.totalPages > 1 && (
-                <div className="flex justify-between items-center py-4 bg-white px-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="text-xs text-gray-500">
-                        Halaman <span className="font-bold text-gray-700">{meta.currentPage}</span> dari <span className="font-bold text-gray-700">{meta.totalPages}</span>
-                    </div>
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={meta.totalPages}
-                        onPageChange={setCurrentPage}
-                    />
+            {loading ? (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
+                    <Loader2 className="animate-spin text-green-500 mb-2" size={32} />
+                    <p className="text-gray-500">Memuat data log...</p>
                 </div>
+            ) : dataList.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+                    Tidak ada log aktivitas yang tercatat
+                </div>
+            ) : (
+                <>
+                    {/* Desktop View */}
+                    <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead>
+                                    <tr className="text-gray-500 border-b border-gray-100 bg-gray-50 uppercase tracking-wider text-[11px] font-bold">
+                                        <th className="px-6 py-4">Waktu</th>
+                                        <th className="px-6 py-4">Pengguna</th>
+                                        <th className="px-6 py-4">Role</th>
+                                        <th className="px-6 py-4">Aksi</th>
+                                        <th className="px-6 py-4">Entitas</th>
+                                        <th className="px-6 py-4">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {dataList.map((log) => (
+                                        <tr key={log.id} className="hover:bg-gray-50/50 transition">
+                                            <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Clock size={14} className="text-gray-400" />
+                                                    {formatDateTime(log.created_at)}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 font-bold text-gray-800">{log.nama_user}</td>
+                                            <td className="px-6 py-4">
+                                                <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                    {log.role_user}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                                                    log.aksi === 'CREATE' ? 'bg-green-50 text-green-700 border border-green-100' :
+                                                    log.aksi === 'UPDATE' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                                    'bg-red-50 text-red-700 border border-red-100'
+                                                }`}>
+                                                    {log.aksi}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Activity size={14} className="text-gray-400" />
+                                                    <span className="font-semibold text-gray-700 uppercase text-[10px]">
+                                                        {formatEntitas(log.entitas)}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-600 font-medium max-w-xs truncate" title={log.keterangan}>
+                                                {log.keterangan}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="block md:hidden space-y-4">
+                        {dataList.map((log) => (
+                            <div key={log.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                                <div className="flex justify-between items-start gap-2">
+                                    <div>
+                                        <h3 className="font-bold text-gray-800 text-sm leading-tight">{log.nama_user}</h3>
+                                        <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                                            {log.role_user}
+                                        </span>
+                                    </div>
+                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
+                                        log.aksi === 'CREATE' ? 'bg-green-50 text-green-700 border border-green-100' :
+                                        log.aksi === 'UPDATE' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                        'bg-red-50 text-red-700 border border-red-100'
+                                    }`}>
+                                        {log.aksi}
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-100"></div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-1.5">
+                                        <Activity size={14} className="text-gray-400" />
+                                        <span className="font-bold text-gray-700 uppercase text-[10px]">
+                                            {formatEntitas(log.entitas)}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-600 font-medium bg-gray-50/50 p-2.5 rounded-xl border border-gray-100/50 break-words leading-relaxed">
+                                        {log.keterangan}
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1 border-t border-gray-50">
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock size={12} className="text-gray-400" />
+                                        <span>{formatDateTime(log.created_at)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={meta.totalPages}
+                onNext={() => setCurrentPage(prev => Math.min(prev + 1, meta.totalPages))}
+                onPrev={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            />
         </div>
     );
 }

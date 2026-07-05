@@ -6,12 +6,15 @@ import {
   Loader2,
   Plus,
   History,
-  ClipboardList
+  ClipboardList,
+  Trash2,
+  FileText
 } from "lucide-react";
 import Pagination from "../../../components/pagination/Pagination";
 import useSort from "../../../hooks/useSort";
 import SortableHeader from "../../../components/SortableHeader";
 import SortDropdown from "../../../components/SortDropdown";
+import ConfirmDeleteModal from "../../../components/ConfirmDeleteModal";
 
 export default function PortalAbsensiPage({ rolePrefix }) {
 
@@ -28,12 +31,43 @@ export default function PortalAbsensiPage({ rolePrefix }) {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedPemeriksa, setSelectedPemeriksa] = useState("");
 
   const limit = 10;
-  const riwayat = useMemo(() => {
-    return absensi.filter(item => item.id_heading !== latest?.id_heading);
-  }, [absensi, latest]);
-  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(riwayat, "tanggal", "desc");
+
+  const pemeriksaList = useMemo(() => {
+    const names = new Set();
+    absensi.forEach(item => {
+      const name = item.users?.nama;
+      if (name) names.add(name);
+    });
+    return Array.from(names);
+  }, [absensi]);
+
+  const filteredRiwayat = useMemo(() => {
+    let data = absensi.filter(item => item.id_heading !== latest?.id_heading);
+    if (selectedPemeriksa) {
+      data = data.filter(item => item.users?.nama === selectedPemeriksa);
+    }
+    return data;
+  }, [absensi, latest, selectedPemeriksa]);
+
+  const { sortedData: sortedRiwayat, sortKey, sortDir, handleSort, setSort } = useSort(filteredRiwayat, "tanggal", "desc");
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/admin/absensi/${deleteModal.id}`);
+      setDeleteModal({ isOpen: false, id: null });
+      fetchDetail();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const fetchDetail = async () => {
     try {
@@ -99,10 +133,11 @@ export default function PortalAbsensiPage({ rolePrefix }) {
     : false;
   
   const renderAbsensiCards = (items, emptyText) => {
+    const displayEmptyText = emptyText === "Belum ada absensi." || emptyText === "Belum ada riwayat absensi." ? "Data tidak ditemukan" : emptyText;
     if (!items.length) {
       return (
         <div className="p-6 text-center text-gray-400 text-sm">
-          {emptyText}
+          {displayEmptyText}
         </div>
       );
     }
@@ -127,14 +162,24 @@ export default function PortalAbsensiPage({ rolePrefix }) {
             </div>
 
             {rolePrefix !== "pimpinan" && (
-              <button
-                onClick={() =>
-                  navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
-                }
-                className="mt-4 w-full px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
-              >
-                Edit
-              </button>
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() =>
+                    navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
+                  }
+                  className="flex-1 px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                >
+                  Edit
+                </button>
+                {rolePrefix === "admin" && (
+                  <button
+                    onClick={() => setDeleteModal({ isOpen: true, id: item.id_heading })}
+                    className="px-3 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition flex items-center justify-center"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
             )}
           </div>
         ))}
@@ -218,9 +263,10 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                 onClick={() =>
                   navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/laporan`)
                 }
-                className="px-3 py-2.5 sm:px-4 sm:py-2.5 border border-green-200 text-green-600 rounded-xl font-medium flex items-center justify-center hover:bg-green-50 transition text-sm sm:text-base shrink-0"
+                className="p-2.5 sm:px-4 sm:py-2.5 border border-green-200 text-green-600 rounded-xl font-medium flex items-center justify-center hover:bg-green-50 transition text-sm sm:text-base shrink-0"
               >
-                Lihat Laporan
+                <FileText size={20} className="sm:mr-2"/>
+                <span className="hidden sm:inline">Lihat Laporan</span>
               </button>
  
               {rolePrefix !== "pimpinan" && (
@@ -237,7 +283,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                   }`}
                 >
                   <Plus size={20} className="sm:mr-2"/>
-                  <span className="hidden sm:inline">Absensi Baru</span>
+                  <span className="hidden sm:inline">Tambah Absensi</span>
                 </button>
               )}
             </div>
@@ -276,17 +322,26 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                             onClick={() =>
                               navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${latest.id_heading}`)
                             }
-                            className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                            className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition inline-block"
                           >
                             Edit
                           </button>
+                          {rolePrefix === "admin" && (
+                            <button
+                              onClick={() => setDeleteModal({ isOpen: true, id: latest.id_heading })}
+                              className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition inline-flex items-center gap-1"
+                            >
+                              <Trash2 size={16} />
+                              Hapus
+                            </button>
+                          )}
                         </td>
                       )}
                     </tr>
                   ) : (
                     <tr>
                       <td colSpan="3" className="p-8 text-center text-gray-400">
-                        Belum ada absensi.
+                        Data tidak ditemukan
                       </td>
                     </tr>
                   )}
@@ -294,7 +349,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               </table>
             </div>
             <div className="lg:hidden">
-              {renderAbsensiCards(latest ? [latest] : [], "Belum ada absensi.")}
+              {renderAbsensiCards(latest ? [latest] : [], "Data tidak ditemukan")}
             </div>
           </div>
         </div>
@@ -337,10 +392,19 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                               onClick={() =>
                                 navigate(`/${rolePrefix}/daftarAbsensiKamar/${id}/edit/${item.id_heading}`)
                               }
-                              className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition"
+                              className="px-4 py-2 border border-blue-200 text-blue-600 rounded-lg text-sm hover:bg-blue-50 transition inline-block"
                             >
                               Edit
                             </button>
+                            {rolePrefix === "admin" && (
+                              <button
+                                onClick={() => setDeleteModal({ isOpen: true, id: item.id_heading })}
+                                className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition inline-flex items-center gap-1"
+                              >
+                                <Trash2 size={16} />
+                                Hapus
+                              </button>
+                            )}
                           </td>
                         )}
                       </tr>
@@ -348,7 +412,7 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                   ) : (
                     <tr>
                       <td colSpan="3" className="p-8 text-center text-gray-400">
-                        Belum ada riwayat absensi.
+                        Data tidak ditemukan
                       </td>
                     </tr>
                   )}
@@ -356,7 +420,17 @@ export default function PortalAbsensiPage({ rolePrefix }) {
               </table>
             </div>
             <div className="lg:hidden">
-              <div className="p-3 border-b border-gray-100 flex justify-end">
+              <div className="p-3 border-b border-gray-100 flex justify-between items-center gap-3">
+                <select
+                  value={selectedPemeriksa}
+                  onChange={(e) => setSelectedPemeriksa(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-700 flex-1 max-w-[200px]"
+                >
+                  <option value="">Semua Pemeriksa</option>
+                  {pemeriksaList.map(name => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
                 <SortDropdown
                   value={`${sortKey}_${sortDir}`}
                   onChange={(val) => {
@@ -367,13 +441,11 @@ export default function PortalAbsensiPage({ rolePrefix }) {
                   }}
                   options={[
                     { value: "tanggal_desc", label: "Terbaru" },
-                    { value: "tanggal_asc", label: "Terlama" },
-                    { value: "users.nama_asc", label: "Pemeriksa (A-Z)" },
-                    { value: "users.nama_desc", label: "Pemeriksa (Z-A)" }
+                    { value: "tanggal_asc", label: "Terlama" }
                   ]}
                 />
               </div>
-              {renderAbsensiCards(sortedRiwayat, "Belum ada riwayat absensi.")}
+              {renderAbsensiCards(sortedRiwayat, "Data tidak ditemukan")}
             </div>
           </div>
 
@@ -385,6 +457,12 @@ export default function PortalAbsensiPage({ rolePrefix }) {
           />
         </div>
       </div>
+      <ConfirmDeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, id: null })}
+        onConfirm={handleDelete}
+        loading={isDeleting}
+      />
     </div>
   );
 }
