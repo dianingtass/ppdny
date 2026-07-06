@@ -110,8 +110,8 @@ exports.getDashboardData = async (req, res) => {
             },
 
             menu_cepat: [
-                { id: 1, nama: "Daftar Santri", icon: "users", endpoint: "/ustadz/daftar-santri", accessible: true },
-                { id: 2, nama: "Jadwal & Kegiatan", icon: "calendar", endpoint: "/ustadz/kegiatan", accessible: true },
+                { id: 1, nama: "Santri", icon: "users", endpoint: "/ustadz/daftar-santri", accessible: true },
+                { id: 2, nama: "Kegiatan", icon: "calendar", endpoint: "/ustadz/kegiatan", accessible: true },
                 { id: 3, nama: "Pengaduan", icon: "message-square", endpoint: "/ustadz/pengaduan", accessible: true }
             ]
         };

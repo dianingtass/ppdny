@@ -11,7 +11,7 @@ export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [activeMenu, setActiveMenu] = useState("home");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,15 +101,15 @@ export default function Dashboard() {
   const { ustadz, kegiatan_hari_ini = [], pengaduan_terbaru = [], statistik = {}, menu_cepat = [] } = dashboardData;
 
   const defaultMenu = [
-    { id: 1, nama: "Daftar Santri", ikon: Users, warna: "bg-green-500", endpoint: "/ustadz/daftar-santri" },
-    { id: 2, nama: "Jadwal & Kegiatan", ikon: Calendar, warna: "bg-blue-500", endpoint: "/ustadz/kegiatan" },
+    { id: 1, nama: "Santri", ikon: Users, warna: "bg-green-500", endpoint: "/ustadz/daftar-santri" },
+    { id: 2, nama: "Kegiatan", ikon: Calendar, warna: "bg-blue-500", endpoint: "/ustadz/kegiatan" },
     { id: 3, nama: "Pengaduan", ikon: MessageSquare, warna: "bg-orange-500", endpoint: "/ustadz/pengaduan" }
   ];
 
   const menuToDisplay = menu_cepat.length > 0 ? menu_cepat.map((menu, index) => ({
     ...menu,
-    ikon: [Calendar, Users, MessageSquare, ClipboardList][index] || BookOpen,
-    warna: ["bg-blue-500", "bg-green-500", "bg-orange-500", "bg-purple-500"][index] || "bg-gray-500"
+    ikon: [Users, Calendar, MessageSquare, ClipboardList][index] || BookOpen,
+    warna: ["bg-green-500", "bg-blue-500", "bg-orange-500", "bg-purple-500"][index] || "bg-gray-500"
   })) : defaultMenu;
 
   return (
@@ -126,7 +126,7 @@ export default function Dashboard() {
               <NotificationDropdown />
               <div className="hidden md:flex items-center space-x-2">
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-3 text-left p-2 rounded-xl hover:bg-white/10 transition focus:outline-none"
                   >
@@ -161,7 +161,7 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-3">
               {ustadz.jabatan.map((jabatanItem, index) => (
                 <div key={index} className="bg-white/10 border border-white/20 px-4 py-2 rounded-xl flex items-center shadow-xs">
-                  <BookOpen size={18} className="text-green-300 mr-2 shrink-0"/>
+                  <BookOpen size={18} className="text-green-300 mr-2 shrink-0" />
                   <span className="text-sm font-medium whitespace-nowrap">{jabatanItem}</span>
                 </div>
               ))}
@@ -173,7 +173,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="max-w-6xl mx-auto p-4 md:p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
+
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Quick Access */}
@@ -203,7 +203,7 @@ export default function Dashboard() {
                 </h3>
                 <span className="text-sm text-gray-500 font-medium">{formatDate(new Date())}</span>
               </div>
-              
+
               {kegiatan_hari_ini.length > 0 ? (
                 <div className="space-y-3">
                   {kegiatan_hari_ini.map((kegiatan, index) => (
@@ -235,7 +235,7 @@ export default function Dashboard() {
                   Pengaduan Santri Terbaru
                 </h3>
               </div>
-              
+
               {pengaduan_terbaru.length > 0 ? (
                 <div className="space-y-3">
                   {pengaduan_terbaru.map((item) => (
@@ -249,10 +249,10 @@ export default function Dashboard() {
                       <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.deskripsi}</p>
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-50">
                         <span className="text-xs text-gray-400 flex items-center">
-                          <Clock size={12} className="mr-1"/> {formatDate(item.waktu)}
+                          <Clock size={12} className="mr-1" /> {formatDate(item.waktu)}
                         </span>
-                        <button 
-                          onClick={() => navigate('/ustadz/pengaduan', { state: { openAduanId: item.id } })} 
+                        <button
+                          onClick={() => navigate('/ustadz/pengaduan', { state: { openAduanId: item.id } })}
                           className="text-xs font-bold text-orange-600 hover:text-orange-700"
                         >
                           Lihat Selengkapnya &rarr;
@@ -284,7 +284,7 @@ export default function Dashboard() {
                     <Users className="text-green-600" size={24} />
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl flex items-center justify-between">
                   <div>
                     <p className="text-orange-800 text-sm font-medium mb-1">Pengaduan Belum Selesai</p>

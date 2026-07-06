@@ -14,13 +14,13 @@ const sanitize = (html) => DOMPurify.sanitize(html || "", {
   USE_PROFILES: { html: true },
   // Izinkan tag HTML normal dari Quill editor
   ALLOWED_TAGS: [
-    "p","br","strong","em","u","s","h1","h2","h3","h4","h5","h6",
-    "ul","ol","li","blockquote","pre","code","span","div","img",
-    "a","table","thead","tbody","tr","th","td",
+    "p", "br", "strong", "em", "u", "s", "h1", "h2", "h3", "h4", "h5", "h6",
+    "ul", "ol", "li", "blockquote", "pre", "code", "span", "div", "img",
+    "a", "table", "thead", "tbody", "tr", "th", "td",
   ],
-  ALLOWED_ATTR: ["href","src","alt","class","target","rel","style"],
+  ALLOWED_ATTR: ["href", "src", "alt", "class", "target", "rel", "style"],
   // Blokir href javascript: dan on* event handlers
-  FORBID_ATTR: ["onerror","onload","onclick","onmouseover"],
+  FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"],
 });
 
 const LEGACY_RECENT_STORAGE_KEY = "santri_recent_materi";
@@ -33,15 +33,15 @@ function DetailMateri() {
   const navigate = useNavigate()
   const location = useLocation();
   const isPublicMateriPage = location.pathname.startsWith("/materi");
-  
+
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role?.trim().toLowerCase();
 
   const rolePathMap = {
     timkesehatan: "/timkesehatan/manageMateri",
-    santri:       "/santri/scabies/viewMateri",
-    pimpinan:     "/pimpinan/scabies/materi",
-    admin:        "/admin/manageMateri",
+    santri: "/santri/scabies/viewMateri",
+    pimpinan: "/pimpinan/scabies/materi",
+    admin: "/admin/manageMateri",
   };
 
   const detailBasePath = isPublicMateriPage ? "/materi" : (rolePathMap[role] || "/viewMateri");
@@ -189,29 +189,29 @@ function DetailMateri() {
           </div>
         </div>
         <CommentSection materiId={id} />
-      </div> 
+      </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
 
-    {/* HEADER */}
-    <div className="bg-[url('/header.png')] bg-cover bg-center text-white px-4 sm:px-6 py-6 pb-20 sm:pb-24 shadow-md">
-      <div className="max-w-6xl mx-auto flex items-center gap-4">
-        <button
-          onClick={handleBack}
-          className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"
-        >
-          <ArrowLeft size={22} />
-        </button>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-base sm:text-xl md:text-2xl font-bold break-words leading-tight">
-            {materi.judul_materi}
-          </h1>
+      {/* HEADER */}
+      <div className="bg-[url('/header.png')] bg-cover bg-center text-white px-4 sm:px-6 py-6 pb-20 sm:pb-24 shadow-md">
+        <div className="max-w-6xl mx-auto flex items-center gap-4">
+          <button
+            onClick={handleBack}
+            className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition"
+          >
+            <ArrowLeft size={22} />
+          </button>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base sm:text-xl md:text-2xl font-bold break-words leading-tight">
+              {materi.judul_materi}
+            </h1>
+          </div>
         </div>
       </div>
-    </div>
 
       <div className="max-w-6xl mx-auto px-4 -mt-14 sm:-mt-16 mb-6">
         <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-md">
@@ -252,9 +252,9 @@ function DetailMateri() {
             </div>
 
             <div className="w-full lg:w-1/3 lg:border-t-0 lg:border-l border-gray-300 border-t lg:pt-0 lg:pl-6 mt-5">
-              <LinkMateri 
-                materiList={materiLain} 
-                detailBasePath={detailBasePath} 
+              <LinkMateri
+                materiList={materiLain}
+                detailBasePath={detailBasePath}
                 fromPath={location.pathname}
                 rootFrom={rootFrom}
               />

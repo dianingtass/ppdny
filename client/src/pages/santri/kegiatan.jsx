@@ -126,7 +126,6 @@ export default function KegiatanSantri() {
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">Waktu Kegiatan</label>
               <FilterSelect
-                placeholder="Semua Waktu"
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 options={[
@@ -177,8 +176,8 @@ export default function KegiatanSantri() {
               <DetailKegiatanModal 
                   isOpen={isDetailOpen}
                   onClose={() => setIsDetailOpen(false)}
-                  kegiatan={selectedKegiatan}
-                  onOpenFeedback={handleOpenFeedback}
+                  data={selectedKegiatan}
+                  onFeedbackClick={handleOpenFeedback}
               />
               
               <FeedbackModal 

@@ -18,18 +18,18 @@ const LEGACY_RECENT_STORAGE_KEY = "santri_recent_materi";
 const EXCLUDED_ROLES = ["admin", "timkesehatan", "pimpinan"];
 
 export default function MateriView() {
-  const [materi, setMateri]                         = useState([]);
-  const [search, setSearch]                         = useState("");
-  const [selectedSumber, setSelectedSumber]         = useState("");
-  const [sortBy, setSortBy]                         = useState("terbaru"); // "terbaru" | "terlama" | "az" | "za"
-  const [loading, setLoading]                       = useState(true);
-  const [isAjukanOpen, setIsAjukanOpen]             = useState(false);
-  const [isRiwayatOpen, setIsRiwayatOpen]           = useState(false);
-  const [alert, setAlert]                           = useState({ show: false, message: "", type: "success" });
+  const [materi, setMateri] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selectedSumber, setSelectedSumber] = useState("");
+  const [sortBy, setSortBy] = useState("terbaru"); // "terbaru" | "terlama" | "az" | "za"
+  const [loading, setLoading] = useState(true);
+  const [isAjukanOpen, setIsAjukanOpen] = useState(false);
+  const [isRiwayatOpen, setIsRiwayatOpen] = useState(false);
+  const [alert, setAlert] = useState({ show: false, message: "", type: "success" });
 
   const { user } = useContext(AuthContext);
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const role = user?.role?.trim().toLowerCase();
 
   const isPublicMateriPage = location.pathname.startsWith("/materi");
@@ -38,8 +38,8 @@ export default function MateriView() {
     : role === "pimpinan"
       ? "/pimpinan"
       : "/santri";
-  const rootFrom     = location.state?.rootFrom || location.state?.from || defaultRootFrom;
-  const backPath     = rootFrom;
+  const rootFrom = location.state?.rootFrom || location.state?.from || defaultRootFrom;
+  const backPath = rootFrom;
   const detailBasePath = isPublicMateriPage
     ? "/materi"
     : role === "pimpinan"
@@ -47,9 +47,9 @@ export default function MateriView() {
       : "/santri/scabies/viewMateri";
 
   // Apakah user yang login termasuk role yang dikecualikan?
-  const isExcludedRole    = role && EXCLUDED_ROLES.includes(role);
+  const isExcludedRole = role && EXCLUDED_ROLES.includes(role);
   // Tampilkan tombol ajukan: public user (tidak login) ATAU login tapi bukan excluded role
-  const showAjukanButton  = !isExcludedRole;
+  const showAjukanButton = !isExcludedRole;
   // Tampilkan tombol riwayat: hanya user yang login dan bukan excluded role
   const showRiwayatButton = !isPublicMateriPage && user && !isExcludedRole;
 
@@ -99,7 +99,7 @@ export default function MateriView() {
       (selectedSumber === "pengalaman" ? item.sumber === "pengalaman" : item.sumber !== "pengalaman");
     return matchSearch && matchSumber;
   });
-  const materiTeori      = filtered.filter((item) => item.sumber !== "pengalaman");
+  const materiTeori = filtered.filter((item) => item.sumber !== "pengalaman");
   const materiPengalaman = filtered.filter((item) => item.sumber === "pengalaman");
 
   const sortMateriList = (list) => {
@@ -114,7 +114,7 @@ export default function MateriView() {
     });
   };
 
-  const sortedTeori      = sortMateriList(materiTeori);
+  const sortedTeori = sortMateriList(materiTeori);
   const sortedPengalaman = sortMateriList(materiPengalaman);
 
   const isPimpinan = role === "pimpinan";
