@@ -107,11 +107,6 @@ export default function ListOrtuModal({ isOpen, onClose, santriData, onAssignCli
             </div>
           ) : ortuList.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {ortuList.map((item) => {
-                const isEditingThis = editingId === item.id_relasi;
-                const isUpdatingThis = updatingId === item.id_relasi;
-
-                return (
               {ortuList.map((item) => (
                 <div
                   key={item.id_relasi}
