@@ -44,9 +44,15 @@ const FilterDropdown = ({
 
       {/* Modal Overlay & Card */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity cursor-pointer"
+          onClick={() => setIsOpen(false)}
+        >
           {/* Modal Card container */}
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 max-w-md w-full flex flex-col animate-in fade-in zoom-in-95 duration-150">
+          <div 
+            className="bg-white rounded-2xl shadow-2xl border border-gray-100 max-w-md w-full flex flex-col animate-in fade-in zoom-in-95 duration-150 cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
@@ -69,8 +75,8 @@ const FilterDropdown = ({
             </div>
 
             {/* Footer Action Buttons */}
-            <div className="p-5 border-t border-gray-100 bg-gray-50/50 flex gap-3 justify-end">
-              {onReset && (
+            {onReset && (
+              <div className="p-5 border-t border-gray-100 bg-gray-50/50 flex gap-3 justify-end">
                 <button
                   type="button"
                   onClick={() => {
@@ -82,15 +88,8 @@ const FilterDropdown = ({
                   <RotateCcw size={14} />
                   Reset Semua
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700 text-sm font-bold shadow-md hover:shadow-green-500/20 transition cursor-pointer"
-              >
-                Terapkan
-              </button>
-            </div>
+              </div>
+            )}
 
           </div>
         </div>

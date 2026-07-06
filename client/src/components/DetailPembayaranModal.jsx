@@ -70,8 +70,28 @@ export default function DetailPembayaranModal({ isOpen, onClose, data, userRole 
             <div className="space-y-4">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Konfirmasi Status</label>
               <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => setStatusVerifikasi('Berhasil')} className={`py-2 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all font-bold ${statusVerifikasi === 'Berhasil' ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-gray-100 text-gray-400'}`}><CheckCircle size={18} /> Berhasil</button>
-                <button onClick={() => setStatusVerifikasi('Gagal')} className={`py-2 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all font-bold ${statusVerifikasi === 'Gagal' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-white border-gray-100 text-gray-400'}`}><XCircle size={18} /> Gagal</button>
+                <button
+                  type="button"
+                  onClick={() => setStatusVerifikasi('Berhasil')}
+                  className={`py-2 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all font-bold cursor-pointer ${
+                    statusVerifikasi === 'Berhasil'
+                      ? 'bg-green-50 border-green-500 text-green-700'
+                      : 'bg-green-50/20 border-green-100 text-green-600/50 hover:bg-green-50 hover:border-green-300 hover:text-green-600'
+                  }`}
+                >
+                  <CheckCircle size={18} /> Berhasil
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatusVerifikasi('Gagal')}
+                  className={`py-2 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all font-bold cursor-pointer ${
+                    statusVerifikasi === 'Gagal'
+                      ? 'bg-red-50 border-red-500 text-red-700'
+                      : 'bg-red-50/20 border-red-100 text-red-600/50 hover:bg-red-50 hover:border-red-300 hover:text-red-600'
+                  }`}
+                >
+                  <XCircle size={18} /> Gagal
+                </button>
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Nominal Diterima (Rp)</label>

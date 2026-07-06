@@ -13,6 +13,7 @@ router.post('/relasi',             ctrl.assignRelasi);
 router.post('/assign',             ctrl.assignRelasi);
 router.put('/:id',                 ctrl.updateOrangTua);
 router.delete('/:id',              ctrl.deleteOrangTua);
+router.put('/relasi/:id_relasi',    ctrl.updateRelasi);
 router.delete('/relasi/:id_relasi',ctrl.removeRelasi);
 
 module.exports = router;

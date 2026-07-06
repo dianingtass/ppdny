@@ -212,3 +212,22 @@ exports.removeRelasi = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Gagal memutus relasi.' });
     }
 };
+
+exports.updateRelasi = async (req, res) => {
+    const { id_relasi } = req.params;
+    const { hubungan } = req.body;
+    try {
+        if (!hubungan || hubungan.trim() === "") {
+            return res.status(400).json({ success: false, message: 'Hubungan wajib diisi.' });
+        }
+        await prisma.orangtua.update({
+            where: { id: parseInt(id_relasi) },
+            data: { hubungan: hubungan.trim() }
+        });
+        return res.json({ success: true, message: 'Hubungan relasi berhasil diperbarui.' });
+    } catch (error) {
+        console.error('updateRelasi error:', error);
+        return res.status(500).json({ success: false, message: 'Gagal memperbarui hubungan relasi.' });
+    }
+};
+

@@ -9,7 +9,7 @@ const getDatabaseUrl = () => {
   // Tambahkan connection_limit jika belum ada di URL
   if (url && !url.includes('connection_limit')) {
     const separator = url.includes('?') ? '&' : '?';
-    const limit = process.env.NODE_ENV === 'production' ? 5 : 10;
+    const limit = process.env.NODE_ENV === 'production' ? 2 : 10;
     return `${url}${separator}connection_limit=${limit}&pool_timeout=20`;
   }
   return url;

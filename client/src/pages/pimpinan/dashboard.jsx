@@ -572,7 +572,7 @@ function ScabiesChartCard({
           <h3 className="text-lg font-bold text-gray-900">{title}</h3>
           <p className="text-xs text-gray-500 mt-1">{description}</p>
         </div>
-        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+        <div className="grid grid-cols-2 sm:flex sm:flex-col sm:items-end gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={onExport}

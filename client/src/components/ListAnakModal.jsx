@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import api from "../config/api";
-import { X, User, Plus, Loader2, Trash2, AlertTriangle } from "lucide-react";
+import { X, User, Plus, Loader2, Trash2, AlertTriangle, Edit2 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import ProfileAvatar from './ProfileAvatar';
 
-export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick, refreshTrigger }) {
+export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick, onEditClick, refreshTrigger }) {
   const [anakList, setAnakList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [confirmRelasi, setConfirmRelasi] = useState({ open: false, id: null });
+
   const { user } = useContext(AuthContext);
   const rolePrefix = user?.role?.toLowerCase() ?? "admin";
 
@@ -123,15 +124,31 @@ export default function ListAnakModal({ isOpen, onClose, ortuData, onAssignClick
                     </div>
                   </div>
                   {rolePrefix !== "pimpinan" && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemove(item.id_relasi);
-                      }}
-                      className="p-2 text-red-500 md:text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditClick(ortuData, {
+                            id_relasi: item.id_relasi,
+                            nama: item.nama,
+                            no_hp: item.nip,
+                            hubungan: item.hubungan
+                          });
+                        }}
+                        className="p-1.5 text-green-600 md:text-gray-300 hover:text-green-600 hover:bg-green-50 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemove(item.id_relasi);
+                        }}
+                        className="p-1.5 text-red-500 md:text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   )}
                 </div>
               ))}

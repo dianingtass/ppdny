@@ -104,12 +104,17 @@ export default function DataSantriPage({ rolePrefix }) {
   const handleAssignSubmit = async (payload) => {
     setIsSaving(true);
     try {
-      await api.post(`/${rolePrefix}/orangtua/assign`, payload);
-      showAlert("success", "Berhasil menghubungkan data wali");
-      setAssignModal({ isOpen: false, data: null });
+      if (payload.isEdit) {
+        await api.put(`/${rolePrefix}/orangtua/relasi/${payload.id_relasi}`, { hubungan: payload.hubungan });
+        showAlert("success", "Hubungan relasi berhasil diperbarui");
+      } else {
+        await api.post(`/${rolePrefix}/orangtua/assign`, payload);
+        showAlert("success", "Berhasil menghubungkan data wali");
+      }
+      setAssignModal({ isOpen: false, data: null, editData: null });
       setRefreshListKey((prev) => prev + 1);
     } catch (err) {
-      showAlert("error", err.response?.data?.message || "Gagal menghubungkan data");
+      showAlert("error", err.response?.data?.message || "Gagal menyimpan relasi");
     } finally {
       setIsSaving(false);
     }
@@ -289,9 +294,9 @@ export default function DataSantriPage({ rolePrefix }) {
 
       <InputSantriModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isEditing={isEditing} editData={selectedData} onSubmit={handleSubmit} saving={isSaving} userRole={rolePrefix} />
 
-      <ListOrtuModal isOpen={listOrtuModal.isOpen} onClose={() => setListOrtuModal({ isOpen: false, data: null })} santriData={listOrtuModal.data} refreshTrigger={refreshListKey} onAssignClick={(santri) => { setAssignModal({ isOpen: true, data: santri }); setListOrtuModal({ ...listOrtuModal, isOpen: false }); }} />
+      <ListOrtuModal isOpen={listOrtuModal.isOpen} onClose={() => setListOrtuModal({ isOpen: false, data: null })} santriData={listOrtuModal.data} refreshTrigger={refreshListKey} onAssignClick={(santri) => { setAssignModal({ isOpen: true, data: santri, editData: null }); setListOrtuModal({ ...listOrtuModal, isOpen: false }); }} onEditClick={(santri, editData) => { setAssignModal({ isOpen: true, data: santri, editData }); setListOrtuModal({ ...listOrtuModal, isOpen: false }); }} />
 
-      <AssignRelasiModal isOpen={assignModal.isOpen} onClose={() => setAssignModal({ isOpen: false, data: null })} mode="ortu" baseData={assignModal.data} onSubmit={handleAssignSubmit} saving={isSaving} />
+      <AssignRelasiModal isOpen={assignModal.isOpen} onClose={() => setAssignModal({ isOpen: false, data: null, editData: null })} mode="ortu" baseData={assignModal.data} editData={assignModal.editData} onSubmit={handleAssignSubmit} saving={isSaving} />
 
       <ConfirmDeleteModal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} onConfirm={confirmDelete} loading={isDeleting} itemName={deleteModal.name} />
     </div>

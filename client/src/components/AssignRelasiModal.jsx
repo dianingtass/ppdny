@@ -6,7 +6,7 @@ import { useAlert } from "../hooks/useAlert";
 import { AuthContext } from "../context/AuthContext";
 
 // mode: 'ortu' (Cari Ortu untuk Santri) ATAU 'santri' (Cari Santri untuk Ortu)
-export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onSubmit, saving }) {
+export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, editData, onSubmit, saving }) {
   const [formStep, setFormStep] = useState(1);
   const [isManualInput, setIsManualInput] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,15 +27,36 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ id_selected: null, nama: "", no_hp: "", hubungan: "" });
-      setSearchQuery("");
-      setSearchResults([]);
-      setFormStep(1);
-      setIsManualInput(false);
-      setSelectedRelasiOption("");
-      setCustomHubungan("");
+      if (editData) {
+        setFormData({
+          id_selected: null,
+          nama: editData.nama,
+          no_hp: editData.no_hp || "",
+          hubungan: editData.hubungan || ""
+        });
+        setFormStep(2);
+        setIsManualInput(false);
+        if (editData.hubungan === "Ayah" || editData.hubungan === "Ibu") {
+          setSelectedRelasiOption(editData.hubungan);
+          setCustomHubungan("");
+        } else if (editData.hubungan) {
+          setSelectedRelasiOption("Lainnya");
+          setCustomHubungan(editData.hubungan);
+        } else {
+          setSelectedRelasiOption("");
+          setCustomHubungan("");
+        }
+      } else {
+        setFormData({ id_selected: null, nama: "", no_hp: "", hubungan: "" });
+        setSearchQuery("");
+        setSearchResults([]);
+        setFormStep(1);
+        setIsManualInput(false);
+        setSelectedRelasiOption("");
+        setCustomHubungan("");
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, editData]);
 
   // Debounced search
   useEffect(() => {
@@ -79,10 +100,20 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!formData.hubungan) return showAlert("error", "Hubungan wajib diisi");
+
+    if (editData) {
+      onSubmit({
+        isEdit: true,
+        id_relasi: editData.id_relasi,
+        hubungan: formData.hubungan
+      });
+      return;
+    }
+
     if (isManualInput && (!formData.nama || !formData.no_hp)) {
       return showAlert("error", "Nama dan No HP wajib diisi untuk akun baru");
     }
-    if (!formData.hubungan) return showAlert("error", "Hubungan wajib diisi");
 
     const payload = {
       hubungan: formData.hubungan,
@@ -120,7 +151,7 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
               {isCariOrtu
                 ? <Users className="text-green-600" size={20} />
                 : <User  className="text-green-600" size={20} />}
-              {isCariOrtu ? "Hubungkan ke Orang Tua" : "Hubungkan ke Anak"}
+              {editData ? "Edit Hubungan Keluarga" : (isCariOrtu ? "Hubungkan ke Orang Tua" : "Hubungkan ke Anak")}
             </h3>
             <p className="text-xs text-gray-500 mt-1">
               Target: <strong>{baseData?.nama}</strong>
@@ -193,7 +224,7 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
           {/* STEP 2: FORM HUBUNGAN */}
           {formStep === 2 && (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isManualInput && (
+              {!isManualInput && !editData && (
                 <div className="bg-green-50 p-3 rounded-lg flex items-start gap-3 mb-2">
                   <CheckCircle className="text-green-600 mt-0.5" size={18} />
                   <div className="text-sm text-green-800">
@@ -218,7 +249,7 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
                 />
               </div>
 
-              {/* No HP hanya untuk Wali baru */}
+              {/* No HP hanya untuk Wali baru atau ketika edit data wali */}
               {(isManualInput || isCariOrtu) && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -278,13 +309,15 @@ export default function AssignRelasiModal({ isOpen, onClose, mode, baseData, onS
               )}
 
               <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setFormStep(1)}
-                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition"
-                >
-                  Kembali
-                </button>
+                {!editData && (
+                  <button
+                    type="button"
+                    onClick={() => setFormStep(1)}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition"
+                  >
+                    Kembali
+                  </button>
+                )}
                 <button
                   type="submit"
                   disabled={saving}
