@@ -271,49 +271,78 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-gray-900 text-gray-300 py-16">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-12 gap-10">
-          <div className="md:col-span-5">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1">
+      <footer className="bg-gray-900 text-gray-300 pt-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* KOLOM KIRI: LOGO, VISI, KONTAK, & MEDIA SOSIAL */}
+          <div className="space-y-8">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center p-1">
                 {/* Pastikan path logo sesuai di sistem Anda saat build */}
                 <img src="/logo.png" alt="PPDNY" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <h2 className="font-bold text-white leading-tight">
+              <div className="space-y-1">
+                <h2 className="font-bold text-white leading-tight text-lg">
                   Darun-Na'im Yapia
                 </h2>
                 <p className="text-[10px] text-green-400 font-bold uppercase tracking-wider">
                   Pondok Pesantren Modern
                 </p>
+                <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-md">
+                  Unggul dalam prestasi akademik dan non-akademik
+                </p>
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-              Mendidik generasi penerus bangsa yang tangguh, berilmu, dan
-              berakhlakul karimah.
-            </p>
+
+            <div className="grid grid-cols-1 gap-6 pt-2">
+              <div>
+                <h4 className="text-white font-bold mb-3 uppercase tracking-wider text-xs">
+                  Hubungi Kami
+                </h4>
+                <a
+                  href="mailto:ponpesmodern.darunnaimyapia@gmail.com"
+                  className="inline-flex items-center gap-2.5 text-sm hover:text-white transition group text-gray-400"
+                >
+                  <div className="p-2 bg-gray-800 rounded-lg group-hover:bg-green-600 transition flex-shrink-0">
+                    <Mail size={16} className="text-green-400 group-hover:text-white transition" />
+                  </div>
+                  <span className="truncate">ponpesmodern.darunnaimyapia@gmail.com</span>
+                </a>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-3 uppercase tracking-wider text-xs">
+                  Media Sosial
+                </h4>
+                <a
+                  href="https://instagram.com/ponpes_modern_darun_naim_yapia"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2.5 text-sm hover:text-white transition group text-gray-400"
+                >
+                  <div className="p-2 bg-gray-800 rounded-lg group-hover:bg-green-600 transition flex-shrink-0">
+                    <Instagram size={16} className="text-green-400 group-hover:text-white transition" />
+                  </div>
+                  <span>@ponpes_modern_darun_naim_yapia</span>
+                </a>
+              </div>
+            </div>
           </div>
 
-          <div className="md:col-span-4">
-            <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">
-              Kontak & Lokasi
+          {/* KOLOM KANAN: LOKASI & PETA */}
+          <div className="space-y-4">
+            <h4 className="text-white font-bold uppercase tracking-wider text-sm">
+              Lokasi Kami
             </h4>
-            <ul className="space-y-4 text-sm mb-5">
-              <li className="flex items-start gap-3">
-                <MapPin
-                  size={18}
-                  className="text-green-500 flex-shrink-0 mt-0.5"
-                />
-                <span>
-                  Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya Kec. Parung Kab.
-                  Bogor
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail size={18} className="text-green-500 flex-shrink-0" />
-                <span>ponpesmodern.darunnaimyapia@gmail.com</span>
-              </li>
-            </ul>
+            <p className="flex items-start gap-2.5 text-sm text-gray-400">
+              <MapPin
+                size={18}
+                className="text-green-500 flex-shrink-0 mt-0.5"
+              />
+              <span>
+                Jl. Demang Aria Rt. 01 Rw. 03 Desa Waru Jaya Kec. Parung Kab.
+                Bogor
+              </span>
+            </p>
             <div className="w-full h-48 md:h-56 rounded-xl overflow-hidden border border-gray-700 shadow-inner">
               <iframe
                 src="https://maps.google.com/maps?q=Pondok%20Pesantren%20Modern%20Darun-Na'im%20Yapia&t=&z=15&ie=UTF8&iwloc=&output=embed"
@@ -327,25 +356,8 @@ export default function LandingPage() {
               ></iframe>
             </div>
           </div>
-
-          <div className="md:col-span-3">
-            <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">
-              Media Sosial
-            </h4>
-            <a
-              href="https://instagram.com/ponpes_modern_darun_naim_yapia"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm hover:text-white transition"
-            >
-              <div className="p-2 bg-gray-800 rounded-lg">
-                <Instagram size={18} />
-              </div>
-              @ponpes_modern_darun_naim_yapia
-            </a>
-          </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 md:px-8 mt-16 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 mt-16 pt-8 pb-8 border-t border-gray-800 text-center text-xs text-gray-500">
           © {new Date().getFullYear()} Pondok Pesantren Modern Darun-Na'im
           Yapia (DNY).
         </div>
