@@ -12,7 +12,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png', 'pwa-192x192.png', 'pwa-512x512.png', 'apple-splash.png'],
+      includeAssets: ['logo.png', 'pwa-192x192.png', 'pwa-512x512.png', 'pwa-splash-512x512.png', 'apple-splash.png'],
       devOptions: {
         enabled: true,
         type: 'module',
@@ -68,7 +68,7 @@ export default defineConfig({
             purpose: 'any',
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-splash-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
