@@ -35,8 +35,10 @@ exports.getDashboardStats = async (req, res) => {
 
         // Grouping by User
         const userPiutang = Object.values(piutangDetail.reduce((acc, curr) => {
-            if (!acc[curr.id_santri]) acc[curr.id_santri] = { nama: curr.users.nama, total: 0 };
-            acc[curr.id_santri].total += curr.nominal;
+            const id_santri = curr.id_santri || 'unknown';
+            const nama = curr.users?.nama || "Santri Tidak Dikenal";
+            if (!acc[id_santri]) acc[id_santri] = { nama, total: 0 };
+            acc[id_santri].total += curr.nominal || 0;
             return acc;
         }, {}));
 

@@ -24,6 +24,16 @@ export default function Dashboard() {
 
   if (loading) return <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-green-600" size={40}/></div>;
 
+  if (!data || !data.success) {
+    return (
+      <div className="h-96 flex flex-col items-center justify-center space-y-2 text-center">
+        <Info className="text-red-500" size={40} />
+        <p className="text-gray-600 font-medium">Gagal memuat data dashboard.</p>
+        <p className="text-gray-400 text-sm">{data?.message || "Terjadi kesalahan pada server."}</p>
+      </div>
+    );
+  }
+
   const { stats, chartData, recentLayanan } = data;
 
   return (
