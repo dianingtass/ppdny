@@ -107,7 +107,7 @@ export default function RiwayatLayananPage({ rolePrefix }) {
     try {
       const res = await api.post(`/${rolePrefix}/riwayat-layanan`, formData);
       if (res.data.success) {
-        showAlert("success", "Pengajuan layanan manual berhasil disimpan");
+        showAlert("success", "Pengajuan layanan berhasil disimpan");
         setIsInputOpen(false);
         fetchData();
       }

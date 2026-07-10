@@ -1,5 +1,5 @@
-const prisma  = require('../../config/prisma');
-const bcrypt  = require('bcryptjs');
+const prisma = require('../../config/prisma');
+const bcrypt = require('bcryptjs');
 
 // Controller ini dipakai bersama oleh route admin DAN pengurus.
 // Tidak ada duplikasi — perbedaan permission ditangani di level route
@@ -17,33 +17,33 @@ exports.getSantri = async (req, res) => {
         if (search) {
             whereCondition.OR = [
                 { nama: { contains: search } },
-                { nip:  { contains: search } },
+                { nip: { contains: search } },
             ];
         }
 
         const santriList = await prisma.users.findMany({
-            where:   whereCondition,
+            where: whereCondition,
             orderBy: { nama: 'asc' },
             select: {
-                id:             true,
-                nip:            true,
-                nama:           true,
-                email:          true,
-                no_hp:          true,
-                alamat:         true,
-                jenis_kelamin:  true,
-                tempat_lahir:   true,
-                tanggal_lahir:  true,
-                foto_profil:    true,
-                is_active:      true,
+                id: true,
+                nip: true,
+                nama: true,
+                email: true,
+                no_hp: true,
+                alamat: true,
+                jenis_kelamin: true,
+                tempat_lahir: true,
+                tanggal_lahir: true,
+                foto_profil: true,
+                is_active: true,
                 kelas_santri: {
-                    where:  { is_active: true },
-                    take:   1,
+                    where: { is_active: true },
+                    take: 1,
                     select: { kelas: { select: { kelas: true } } },
                 },
                 kamar_santri: {
-                    where:  { is_active: true },
-                    take:   1,
+                    where: { is_active: true },
+                    take: 1,
                     select: { kamar: { select: { kamar: true, lokasi: true } } },
                 },
                 _count: {
@@ -54,9 +54,9 @@ exports.getSantri = async (req, res) => {
 
         const formattedData = santriList.map(santri => ({
             ...santri,
-            kelas_aktif:  santri.kelas_santri[0]?.kelas?.kelas || '-',
-            kamar_aktif:  santri.kamar_santri[0]?.kamar?.kamar || '-',
-            jumlah_ortu:  santri._count.orangtua_orangtua_id_santriTousers,
+            kelas_aktif: santri.kelas_santri[0]?.kelas?.kelas || '-',
+            kamar_aktif: santri.kamar_santri[0]?.kamar?.kamar || '-',
+            jumlah_ortu: santri._count.orangtua_orangtua_id_santriTousers,
         }));
 
         return res.json({ success: true, data: formattedData });
@@ -80,7 +80,7 @@ exports.createSantri = async (req, res) => {
                 where: { email: email, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
@@ -89,11 +89,11 @@ exports.createSantri = async (req, res) => {
         const createData = {
             nip, nama, email, no_hp, alamat, jenis_kelamin,
             tempat_lahir,
-            password:       hashedPassword,
-            is_active:      true,
+            password: hashedPassword,
+            is_active: true,
             user_role: { create: { id_role: 1 } },
         };
-        
+
         if (tanggal_lahir) {
             createData.tanggal_lahir = new Date(tanggal_lahir);
         }
@@ -120,12 +120,12 @@ exports.updateSantri = async (req, res) => {
                 where: { email: email, id: { not: parseInt(id) }, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
         const updateData = { nip, nama, email, no_hp, alamat, jenis_kelamin, tempat_lahir };
-        
+
         if (tanggal_lahir) {
             updateData.tanggal_lahir = new Date(tanggal_lahir);
         }
@@ -178,12 +178,12 @@ exports.getOrtuBySantri = async (req, res) => {
         });
 
         const data = relasi.map(r => ({
-            id_relasi:   r.id,
-            id_ortu:     r.users_orangtua_id_orangtuaTousers.id,
-            nama:        r.users_orangtua_id_orangtuaTousers.nama,
-            no_hp:       r.users_orangtua_id_orangtuaTousers.no_hp,
+            id_relasi: r.id,
+            id_ortu: r.users_orangtua_id_orangtuaTousers.id,
+            nama: r.users_orangtua_id_orangtuaTousers.nama,
+            no_hp: r.users_orangtua_id_orangtuaTousers.no_hp,
             foto_profil: r.users_orangtua_id_orangtuaTousers.foto_profil,
-            hubungan:    r.hubungan,
+            hubungan: r.hubungan,
         }));
 
         return res.json({ success: true, data });

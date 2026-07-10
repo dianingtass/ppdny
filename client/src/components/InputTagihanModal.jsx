@@ -63,6 +63,37 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.id_jenis_tagihan) return showAlert("error", "Jenis tagihan wajib dipilih");
+    if (!formData.nama_tagihan.trim()) return showAlert("error", "Nama tagihan wajib diisi");
+    
+    // Validasi Nominal
+    if (formData.nominal === undefined || formData.nominal === null || formData.nominal === "") {
+      return showAlert("error", "Nominal tagihan wajib diisi");
+    }
+    const parsedNominal = parseInt(formData.nominal);
+    if (isNaN(parsedNominal) || parsedNominal <= 0) {
+      return showAlert("error", "Nominal tagihan harus berupa angka positif lebih dari 0");
+    }
+
+    if (!formData.tanggal_tagihan) return showAlert("error", "Tanggal tagihan wajib diisi");
+    if (!formData.batas_pembayaran) return showAlert("error", "Tanggal jatuh tempo wajib diisi");
+
+    // Validasi Tanggal Jatuh Tempo
+    const tagihanDate = new Date(formData.tanggal_tagihan);
+    const jatuhTempoDate = new Date(formData.batas_pembayaran);
+    const today = new Date();
+    
+    tagihanDate.setHours(0,0,0,0);
+    jatuhTempoDate.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+
+    if (jatuhTempoDate < tagihanDate) {
+      return showAlert("error", "Tanggal jatuh tempo harus setelah atau sama dengan tanggal tagihan");
+    }
+    if (jatuhTempoDate < today) {
+      return showAlert("error", "Tanggal jatuh tempo minimal hari ini");
+    }
+
     if (!isSelectAll && selectedSantri.length === 0) return showAlert("error", "Pilih minimal satu santri");
     onSubmit({ ...formData, target_santri: isSelectAll ? 'all' : selectedSantri });
   };
@@ -96,14 +127,14 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nama Tagihan</label>
-                    <input type="text" className="w-full p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Contoh: SPP Januari" value={formData.nama_tagihan} onChange={e => setFormData({...formData, nama_tagihan: e.target.value})}/>
+                    <input type="text" required className="w-full p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Contoh: SPP Januari" value={formData.nama_tagihan} onChange={e => setFormData({...formData, nama_tagihan: e.target.value})}/>
                 </div>
             </div>
 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
                 <div className="relative">
-                    <input type="number" className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="0" value={formData.nominal} onChange={e => setFormData({...formData, nominal: e.target.value})}/>
+                    <input type="number" required min="1" className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="0" value={formData.nominal} onChange={e => setFormData({...formData, nominal: e.target.value})}/>
                     <span className="absolute left-3 top-3 text-gray-500 text-sm font-bold">Rp</span>
                 </div>
             </div>

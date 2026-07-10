@@ -291,7 +291,7 @@ export default function Login() {
                 ))}
               </div>
               <button
-                onClick={() => { setStep(1); setSelectionToken(null); }}
+                onClick={() => { setStep(1); setSelectionToken(null); setPassword(""); }}
                 disabled={loading}
                 className="w-full py-3 mt-4 rounded-xl font-semibold text-green-100 lg:text-gray-500 hover:text-white lg:hover:text-gray-800 transition-colors"
               >

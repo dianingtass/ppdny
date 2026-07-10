@@ -51,9 +51,22 @@ exports.getSantriByKamar = async (req, res) => {
 exports.createKamar = async (req, res) => {
     const { kamar, kapasitas, gender, lokasi, id_wali } = req.body;
     try {
+        if (!kamar || !kamar.trim()) {
+            return res.status(400).json({ success: false, message: 'Nama kamar wajib diisi.' });
+        }
+        const existing = await prisma.kamar.findFirst({
+            where: {
+                kamar: { equals: kamar.trim(), mode: 'insensitive' },
+                is_active: true
+            }
+        });
+        if (existing) {
+            return res.status(400).json({ success: false, message: 'Nama kamar sudah terdaftar.' });
+        }
+
         await prisma.kamar.create({
             data: {
-                kamar,
+                kamar: kamar.trim(),
                 kapasitas: parseInt(kapasitas) || null,
                 gender,
                 lokasi,
@@ -71,10 +84,24 @@ exports.updateKamar = async (req, res) => {
     const { id } = req.params;
     const { kamar, kapasitas, gender, lokasi, id_wali } = req.body;
     try {
+        if (!kamar || !kamar.trim()) {
+            return res.status(400).json({ success: false, message: 'Nama kamar wajib diisi.' });
+        }
+        const existing = await prisma.kamar.findFirst({
+            where: {
+                kamar: { equals: kamar.trim(), mode: 'insensitive' },
+                is_active: true,
+                id: { not: parseInt(id) }
+            }
+        });
+        if (existing) {
+            return res.status(400).json({ success: false, message: 'Nama kamar sudah digunakan dan aktif.' });
+        }
+
         await prisma.kamar.update({
             where: { id: parseInt(id) },
             data: {
-                kamar,
+                kamar: kamar.trim(),
                 kapasitas: parseInt(kapasitas) || null,
                 gender,
                 lokasi,

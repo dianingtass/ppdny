@@ -327,7 +327,7 @@ exports.updateOrangTua = async (req, res) => {
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          message: "Nomor HP sudah digunakan oleh akun lain.",
+          message: "Nomor HP sudah terdaftar.",
         });
       }
     }

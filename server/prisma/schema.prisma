@@ -950,6 +950,7 @@ enum pengajuan_materi_status {
   ditinjau
   disetujui
   ditolak
+  dihapus
 }
 
 enum materi_sumber {

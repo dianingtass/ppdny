@@ -74,6 +74,22 @@ exports.createTahun = async (req, res) => {
     kuota, biaya_pendaftaran, deskripsi,
   } = req.body;
 
+  if (!nama_gelombang || !nama_gelombang.trim()) {
+    return res.status(400).json({ success: false, message: "Nama gelombang wajib diisi" });
+  }
+  if (!tahun_ajaran || !tahun_ajaran.trim()) {
+    return res.status(400).json({ success: false, message: "Tahun ajaran wajib diisi" });
+  }
+  if (!tanggal_buka) {
+    return res.status(400).json({ success: false, message: "Tanggal buka wajib diisi" });
+  }
+  if (!tanggal_tutup) {
+    return res.status(400).json({ success: false, message: "Tanggal tutup wajib diisi" });
+  }
+  if (new Date(tanggal_tutup) < new Date(tanggal_buka)) {
+    return res.status(400).json({ success: false, message: "Tanggal tutup tidak boleh lebih awal dari tanggal buka" });
+  }
+
   try {
     const newTahun = await prisma.ppdb_tahun.create({
       data: {
@@ -105,6 +121,22 @@ exports.updateTahun = async (req, res) => {
     tanggal_buka, tanggal_tutup, tanggal_pengumuman,
     kuota, biaya_pendaftaran, deskripsi,
   } = req.body;
+
+  if (!nama_gelombang || !nama_gelombang.trim()) {
+    return res.status(400).json({ success: false, message: "Nama gelombang wajib diisi" });
+  }
+  if (!tahun_ajaran || !tahun_ajaran.trim()) {
+    return res.status(400).json({ success: false, message: "Tahun ajaran wajib diisi" });
+  }
+  if (!tanggal_buka) {
+    return res.status(400).json({ success: false, message: "Tanggal buka wajib diisi" });
+  }
+  if (!tanggal_tutup) {
+    return res.status(400).json({ success: false, message: "Tanggal tutup wajib diisi" });
+  }
+  if (new Date(tanggal_tutup) < new Date(tanggal_buka)) {
+    return res.status(400).json({ success: false, message: "Tanggal tutup tidak boleh lebih awal dari tanggal buka" });
+  }
 
   try {
     const existing = await prisma.ppdb_tahun.findFirst({ where: { id: parseInt(id), is_active: true } });
@@ -317,7 +349,7 @@ exports.aktivasiSantri = async (req, res) => {
 
         if (!userOrtu) {
           const roleOrtu = await prisma.role.findFirst({ where: { role: "orangtua" } });
-          const hashedParentPassword = await bcrypt.hash("Pesantren123!", 12);
+          const hashedParentPassword = await bcrypt.hash("password123", 12);
           userOrtu = await prisma.users.create({
             data: {
               nama: ortu.nama,

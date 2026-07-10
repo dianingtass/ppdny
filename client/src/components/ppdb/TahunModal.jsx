@@ -28,6 +28,27 @@ export default function TahunModal({ isOpen, editData, onClose, onSuccess }) {
   }, [isOpen, editData]);
 
   const handleSubmit = async () => {
+    if (!form.nama_gelombang.trim()) {
+      alert("Nama gelombang wajib diisi!");
+      return;
+    }
+    if (!form.tahun_ajaran.trim()) {
+      alert("Tahun ajaran wajib diisi!");
+      return;
+    }
+    if (!form.tanggal_buka) {
+      alert("Tanggal buka wajib diisi!");
+      return;
+    }
+    if (!form.tanggal_tutup) {
+      alert("Tanggal tutup wajib diisi!");
+      return;
+    }
+    if (new Date(form.tanggal_tutup) < new Date(form.tanggal_buka)) {
+      alert("Tanggal tutup tidak boleh lebih awal dari tanggal buka!");
+      return;
+    }
+
     try {
       setLoading(true);
       if (isEdit) await api.put(`/ppdb/admin/tahun/${editData.id}`, form);
@@ -50,12 +71,12 @@ export default function TahunModal({ isOpen, editData, onClose, onSuccess }) {
           <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition"><X size={20}/></button>
         </div>
         <div className="p-6 space-y-4">
-          <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Nama Gelombang *</label><input name="nama_gelombang" value={form.nama_gelombang} onChange={e => setForm({...form, nama_gelombang: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+          <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Nama Gelombang *</label><input required name="nama_gelombang" value={form.nama_gelombang} onChange={e => setForm({...form, nama_gelombang: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tahun Ajaran *</label><input name="tahun_ajaran" value={form.tahun_ajaran} onChange={e => setForm({...form, tahun_ajaran: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tahun Ajaran *</label><input required name="tahun_ajaran" value={form.tahun_ajaran} onChange={e => setForm({...form, tahun_ajaran: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
             <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Gelombang Ke-</label><input type="number" name="gelombang" value={form.gelombang} onChange={e => setForm({...form, gelombang: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
-            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tanggal Buka *</label><input type="date" name="tanggal_buka" value={form.tanggal_buka} onChange={e => setForm({...form, tanggal_buka: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
-            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tanggal Tutup *</label><input type="date" name="tanggal_tutup" value={form.tanggal_tutup} onChange={e => setForm({...form, tanggal_tutup: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tanggal Buka *</label><input required type="date" name="tanggal_buka" value={form.tanggal_buka} onChange={e => setForm({...form, tanggal_buka: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tanggal Tutup *</label><input required type="date" name="tanggal_tutup" value={form.tanggal_tutup} onChange={e => setForm({...form, tanggal_tutup: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           </div>
           <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tgl Pengumuman</label><input type="date" name="tanggal_pengumuman" value={form.tanggal_pengumuman} onChange={e => setForm({...form, tanggal_pengumuman: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           <div className="grid grid-cols-2 gap-4">

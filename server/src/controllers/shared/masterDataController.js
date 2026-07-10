@@ -236,6 +236,29 @@ exports.getKeuanganOptions = async (req, res) => {
 exports.createTagihan = async (req, res) => {
     const { nama_tagihan, id_jenis_tagihan, nominal, tanggal_tagihan, batas_pembayaran, target_santri } = req.body;
     try {
+        if (!nama_tagihan || !nama_tagihan.trim()) {
+            return res.status(400).json({ success: false, message: 'Nama tagihan wajib diisi.' });
+        }
+        if (!id_jenis_tagihan) {
+            return res.status(400).json({ success: false, message: 'Jenis tagihan wajib dipilih.' });
+        }
+        if (nominal === undefined || nominal === null || nominal === "") {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan wajib diisi.' });
+        }
+        const parsedNominal = parseInt(nominal);
+        if (isNaN(parsedNominal)) {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan harus berupa angka.' });
+        }
+        if (parsedNominal <= 0) {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan harus lebih besar dari 0.' });
+        }
+        if (!tanggal_tagihan) {
+            return res.status(400).json({ success: false, message: 'Tanggal tagihan wajib diisi.' });
+        }
+        if (!batas_pembayaran) {
+            return res.status(400).json({ success: false, message: 'Tanggal jatuh tempo wajib diisi.' });
+        }
+
         let targetIds = [];
         if (target_santri === 'all') {
             const allSantri = await prisma.users.findMany({
@@ -256,7 +279,7 @@ exports.createTagihan = async (req, res) => {
                 id_santri:        parseInt(santriId),
                 id_jenis_tagihan: parseInt(id_jenis_tagihan),
                 nama_tagihan,
-                nominal:          parseInt(nominal),
+                nominal:          parsedNominal,
                 tanggal_tagihan:  new Date(tanggal_tagihan),
                 batas_pembayaran: new Date(batas_pembayaran),
                 status:           'Aktif',
@@ -276,9 +299,32 @@ exports.updateTagihan = async (req, res) => {
     const { id } = req.params;
     const { nama_tagihan, nominal, tanggal_tagihan, batas_pembayaran, id_jenis_tagihan } = req.body;
     try {
+        if (!nama_tagihan || !nama_tagihan.trim()) {
+            return res.status(400).json({ success: false, message: 'Nama tagihan wajib diisi.' });
+        }
+        if (!id_jenis_tagihan) {
+            return res.status(400).json({ success: false, message: 'Jenis tagihan wajib dipilih.' });
+        }
+        if (nominal === undefined || nominal === null || nominal === "") {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan wajib diisi.' });
+        }
+        const parsedNominal = parseInt(nominal);
+        if (isNaN(parsedNominal)) {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan harus berupa angka.' });
+        }
+        if (parsedNominal <= 0) {
+            return res.status(400).json({ success: false, message: 'Nominal tagihan harus lebih besar dari 0.' });
+        }
+        if (!tanggal_tagihan) {
+            return res.status(400).json({ success: false, message: 'Tanggal tagihan wajib diisi.' });
+        }
+        if (!batas_pembayaran) {
+            return res.status(400).json({ success: false, message: 'Tanggal jatuh tempo wajib diisi.' });
+        }
+
         await prisma.tagihan.update({
             where: { id: parseInt(id) },
-            data: { nama_tagihan, id_jenis_tagihan: parseInt(id_jenis_tagihan), nominal: parseInt(nominal), tanggal_tagihan: new Date(tanggal_tagihan), batas_pembayaran: new Date(batas_pembayaran) },
+            data: { nama_tagihan, id_jenis_tagihan: parseInt(id_jenis_tagihan), nominal: parsedNominal, tanggal_tagihan: new Date(tanggal_tagihan), batas_pembayaran: new Date(batas_pembayaran) },
         });
         return res.json({ success: true, message: 'Tagihan diperbarui.' });
     } catch (error) {

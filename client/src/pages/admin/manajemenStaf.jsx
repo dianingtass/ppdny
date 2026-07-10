@@ -125,7 +125,7 @@ export default function ManajemenStaf() {
   };
 
   const handleDelete = (item) => setDeleteModal({ isOpen: true, id: item.id, name: `Staf ${item.nama}` });
-  
+
   const confirmDelete = async () => {
     setIsDeleting(true);
     try {
@@ -386,7 +386,7 @@ export default function ManajemenStaf() {
         onConfirm={confirmResetPassword}
         loading={resetModal.loading}
         title="Reset Password"
-        message={"Reset password akun ini menjadi 'Pesantren123!'? Pastikan pengguna sudah diberitahu."}
+        message={"Reset password akun ini menjadi 'password123'? Pastikan pengguna sudah diberitahu."}
         confirmText="Ya, Reset"
         confirmClass="bg-orange-500 hover:bg-orange-600"
       />
@@ -409,12 +409,12 @@ export default function ManajemenStaf() {
         confirmText={toggleStatusModal.is_active ? "Ya, Nonaktifkan" : "Ya, Aktifkan"}
         confirmClass={toggleStatusModal.is_active ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
       />
-      <ConfirmDeleteModal 
-        isOpen={deleteModal.isOpen} 
-        onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })} 
-        onConfirm={confirmDelete} 
-        loading={isDeleting} 
-        itemName={deleteModal.name} 
+      <ConfirmDeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, id: null, name: "" })}
+        onConfirm={confirmDelete}
+        loading={isDeleting}
+        itemName={deleteModal.name}
       />
     </div>
   );

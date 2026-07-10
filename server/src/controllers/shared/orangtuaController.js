@@ -11,13 +11,13 @@ exports.getOrangTua = async (req, res) => {
 
         if (search) {
             whereCondition.OR = [
-                { nama:  { contains: search } },
+                { nama: { contains: search } },
                 { no_hp: { contains: search } },
             ];
         }
 
         const ortuList = await prisma.users.findMany({
-            where:   whereCondition,
+            where: whereCondition,
             orderBy: { nama: 'asc' },
             select: {
                 id: true, nama: true, email: true, no_hp: true,
@@ -59,12 +59,12 @@ exports.getAnakByOrtu = async (req, res) => {
         });
 
         const data = relasi.map(r => ({
-            id_relasi:   r.id,
-            id_santri:   r.users_orangtua_id_santriTousers.id,
-            nama:        r.users_orangtua_id_santriTousers.nama,
-            nip:         r.users_orangtua_id_santriTousers.nip,
+            id_relasi: r.id,
+            id_santri: r.users_orangtua_id_santriTousers.id,
+            nama: r.users_orangtua_id_santriTousers.nama,
+            nip: r.users_orangtua_id_santriTousers.nip,
             foto_profil: r.users_orangtua_id_santriTousers.foto_profil,
-            hubungan:    r.hubungan,
+            hubungan: r.hubungan,
         }));
 
         return res.json({ success: true, data });
@@ -83,8 +83,8 @@ exports.searchUser = async (req, res) => {
                 is_active: true,
                 user_role: { some: { role: { role: role } } },
                 OR: [
-                    { nama:  { contains: q } },
-                    { nip:   { contains: q } },
+                    { nama: { contains: q } },
+                    { nip: { contains: q } },
                     { no_hp: { contains: q } },
                 ],
             },
@@ -106,7 +106,7 @@ exports.createOrangTua = async (req, res) => {
                 where: { email: email, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
@@ -115,7 +115,7 @@ exports.createOrangTua = async (req, res) => {
         const newOrtu = await prisma.users.create({
             data: {
                 nama, email, no_hp, alamat, jenis_kelamin,
-                password:  hashedPassword,
+                password: hashedPassword,
                 is_active: true,
                 user_role: { create: { id_role: 4 } },
             },
@@ -136,13 +136,13 @@ exports.updateOrangTua = async (req, res) => {
                 where: { email: email, id: { not: parseInt(id) }, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
         await prisma.users.update({
             where: { id: parseInt(id) },
-            data:  { nama, email, no_hp, alamat, jenis_kelamin },
+            data: { nama, email, no_hp, alamat, jenis_kelamin },
         });
         return res.json({ success: true, message: 'Data wali diperbarui.' });
     } catch (error) {
@@ -171,9 +171,9 @@ exports.assignRelasi = async (req, res) => {
             const hashedPassword = await bcrypt.hash(ortuDataBaru.no_hp || '12345678', 10);
             const newOrtu = await prisma.users.create({
                 data: {
-                    nama:      ortuDataBaru.nama,
-                    no_hp:     ortuDataBaru.no_hp,
-                    password:  hashedPassword,
+                    nama: ortuDataBaru.nama,
+                    no_hp: ortuDataBaru.no_hp,
+                    password: hashedPassword,
                     is_active: true,
                     user_role: { create: { id_role: 4 } },
                 },

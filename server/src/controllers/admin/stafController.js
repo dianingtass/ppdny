@@ -28,7 +28,7 @@ exports.getStaffList = async (req, res) => {
           const r = ur.role.role;
           if (r === 'timkesehatan') return 'Tim Kesehatan';
           return r.charAt(0).toUpperCase() + r.slice(1);
-        }), 
+        }),
         foto_profil: user.foto_profil || null
       };
     });
@@ -44,26 +44,26 @@ exports.getStaffList = async (req, res) => {
 exports.createStaff = async (req, res) => {
   try {
     const { nip, nama, email, no_hp, jenis_kelamin, roles } = req.body;
-    
+
     if (nip && nip !== "") {
-        const existingNip = await prisma.users.findFirst({
-            where: { nip: nip }
+      const existingNip = await prisma.users.findFirst({
+        where: { nip: nip }
+      });
+      if (existingNip) {
+        return res.status(400).json({
+          success: false,
+          message: "Gagal menyimpan: NIP tersebut sudah terdaftar di sistem!"
         });
-        if (existingNip) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Gagal menyimpan: NIP tersebut sudah terdaftar di sistem!" 
-            });
-        }
+      }
     }
 
     if (email && email.trim() !== "") {
-        const existingEmail = await prisma.users.findFirst({
-            where: { email: email, is_active: true }
-        });
-        if (existingEmail) {
-            return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
-        }
+      const existingEmail = await prisma.users.findFirst({
+        where: { email: email, is_active: true }
+      });
+      if (existingEmail) {
+        return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
+      }
     }
 
     const hashedPassword = await bcrypt.hash("password123", 10);
@@ -73,7 +73,7 @@ exports.createStaff = async (req, res) => {
       return r.toLowerCase();
     });
     const roleRecords = await prisma.role.findMany({ where: { role: { in: dbRoles } } });
-    
+
     if (roleRecords.length === 0) return res.status(400).json({ success: false, message: "Role tidak valid" });
 
     await prisma.$transaction(async (tx) => {
@@ -105,27 +105,27 @@ exports.updateStaff = async (req, res) => {
     const { nip, nama, email, no_hp, jenis_kelamin, roles } = req.body;
 
     if (nip && nip !== "") {
-        const existingNip = await prisma.users.findFirst({
-            where: { 
-                nip: nip,
-                id: { not: targetId }
-            }
-        });
-        if (existingNip) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Gagal menyimpan: NIP tersebut sudah dipakai oleh staf/pengguna lain!" 
-            });
+      const existingNip = await prisma.users.findFirst({
+        where: {
+          nip: nip,
+          id: { not: targetId }
         }
+      });
+      if (existingNip) {
+        return res.status(400).json({
+          success: false,
+          message: "Gagal menyimpan: NIP tersebut sudah dipakai oleh staf/pengguna lain!"
+        });
+      }
     }
 
     if (email && email.trim() !== "") {
-        const existingEmail = await prisma.users.findFirst({
-            where: { email: email, id: { not: targetId }, is_active: true }
-        });
-        if (existingEmail) {
-            return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
-        }
+      const existingEmail = await prisma.users.findFirst({
+        where: { email: email, id: { not: targetId }, is_active: true }
+      });
+      if (existingEmail) {
+        return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
+      }
     }
 
     const dbRoles = roles.map(r => {
@@ -187,33 +187,33 @@ exports.toggleStaffStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const targetId = parseInt(id);
-    
+
     const user = await prisma.users.findUnique({
       where: { id: targetId },
       include: { user_role: true }
     });
-    
+
     if (!user) {
       return res.status(404).json({ success: false, message: "Staf tidak ditemukan" });
     }
-    
+
     const newStatus = !user.is_active;
-    
+
     await prisma.$transaction(async (tx) => {
       await tx.users.update({
         where: { id: targetId },
         data: { is_active: newStatus }
       });
-      
+
       await tx.user_role.updateMany({
         where: { id_user: targetId },
         data: { is_active: newStatus }
       });
     });
-    
-    res.json({ 
-      success: true, 
-      message: `Akun staf berhasil ${newStatus ? "diaktifkan kembali" : "dinonaktifkan"}` 
+
+    res.json({
+      success: true,
+      message: `Akun staf berhasil ${newStatus ? "diaktifkan kembali" : "dinonaktifkan"}`
     });
   } catch (error) {
     console.error(error);
@@ -226,7 +226,7 @@ exports.resetPassword = async (req, res) => {
   try {
     const { id } = req.params;
     const hashedPassword = await bcrypt.hash("password123", 10);
-    
+
     await prisma.users.update({
       where: { id: parseInt(id) },
       data: { password: hashedPassword }

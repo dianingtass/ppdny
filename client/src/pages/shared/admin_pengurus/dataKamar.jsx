@@ -77,8 +77,8 @@ export default function DataKamarPage({ rolePrefix }) {
       }
       setModalKamar({ ...modalKamar, isOpen: false });
       fetchData();
-    } catch {
-      showAlert("error", "Gagal menyimpan");
+    } catch (err) {
+      showAlert("error", err.response?.data?.message || "Gagal menyimpan");
     } finally {
       setIsSaving(false);
     }

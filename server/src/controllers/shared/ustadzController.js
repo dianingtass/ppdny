@@ -12,12 +12,12 @@ exports.getUstadz = async (req, res) => {
         if (search) {
             whereCondition.OR = [
                 { nama: { contains: search } },
-                { nip:  { contains: search } },
+                { nip: { contains: search } },
             ];
         }
 
         const ustadzList = await prisma.users.findMany({
-            where:   whereCondition,
+            where: whereCondition,
             orderBy: { nama: 'asc' },
             select: {
                 id: true, nip: true, nama: true, email: true,
@@ -46,12 +46,12 @@ exports.createUstadz = async (req, res) => {
                 where: { email: email, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
         // Default password wajib minimal 8 karakter
-        const defaultPass    = '12345678';
+        const defaultPass = '12345678';
         const hashedPassword = await bcrypt.hash(password || defaultPass, 10);
 
         const newUstadz = await prisma.users.create({
@@ -84,7 +84,7 @@ exports.updateUstadz = async (req, res) => {
                 where: { email: email, id: { not: parseInt(id) }, is_active: true }
             });
             if (existingEmail) {
-                return res.status(400).json({ success: false, message: 'Email sudah digunakan oleh akun lain.' });
+                return res.status(400).json({ success: false, message: 'Email sudah terdaftar.' });
             }
         }
 
