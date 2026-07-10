@@ -67,7 +67,7 @@ export default function OrangTuaPengaduan() {
   };
 
   const filteredData = data.filter(item => {
-    const matchSearch = item.judul.toLowerCase().includes(search.toLowerCase()) || 
+    const matchSearch = (item.judul || "").toLowerCase().includes(search.toLowerCase()) || 
       (item.pelapor?.nama || item.santri?.nama || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "Semua" || item.status === filterStatus;
     return matchSearch && matchStatus;

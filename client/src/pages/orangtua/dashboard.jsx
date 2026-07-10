@@ -70,13 +70,24 @@ export default function OrangTuaDashboard() {
     navigate("/login");
   };
 
-  if (loading && !data) return (
+  if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Loader2 className="h-10 w-10 animate-spin text-green-600" />
     </div>
   );
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-3 bg-gray-50 text-center p-6">
+        <AlertCircle className="text-red-500" size={48} />
+        <h2 className="text-lg font-bold text-gray-800">Gagal Memuat Dashboard</h2>
+        <p className="text-gray-500 text-sm max-w-sm">Terjadi kesalahan saat memuat data dashboard orang tua. Coba muat ulang halaman atau hubungi admin.</p>
+        <button onClick={handleLogout} className="mt-2 px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition">
+          Kembali ke Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -97,7 +108,7 @@ export default function OrangTuaDashboard() {
                 <ProfileAvatar fotoProfil={data.ortu.foto_profil} nama={data.ortu.nama} className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-transparent transition" />
                 <div>
                   <p className="font-medium leading-tight">{data.ortu.nama}</p>
-                  <p className="text-sm text-white/75">{data.ortu.hubungan} {data.anak.nama.split(" ")[0]}</p>
+                  <p className="text-sm text-white/75">{data.ortu.hubungan} {(data.anak.nama || "").split(" ")[0]}</p>
                 </div>
                 <ChevronDown
                   size={16}
@@ -217,7 +228,7 @@ export default function OrangTuaDashboard() {
                 <div className="space-y-4">
                   <div className="p-4 bg-green-50 rounded-2xl">
                     <p className="text-xs text-green-600 font-bold mb-1 uppercase">{data.keuangan.tagihan_pending.nama}</p>
-                    <p className="text-2xl font-black text-gray-800">Rp {data.keuangan.tagihan_pending.nominal.toLocaleString('id-ID')}</p>
+                    <p className="text-2xl font-black text-gray-800">Rp {(data.keuangan.tagihan_pending.nominal || 0).toLocaleString('id-ID')}</p>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-red-500 font-bold">
                     <Clock size={14} /> Jatuh Tempo: {formatDate(data.keuangan.tagihan_pending.jatuh_tempo)}

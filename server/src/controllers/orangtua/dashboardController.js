@@ -306,7 +306,7 @@ exports.getDashboardData = async (req, res) => {
                 },
                 kesehatan: {
                     observasi: observasiTerakhir ? {
-                        tanggal: observasiTerakhir.tanggal, catatan: observasiTerakhir.detail_observasi[0]?.catatan || 'Kondisi Baik'
+                        tanggal: observasiTerakhir.tanggal, catatan: observasiTerakhir.catatan || 'Kondisi Baik'
                     } : null,
                     screening: screeningTerakhir ? {
                         tanggal: screeningTerakhir.tanggal, status: screeningTerakhir.status, diagnosa: screeningTerakhir.diagnosa

@@ -80,7 +80,7 @@ exports.getDashboardStats = async (req, res) => {
                     verifikasiBayar: await prisma.pembayaran.count({ where: { status: 'Pending', is_active: true } })
                 },
                 keuangan: {
-                    piutang: piutangDetail.reduce((a, b) => a + b.nominal, 0),
+                    piutang: piutangDetail.reduce((a, b) => a + (b.nominal || 0), 0),
                     terbayar: (await prisma.pembayaran.aggregate({ _sum: { nominal: true }, where: { status: 'Berhasil', is_active: true } }))._sum.nominal || 0,
                     userPiutang
                 }

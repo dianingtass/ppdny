@@ -80,7 +80,7 @@ export default function OrangTuaScabiesDashboard() {
     navigate("/login");
   };
 
-  if (loading && !data) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Loader2 className="h-10 w-10 animate-spin text-green-600" />
@@ -88,7 +88,18 @@ export default function OrangTuaScabiesDashboard() {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-3 bg-gray-50 text-center p-6">
+        <AlertCircle className="text-red-500" size={48} />
+        <h2 className="text-lg font-bold text-gray-800">Gagal Memuat Dashboard</h2>
+        <p className="text-gray-500 text-sm max-w-sm">Terjadi kesalahan saat memuat data dashboard. Coba muat ulang halaman atau hubungi admin.</p>
+        <button onClick={handleLogout} className="mt-2 px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition">
+          Kembali ke Login
+        </button>
+      </div>
+    );
+  }
 
   const scabiesDashboard = data.scabies_dashboard || {};
   const scabiesSummary = scabiesDashboard.summary || {};
@@ -116,7 +127,7 @@ export default function OrangTuaScabiesDashboard() {
                 <div>
                   <p className="font-medium leading-tight">{data.ortu.nama}</p>
                   <p className="text-sm text-white/75">
-                    {data.ortu.hubungan} {data.anak.nama.split(" ")[0]}
+                    {data.ortu.hubungan} {(data.anak.nama || "").split(" ")[0]}
                   </p>
                 </div>
                 <ChevronDown
@@ -193,7 +204,7 @@ export default function OrangTuaScabiesDashboard() {
         <section className="mt-8 mb-12 space-y-6">
           <div className="flex flex-col gap-2">
             <p className="text-sm font-bold uppercase tracking-wide text-teal-600">Analytical Dashboard</p>
-            <h3 className="text-2xl font-black text-gray-900">Analitik Monitoring Kesehatan {data.anak.nama.split(" ")[0]}</h3>
+            <h3 className="text-2xl font-black text-gray-900">Analitik Monitoring Kesehatan {(data.anak.nama || "").split(" ")[0]}</h3>
             <p className="text-sm text-gray-500 max-w-3xl">
               Ringkasan ini membaca riwayat screening dan observasi anak secara personal, sehingga wali bisa cepat melihat kondisi terakhir, pola pemantauan, dan area yang perlu diperhatikan.
             </p>
