@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../config/api";
 import { Loader2, Activity, Clock } from "lucide-react";
+import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import SearchBar from "../../components/SearchBar";
 import FilterSelect from "../../components/FilterSelect";
@@ -21,10 +22,23 @@ const formatEntitas = (string) => {
     return string.replace(/-/g, ' ');
 };
 
+const formatRoleName = (role) => {
+    if (!role) return "-";
+    const mapping = {
+        admin: "Admin",
+        pimpinan: "Pimpinan",
+        ustadz: "Ustadz",
+        timkesehatan: "Tim Kesehatan",
+        pengurus: "Pengurus",
+        orangtua: "Wali / Orang Tua",
+        santri: "Santri",
+    };
+    return mapping[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+};
+
 export default function Log() {
     const [dataList, setDataList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [meta, setMeta] = useState({ totalPages: 0, currentPage: 1 });
 
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState(""); 
@@ -33,8 +47,8 @@ export default function Log() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [availableRoles, setAvailableRoles] = useState([]);
-    
-    const [currentPage, setCurrentPage] = useState(1);
+
+    const { currentData, currentPage, maxPage, next, prev, jump } = usePagination(dataList);
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -53,21 +67,11 @@ export default function Log() {
         return () => clearTimeout(timer);
     }, [search]);
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [debouncedSearch, filterAksi, filterRole, startDate, endDate]);
-
-    useEffect(() => {
-        fetchLogs();
-    }, [debouncedSearch, filterAksi, filterRole, startDate, endDate, currentPage]);
-
     const fetchLogs = async () => {
         setLoading(true);
         try {
             const res = await api.get("/admin/log", {
                 params: {
-                    page: currentPage,
-                    limit: 15,
                     search: debouncedSearch,
                     aksi: filterAksi,
                     role: filterRole,
@@ -78,7 +82,6 @@ export default function Log() {
             
             if (res.data.success) {
                 setDataList(res.data.data);
-                setMeta(res.data.meta);
             }
         } catch (err) {
             console.error("Gagal memuat log:", err.response?.data?.message || err.message);
@@ -86,6 +89,14 @@ export default function Log() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const load = async () => {
+            await fetchLogs();
+            jump(1);
+        };
+        load();
+    }, [debouncedSearch, filterAksi, filterRole, startDate, endDate]);
 
     return (
         <div className="space-y-6">
@@ -130,7 +141,7 @@ export default function Log() {
                         onChange={(e) => setFilterRole(e.target.value)}
                         options={[
                           { value: "Semua", label: "Semua Role" },
-                          ...availableRoles.map(role => ({ value: role, label: role.toUpperCase() }))
+                          ...availableRoles.map(role => ({ value: role, label: formatRoleName(role) }))
                         ]}
                       />
                     </div>
@@ -187,7 +198,7 @@ export default function Log() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {dataList.map((log) => (
+                                    {currentData.map((log) => (
                                         <tr key={log.id} className="hover:bg-gray-50/50 transition">
                                             <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap">
                                                 <div className="flex items-center gap-1.5">
@@ -230,7 +241,7 @@ export default function Log() {
 
                     {/* Mobile View */}
                     <div className="block md:hidden space-y-4">
-                        {dataList.map((log) => (
+                        {currentData.map((log) => (
                             <div key={log.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3">
                                 <div className="flex justify-between items-start gap-2">
                                     <div>
@@ -273,9 +284,9 @@ export default function Log() {
 
             <Pagination
                 currentPage={currentPage}
-                totalPages={meta.totalPages}
-                onNext={() => setCurrentPage(prev => Math.min(prev + 1, meta.totalPages))}
-                onPrev={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                totalPages={maxPage}
+                onNext={next}
+                onPrev={prev}
             />
         </div>
     );

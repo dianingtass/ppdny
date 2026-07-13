@@ -1,12 +1,11 @@
 const prisma = require("../../config/prisma");
 
-// Get All Logs with Server-Side Search & Pagination
+// Get All Logs with Server-Side Search & Optional Pagination
 exports.getAllLogs = async (req, res) => {
     try {
         // Ambil parameter dari frontend
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 15;
-        const skip = (page - 1) * limit;
+        const page = req.query.page ? parseInt(req.query.page) : null;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
         const { search, aksi, role, startDate, endDate } = req.query;
 
@@ -35,17 +34,31 @@ exports.getAllLogs = async (req, res) => {
             ];
         }
 
-        // Jalankan count dan pencarian data secara paralel (transaction)
-        const [totalRows, logs] = await prisma.$transaction([
-            prisma.activity_log.count({ where: whereClause }),
-            prisma.activity_log.findMany({
+        let logs;
+        let totalRows;
+
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            const [count, list] = await prisma.$transaction([
+                prisma.activity_log.count({ where: whereClause }),
+                prisma.activity_log.findMany({
+                    where: whereClause,
+                    skip: skip,
+                    take: limit,
+                    orderBy: { created_at: 'desc' },
+                    include: { users: { select: { nama: true } } }
+                })
+            ]);
+            totalRows = count;
+            logs = list;
+        } else {
+            logs = await prisma.activity_log.findMany({
                 where: whereClause,
-                skip: skip,
-                take: limit,
                 orderBy: { created_at: 'desc' },
                 include: { users: { select: { nama: true } } }
-            })
-        ]);
+            });
+            totalRows = logs.length;
+        }
 
         // Mapping agar rapi
         const formattedLogs = logs.map(log => ({
@@ -63,8 +76,8 @@ exports.getAllLogs = async (req, res) => {
             data: formattedLogs,
             meta: {
                 totalRows,
-                totalPages: Math.ceil(totalRows / limit),
-                currentPage: page
+                totalPages: limit ? Math.ceil(totalRows / limit) : 1,
+                currentPage: page || 1
             }
         });
     } catch (error) {

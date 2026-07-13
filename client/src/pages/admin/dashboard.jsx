@@ -48,6 +48,7 @@ export default function AdminDashboard() {
 
   const [showTooltipSantri, setShowTooltipSantri] = useState(false);
   const [showTooltipIncomplete, setShowTooltipIncomplete] = useState(false);
+  const [activeTab, setActiveTab] = useState("main");
 
   const COLORS = [
     "#3b82f6",
@@ -94,6 +95,25 @@ export default function AdminDashboard() {
   const isSystemHealthy =
     stats.systemHealth.orphanKamar === 0 &&
     stats.systemHealth.orphanKelas === 0;
+
+  const totalIssues = (stats?.incompleteSantri?.totalIncomplete || 0) + (stats?.systemHealth?.orphanKamar || 0) + (stats?.systemHealth?.orphanKelas || 0);
+
+  const mainRoleData = chartDataRole ? chartDataRole.filter(
+    (item) => item.name === "Santri" || item.name === "Orangtua"
+  ) : [];
+  const staffRoleData = chartDataRole ? chartDataRole.filter(
+    (item) => item.name !== "Santri" && item.name !== "Orangtua"
+  ) : [];
+
+  const ROLE_COLORS = {
+    "Santri": "#3b82f6",       // Blue
+    "Orangtua": "#10b981",     // Green
+    "Admin": "#f59e0b",        // Orange
+    "Pimpinan": "#8b5cf6",     // Purple
+    "Timkesehatan": "#ef4444", // Red
+    "Pengurus": "#64748b",     // Gray
+    "Ustadz": "#ec4899",       // Pink
+  };
 
   return (
     <div className="space-y-6">
@@ -192,7 +212,7 @@ export default function AdminDashboard() {
           onClick={() => setShowTooltipIncomplete(!showTooltipIncomplete)}
         >
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${stats?.incompleteSantri?.totalIncomplete > 0 ? "bg-orange-50 text-orange-600" : "bg-gray-50 text-gray-400"}`}
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${totalIssues > 0 ? "bg-orange-50 text-orange-600" : "bg-gray-50 text-gray-400"}`}
           >
             <UserMinus size={20} />
           </div>
@@ -200,49 +220,71 @@ export default function AdminDashboard() {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-center mb-1">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                Data Belum Lengkap
+                Peringatan & Data
               </p>
               <Info size={14} className="text-gray-300 flex-shrink-0" />
             </div>
             <h2 className="text-xl font-black text-gray-800">
-              {stats?.incompleteSantri?.totalIncomplete}
+              {totalIssues}
             </h2>
           </div>
 
           {/* Tooltip List (Hover) */}
           <div
-            className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[80%] transition-all duration-200 z-20 pointer-events-none ${showTooltipIncomplete ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-2"}`}
+            className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[240px] transition-all duration-200 z-20 pointer-events-none ${showTooltipIncomplete ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-2"}`}
           >
-            <div className="bg-white rounded-xl p-3.5 shadow-xl relative">
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45"></div>
-              <div className="relative z-10">
-                {stats?.incompleteSantri?.totalIncomplete > 0 ? (
+            <div className="bg-white rounded-xl p-3.5 shadow-xl relative border border-gray-100">
+              <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-100"></div>
+              <div className="relative z-10 space-y-3">
+                {totalIssues > 0 ? (
                   <>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 border-b border-gray-100 pb-1">Santri:</p>
-                    <ul className="space-y-1.5 font-bold uppercase tracking-wider text-gray-800">
-                      <li className="text-[10px] flex justify-between items-center">
-                        <span>Tanpa No. HP:</span>
-                        <span className="text-[10px] text-orange-400 text-xs bg-orange-400/10 px-1.5 py-0.5 rounded">
-                          {stats?.incompleteSantri?.noHp}
-                        </span>
-                      </li>
-                      <li className="text-[10px] flex justify-between items-center">
-                        <span>Tanpa Email:</span>
-                        <span className="text-[10px] text-orange-400 text-xs bg-orange-400/10 px-1.5 py-0.5 rounded">
-                          {stats?.incompleteSantri?.noEmail}
-                        </span>
-                      </li>
-                      <li className="text-[10px] flex justify-between items-center">
-                        <span>Tanpa Data Wali:</span>
-                        <span className="text-[10px] text-orange-400 text-xs bg-orange-400/10 px-1.5 py-0.5 rounded">
-                          {stats?.incompleteSantri?.noOrtu}
-                        </span>
-                      </li>
-                    </ul>
+                    {/* Section 1: Kelengkapan Profil */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 border-b border-gray-100 pb-1">Kelengkapan Profil</p>
+                      <ul className="space-y-1 text-gray-700">
+                        <li className="text-[10px] font-semibold flex justify-between items-center">
+                          <span>Tanpa No. HP:</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${stats?.incompleteSantri?.noHp > 0 ? "text-orange-600 bg-orange-50 font-bold" : "text-gray-400 bg-gray-50"}`}>
+                            {stats?.incompleteSantri?.noHp}
+                          </span>
+                        </li>
+                        <li className="text-[10px] font-semibold flex justify-between items-center">
+                          <span>Tanpa Email:</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${stats?.incompleteSantri?.noEmail > 0 ? "text-orange-600 bg-orange-50 font-bold" : "text-gray-400 bg-gray-50"}`}>
+                            {stats?.incompleteSantri?.noEmail}
+                          </span>
+                        </li>
+                        <li className="text-[10px] font-semibold flex justify-between items-center">
+                          <span>Tanpa Wali:</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${stats?.incompleteSantri?.noOrtu > 0 ? "text-orange-600 bg-orange-50 font-bold" : "text-gray-400 bg-gray-50"}`}>
+                            {stats?.incompleteSantri?.noOrtu}
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Section 2: Alokasi Santri */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 border-b border-gray-100 pb-1">Alokasi Santri</p>
+                      <ul className="space-y-1 text-gray-700">
+                        <li className="text-[10px] font-semibold flex justify-between items-center">
+                          <span>Tanpa Kamar:</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${stats.systemHealth.orphanKamar > 0 ? "text-red-600 bg-red-50 font-bold" : "text-gray-400 bg-gray-50"}`}>
+                            {stats.systemHealth.orphanKamar}
+                          </span>
+                        </li>
+                        <li className="text-[10px] font-semibold flex justify-between items-center">
+                          <span>Tanpa Kelas:</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${stats.systemHealth.orphanKelas > 0 ? "text-red-600 bg-red-50 font-bold" : "text-gray-400 bg-gray-50"}`}>
+                            {stats.systemHealth.orphanKelas}
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
                   </>
                 ) : (
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-green-400 text-center">
-                    Seluruh data santri sudah lengkap!
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-green-500 text-center">
+                    Seluruh data & alokasi santri lengkap!
                   </p>
                 )}
               </div>
@@ -253,120 +295,175 @@ export default function AdminDashboard() {
 
       {/* MIDDLE SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 pb-12">
-          <h3 className="font-bold text-gray-800 mb-2">
-            Demografi Hak Akses (Role)
-          </h3>
-          <p className="text-xs text-gray-500 mb-4">
-            Distribusi akun pengguna dalam sistem
-          </p>
-          <div className="h-[220px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartDataRole}
-                  cx="50%"
-                  cy="45%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  nameKey="name"
-                >
-                  {chartDataRole.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "none",
-                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  iconType="circle"
-                  formatter={(value) => (
-                    <span className="text-[14px] font-medium text-gray-600">
-                      {value}
-                    </span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <Database size={18} className="text-blue-600" /> Referensi Master
-            Data
-          </h3>
-          <div className="space-y-4">
-            <MasterDataRow
-              label="Data Kamar"
-              count={stats.masterData.kamar}
-              icon={<BedDouble size={16} />}
-            />
-            <MasterDataRow
-              label="Data Kelas"
-              count={stats.masterData.kelas}
-              icon={<BookOpen size={16} />}
-            />
-            <MasterDataRow
-              label="Jenis Layanan"
-              count={stats.masterData.layanan}
-              icon={<List size={16} />}
-            />
-            <MasterDataRow
-              label="Jenis Tagihan"
-              count={stats.masterData.tagihan}
-              icon={<Receipt size={16} />}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <AlertTriangle size={18} className="text-orange-500" /> Log
-            Peringatan Data
-          </h3>
-          <div className="space-y-3">
-            {isSystemHealthy ? (
-              <div className="text-center p-8 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-                <ShieldCheck
-                  size={32}
-                  className="text-green-500 mx-auto mb-2 opacity-50"
-                />
-                <p className="text-sm font-medium text-gray-500">
-                  Seluruh santri telah teralokasi.
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 pb-4 flex flex-col justify-between">
+          <div>
+            <div className="mb-6">
+              <div>
+                <h3 className="font-bold text-gray-800 mb-1">
+                  Demografi Hak Akses (Role)
+                </h3>
+                <p className="text-xs text-gray-500 mb-1">
+                  Distribusi akun pengguna dalam sistem
                 </p>
               </div>
-            ) : (
-              <>
-                {stats.systemHealth.orphanKamar > 0 && (
-                  <WarningBox
-                    icon={<BedDouble size={18} />}
-                    title="Santri Tanpa Kamar"
-                    count={stats.systemHealth.orphanKamar}
-                    color="red"
-                  />
-                )}
-                {stats.systemHealth.orphanKelas > 0 && (
-                  <WarningBox
-                    icon={<BookOpen size={18} />}
-                    title="Santri Tanpa Kelas"
-                    count={stats.systemHealth.orphanKelas}
-                    color="orange"
-                  />
-                )}
-              </>
-            )}
+
+              {/* Mobile Segmented Tab Toggle */}
+              <div className="relative flex md:hidden bg-gray-100 rounded-lg p-0.5 mt-2 w-full">
+                {/* Sliding Indicator */}
+                <div
+                  className={`absolute top-0.5 bottom-0.5 bg-white rounded-md shadow-sm transition-all duration-300 ease-in-out ${
+                    activeTab === "main"
+                      ? "left-0.5 w-[calc(50%-2px)]"
+                      : "left-[calc(50%+1px)] w-[calc(50%-2px)]"
+                  }`}
+                />
+
+                <button
+                  onClick={() => setActiveTab("main")}
+                  className={`relative z-10 px-3 py-1 w-full text-[10px] font-bold rounded-md transition-colors duration-300 ${activeTab === "main" ? "text-gray-800" : "text-gray-500 hover:text-gray-700"}`}
+                >
+                  Santri & Wali
+                </button>
+                <button
+                  onClick={() => setActiveTab("staff")}
+                  className={`relative z-10 px-3 py-1 w-full text-[10px] font-bold rounded-md transition-colors duration-300 ${activeTab === "staff" ? "text-gray-800" : "text-gray-500 hover:text-gray-700"}`}
+                >
+                  Staf & Pengajar
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0">
+              {/* Chart 1: Akun Utama */}
+              <div className={`flex-col items-center ${activeTab === "main" ? "flex" : "hidden md:flex"}`}>
+                <h4 className="text-sm font-semibold text-gray-600 mb-1 hidden md:block">Santri & Wali</h4>
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={mainRoleData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={90}
+                        paddingAngle={5}
+                        dataKey="value"
+                        nameKey="name"
+                        isAnimationActive={true}
+                        animationBegin={0}
+                        animationDuration={600}
+                        animationEasing="ease-out"
+                      >
+                        {mainRoleData.map((entry, index) => (
+                          <Cell
+                            key={`cell-main-${index}`}
+                            fill={ROLE_COLORS[entry.name] || "#cbd5e1"}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: "12px",
+                          border: "none",
+                          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Chart 2: Akun Staf & Pengajar */}
+              <div className={`flex-col items-center ${activeTab === "staff" ? "flex" : "hidden md:flex"}`}>
+                <h4 className="text-sm font-semibold text-gray-600 mb-1 hidden md:block">Staf & Pengajar</h4>
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={staffRoleData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={90}
+                        paddingAngle={5}
+                        dataKey="value"
+                        nameKey="name"
+                        isAnimationActive={true}
+                        animationBegin={0}
+                        animationDuration={600}
+                        animationEasing="ease-out"
+                      >
+                        {staffRoleData.map((entry, index) => (
+                          <Cell
+                            key={`cell-staff-${index}`}
+                            fill={ROLE_COLORS[entry.name] || "#cbd5e1"}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: "12px",
+                          border: "none",
+                          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Single Custom Legend */}
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-gray-50 pt-4 mt-2">
+            {Object.keys(ROLE_COLORS).map((role) => {
+              const exists = chartDataRole?.some(item => item.name === role);
+              if (!exists) return null;
+
+              const isMainRole = role === "Santri" || role === "Orangtua";
+              const isVisibleOnMobile = (isMainRole && activeTab === "main") || (!isMainRole && activeTab === "staff");
+              const displayClass = isVisibleOnMobile ? "flex" : "hidden md:flex";
+
+              return (
+                <div key={role} className={`${displayClass} items-center gap-1.5 text-xs font-semibold text-gray-600`}>
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: ROLE_COLORS[role] }} />
+                  <span>
+                    {role === "Orangtua" ? "Wali/Orang Tua" : role === "Timkesehatan" ? "Tim Kesehatan" : role}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between">
+          <div>
+            <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <Database size={18} className="text-blue-600" /> Referensi Master
+              Data
+            </h3>
+            <div className="space-y-4">
+              <MasterDataRow
+                label="Data Kamar"
+                count={stats.masterData.kamar}
+                icon={<BedDouble size={16} />}
+              />
+              <MasterDataRow
+                label="Data Kelas"
+                count={stats.masterData.kelas}
+                icon={<BookOpen size={16} />}
+              />
+              <MasterDataRow
+                label="Jenis Layanan"
+                count={stats.masterData.layanan}
+                icon={<List size={16} />}
+              />
+              <MasterDataRow
+                label="Jenis Tagihan"
+                count={stats.masterData.tagihan}
+                icon={<Receipt size={16} />}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -383,7 +480,7 @@ export default function AdminDashboard() {
           </span>
         </div>
         {recentLogs.length > 0 ? (
-          <div className="space-y-4">
+          <div>
             {recentLogs.map((log) => (
               <div
                 key={log.id}
