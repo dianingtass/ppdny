@@ -96,7 +96,7 @@ exports.submitPendaftaran = async (req, res) => {
       data: {
         ppdb_tahun: { connect: { id: parseInt(id_tahun) } }, // PERBAIKAN 1
         nama_lengkap, 
-        jenis_kelamin: jenis_kelamin === "Laki-laki" ? "Laki_laki" : "Perempuan",
+        jenis_kelamin: (jenis_kelamin === "Laki-laki" || jenis_kelamin === "Laki_laki") ? "Laki_laki" : "Perempuan",
         tempat_lahir,
         tanggal_lahir: new Date(tanggal_lahir),
         anak_ke: anak_ke ? parseInt(anak_ke) : null,

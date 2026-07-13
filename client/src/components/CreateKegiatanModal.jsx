@@ -57,10 +57,10 @@ export default function CreateKegiatanModal({ isOpen, onClose, onSubmit, isSavin
     const handleSubmit = (e) => {
         e.preventDefault();
         const finalData = { ...formData };
-        if (!isUstadz) {
+        if (!isUstadz && !initialData) {
             finalData.id_kelas = null;
             finalData.id_kamar = null;
-        } else if (!finalData.id_kelas && !finalData.id_kamar) {
+        } else if (isUstadz && !finalData.id_kelas && !finalData.id_kamar) {
             return showAlert("error", "Silakan pilih kelas atau kamar tujuan kegiatan.");
         }
         onSubmit(finalData);

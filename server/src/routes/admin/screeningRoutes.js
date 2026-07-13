@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { requireRole } = require('../../middleware/verifyToken');
+
+router.use(requireRole('admin'));
+
 const screeningController = require("../../controllers/admin/screeningController");
 const createUploader = require("../../middleware/uploadMiddleware");
 

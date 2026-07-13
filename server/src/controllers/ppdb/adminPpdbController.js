@@ -321,7 +321,7 @@ exports.aktivasiSantri = async (req, res) => {
       data: {
         nip: nis,
         nama: pendaftar.nama_lengkap,
-        jenis_kelamin: pendaftar.jenis_kelamin === "Laki-laki" ? "Laki_laki" : "Perempuan",
+        jenis_kelamin: (pendaftar.jenis_kelamin === "Laki-laki" || pendaftar.jenis_kelamin === "Laki_laki") ? "Laki_laki" : "Perempuan",
         tempat_lahir: pendaftar.tempat_lahir,
         tanggal_lahir: pendaftar.tanggal_lahir,
         email: pendaftar.email,

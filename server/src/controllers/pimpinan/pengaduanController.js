@@ -90,7 +90,6 @@ exports.getDetailPengaduan = async (req, res) => {
       include: {
         users_pengaduan_id_santriTousers: { select: { nama: true, nip: true } },
         tanggapan_aduan: {
-          where: { is_active: true },
           orderBy: { waktu_tanggapan: "asc" },
           include: {
             users: {

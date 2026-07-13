@@ -84,12 +84,12 @@ exports.getKegiatan = async (req, res) => {
         res.json({ success: true, data });
 
     } catch (err) {
-        console.error("Error getKegiatan Pengurus:", err);
+        console.error("Error getKegiatan Admin:", err);
         res.status(500).json({ success: false, message: 'Gagal memuat daftar kegiatan' });
     }
 };
 
-// POST: Buat Kegiatan Pengurus (Otomatis Global)
+// POST: Buat Kegiatan Admin (Otomatis Global)
 exports.createKegiatan = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -107,7 +107,7 @@ exports.createKegiatan = async (req, res) => {
                 lokasi: lokasi,
                 deskripsi: deskripsi,
                 penanggung_jawab: userId,
-                id_kelas: null, // PENGURUS OTOMATIS BIKIN KEGIATAN GLOBAL
+                id_kelas: null, // ADMIN OTOMATIS BIKIN KEGIATAN GLOBAL
                 rutin: false,
                 is_active: true
             }
@@ -115,7 +115,7 @@ exports.createKegiatan = async (req, res) => {
 
         res.status(201).json({ success: true, message: 'Kegiatan Global berhasil ditambahkan!' });
     } catch (err) {
-        console.error("Error createKegiatan Pengurus:", err);
+        console.error("Error createKegiatan Admin:", err);
         res.status(500).json({ success: false, message: 'Gagal menyimpan kegiatan baru' });
     }
 };
@@ -142,7 +142,7 @@ exports.updateKegiatan = async (req, res) => {
 
         res.json({ success: true, message: 'Kegiatan berhasil diperbarui!' });
     } catch (err) {
-        console.error("Error updateKegiatan Pengurus:", err);
+        console.error("Error updateKegiatan Admin:", err);
         res.status(500).json({ success: false, message: 'Gagal memperbarui kegiatan' });
     }
 };

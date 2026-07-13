@@ -97,7 +97,7 @@ exports.getDetailPengaduan = async (req, res) => {
       include: {
         users_pengaduan_id_pelaporTousers: { select: { nama: true, foto_profil: true, user_role: { include: { role: true }, take: 1 } } },
         tanggapan_aduan: {
-          where: { is_active: true }, orderBy: { waktu_tanggapan: 'asc' },
+          orderBy: { waktu_tanggapan: 'asc' },
           include: { users: { select: { id: true, nama: true, foto_profil: true, user_role: { include: { role: true }, take: 1 }, orangtua_orangtua_id_orangtuaTousers: { select: { hubungan: true }, take: 1 } } } }
         }
       }
