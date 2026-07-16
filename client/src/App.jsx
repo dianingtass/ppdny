@@ -25,6 +25,7 @@ const SantriRiwayatLayanan = lazy(() => import("./pages/santri/riwayatLayanan"))
 const SantriScabiesDashboard = lazy(() => import("./pages/santri/scabiesDashboard"));
 const SantriScabiesKonsultasi = lazy(() => import("./pages/santri/scabiesKonsultasi"));
 const SantriScabiesKonsultasiRoom = lazy(() => import("./pages/santri/scabiesKonsultasiRoom"));
+const SantriGuidebook = lazy(() => import("./pages/santri/guidebook"));
 
 // General / Shared
 const MateriManage = lazy(() => import("./pages/manageMateri"));
@@ -142,7 +143,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 function App() {
   return (
     <AuthProvider>
-      <InstallPrompt />
+      {/* <InstallPrompt /> */}
       <BrowserRouter>
         <Suspense fallback={
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -176,6 +177,7 @@ function App() {
                 <Route path="konsultasi" element={<SantriScabiesKonsultasi />} />
                 <Route path="konsultasi/room/:roomId" element={<SantriScabiesKonsultasiRoom />} />
               </Route>
+              <Route path="guidebook" element={<SantriGuidebook />} />
             </Route>
           </Route>
 

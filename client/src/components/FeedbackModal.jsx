@@ -13,7 +13,7 @@ export default function FeedbackModal({ isOpen, onClose, item, onSubmit, saving 
     if (isOpen) {
       setRating(0);
       setReview("");
-      setMessage({ type: "", text: "" });
+      clearAlert();
     }
   }, [isOpen]);
 

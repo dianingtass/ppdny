@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
-import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, Cross } from "lucide-react";
+import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, Cross, BookOpen } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileAvatar from '../../components/ProfileAvatar';
 
@@ -266,6 +266,18 @@ export default function SantriDashboard() {
                       >
                         <Settings size={16} className="mr-3" />
                         Edit Profil
+                      </button>
+
+                      {/* Item 2: Buku Panduan */}
+                      <button 
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/santri/guidebook");
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition"
+                      >
+                        <BookOpen size={16} className="mr-3" />
+                        Buku Panduan
                       </button>
 
                       {/* Item 2: Keluar */}
@@ -606,6 +618,10 @@ export default function SantriDashboard() {
                 <button onClick={() => navigate("/santri/profil")} className="flex flex-col items-center p-2 text-gray-600 hover:text-green-600">
                   <User size={24} />
                   <span className="text-xs mt-1">Profil</span>
+                </button>
+                <button onClick={() => navigate("/santri/guidebook")} className="flex flex-col items-center p-2 text-gray-600 hover:text-green-600">
+                  <BookOpen size={24} />
+                  <span className="text-xs mt-1">Panduan</span>
                 </button>
                 <button onClick={handleLogout} className="flex flex-col items-center p-2 text-gray-600 hover:text-red-600">
                   <LogOut size={24} />

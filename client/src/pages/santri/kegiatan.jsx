@@ -183,8 +183,8 @@ export default function KegiatanSantri() {
               <FeedbackModal 
                   isOpen={isFeedbackOpen}
                   onClose={() => setIsFeedbackOpen(false)}
-                  kegiatan={selectedKegiatan}
-                  onSubmitFeedback={handleSubmitFeedback}
+                  item={selectedKegiatan}
+                  onSubmit={handleSubmitFeedback}
                   saving={isSaving}
               />
           </>

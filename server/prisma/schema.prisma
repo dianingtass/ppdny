@@ -957,3 +957,16 @@ enum materi_sumber {
   teori
   pengalaman
 }
+
+model guidebook_screenshot {
+  id        Int      @id @default(autoincrement())
+  role      String
+  modul     String
+  bagian    String
+  device    String
+  url       String   @db.VarChar(2048)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([role, modul, bagian, device])
+}

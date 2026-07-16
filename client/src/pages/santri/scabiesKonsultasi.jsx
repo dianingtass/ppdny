@@ -170,40 +170,84 @@ export default function SantriScabiesKonsultasi() {
               <p className="mt-3 text-gray-600 font-medium">Memuat data konsultasi...</p>
             </div>
           ) : activeTab === 'timkes' ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="text-left p-4 w-[20%]">Nama</th>
-                    <th className="text-left p-4 w-[15%]">Slot</th>
-                    <th className="text-left p-4 w-[15%]">Status</th>
-                    <th className="text-left p-4 w-[15%]">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {timkesList.map((item) => (
-                    <tr key={item.id} className="border-t border-gray-100">
-                      <td className="p-4">
-                        <div className="flex items-center gap-2 text-gray-800 font-medium"><UserRound size={16} /> {item.nama}</div>
-                      </td>
-                      <td className="p-4 text-gray-700">{item.active_count}/{item.max_slot}</td>
-                      <td className="p-4">
-                        {item.is_full ? <span className="px-2.5 py-1 rounded-full text-xs bg-amber-100 text-amber-700">Full</span> : <span className="px-2.5 py-1 rounded-full text-xs bg-green-100 text-green-700">Tersedia</span>}
-                      </td>
-                      <td className="p-4">
-                        <button onClick={() => startConsultation(item.id)} className="px-3 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700">
-                          Mulai Konsultasi
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {timkesList.length === 0 && (
+            <div>
+              {/* Desktop view (table) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-gray-600">
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-gray-500">Belum ada tim kesehatan tersedia.</td>
+                      <th className="text-left p-4 w-[20%]">Nama</th>
+                      <th className="text-left p-4 w-[15%]">Slot</th>
+                      <th className="text-left p-4 w-[15%]">Status</th>
+                      <th className="text-left p-4 w-[15%]">Aksi</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {timkesList.map((item) => (
+                      <tr key={item.id} className="border-t border-gray-100">
+                        <td className="p-4">
+                          <div className="flex items-center gap-2 text-gray-800 font-medium"><UserRound size={16} /> {item.nama}</div>
+                        </td>
+                        <td className="p-4 text-gray-700">{item.active_count}/{item.max_slot}</td>
+                        <td className="p-4">
+                          {item.is_full ? <span className="px-2.5 py-1 rounded-full text-xs bg-amber-100 text-amber-700">Full</span> : <span className="px-2.5 py-1 rounded-full text-xs bg-green-100 text-green-700">Tersedia</span>}
+                        </td>
+                        <td className="p-4">
+                          <button onClick={() => startConsultation(item.id)} className="px-3 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700">
+                            Mulai Konsultasi
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {timkesList.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="p-8 text-center text-gray-500">Belum ada tim kesehatan tersedia.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile view (cards) */}
+              <div className="md:hidden p-4 space-y-4">
+                {timkesList.map((item) => (
+                  <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col gap-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-green-50 rounded-xl text-green-600">
+                          <UserRound size={18} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-800 text-sm leading-snug">{item.nama}</h4>
+                          <p className="text-xs text-gray-500 mt-0.5">Slot: {item.active_count}/{item.max_slot}</p>
+                        </div>
+                      </div>
+                      <div>
+                        {item.is_full ? (
+                          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+                            Full
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                            Tersedia
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => startConsultation(item.id)} 
+                      className="w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-xs tracking-wider transition-all shadow-sm active:scale-[0.98]"
+                    >
+                      Mulai Konsultasi
+                    </button>
+                  </div>
+                ))}
+                {timkesList.length === 0 && (
+                  <div className="p-8 text-center text-gray-500 bg-white border border-gray-100 rounded-2xl">
+                    Belum ada tim kesehatan tersedia.
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div>

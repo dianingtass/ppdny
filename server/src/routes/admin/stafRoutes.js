@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const stafController = require('../../controllers/admin/stafController');
+const { requireRole } = require('../../middleware/verifyToken');
+
+router.use(requireRole('admin'));
 
 router.get('/', stafController.getStaffList);
 router.post('/', stafController.createStaff); 

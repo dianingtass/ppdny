@@ -241,7 +241,7 @@ export default function RiwayatLayananList() {
               onClose={() => setFeedbackItem(null)}
               saving={isSavingFeedback}
               onSubmit={(rating, text) => handleSubmitFeedback(feedbackItem.id, rating, text)}
-              title={feedbackItem.nama_layanan}
+              item={{ id: feedbackItem.id, nama: feedbackItem.nama_layanan }}
           />
       )}
     </div>
