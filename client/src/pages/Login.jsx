@@ -300,66 +300,67 @@ export default function Login() {
             </div>
           )}
 
-          {/* --- MODAL LUPA PASSWORD --- */}
-          {openForgot && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                  <div>
-                    <h3 className="font-bold text-gray-800 text-lg">Reset Kata Sandi</h3>
-                    <p className="text-xs text-gray-500 mt-1">Hubungi Admin via WhatsApp</p>
-                  </div>
-                  <button onClick={() => setOpenForgot(false)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition">
-                    <X size={20} />
-                  </button>
-                </div>
-                <form onSubmit={handleKirimWA} className="p-6 space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tipe Akun</label>
-                    <select
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white text-gray-700"
-                      value={forgotData.role}
-                      onChange={(e) => setForgotData({ ...forgotData, role: e.target.value })}
-                    >
-                      <option value="Santri">Santri</option>
-                      <option value="Orang Tua">Orang Tua / Wali</option>
-                      <option value="Pengurus">Pengurus Pondok</option>
-                      <option value="Ustadz">Ustadz / Guru</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Ahmad Fulan"
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
-                      value={forgotData.nama}
-                      onChange={(e) => setForgotData({ ...forgotData, nama: e.target.value })}
-                      autoFocus
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">NIS / NIP / No. HP</label>
-                    <input
-                      type="text"
-                      placeholder="Masukkan identitas terdaftar"
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
-                      value={forgotData.nip}
-                      onChange={(e) => setForgotData({ ...forgotData, nip: e.target.value })}
-                    />
-                  </div>
-                  <div className="pt-4">
-                    <button type="submit" className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition flex justify-center items-center shadow-md shadow-green-200">
-                      Kirim ke WhatsApp
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
         </div>
 
         <RegisterModal open={openRegister} onClose={() => setOpenRegister(false)} />
+
+        {/* --- MODAL LUPA PASSWORD --- */}
+        {openForgot && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div>
+                  <h3 className="font-bold text-gray-800 text-lg">Reset Kata Sandi</h3>
+                  <p className="text-xs text-gray-500 mt-1">Hubungi Admin via WhatsApp</p>
+                </div>
+                <button onClick={() => setOpenForgot(false)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition">
+                  <X size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleKirimWA} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tipe Akun</label>
+                  <select
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white text-gray-700"
+                    value={forgotData.role}
+                    onChange={(e) => setForgotData({ ...forgotData, role: e.target.value })}
+                  >
+                    <option value="Santri">Santri</option>
+                    <option value="Orang Tua">Orang Tua / Wali</option>
+                    <option value="Pengurus">Pengurus Pondok</option>
+                    <option value="Ustadz">Ustadz / Guru</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Ahmad Fulan"
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+                    value={forgotData.nama}
+                    onChange={(e) => setForgotData({ ...forgotData, nama: e.target.value })}
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">NIS / NIP / No. HP</label>
+                  <input
+                    type="text"
+                    placeholder="Masukkan identitas terdaftar"
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+                    value={forgotData.nip}
+                    onChange={(e) => setForgotData({ ...forgotData, nip: e.target.value })}
+                  />
+                </div>
+                <div className="pt-4">
+                  <button type="submit" className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition flex justify-center items-center shadow-md shadow-green-200">
+                    Kirim ke WhatsApp
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
