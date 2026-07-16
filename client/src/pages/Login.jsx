@@ -65,8 +65,8 @@ export default function Login() {
       return;
     }
 
-    if (token || localStorage.getItem("user")) {
-      clearAuthSession();
+    if (token) {
+      clearAuthSession(); // token ada tapi tidak bisa di-decode → clear
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

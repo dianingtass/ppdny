@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ChevronDown, CircleHelp, Loader2, Plus, Pencil, Trash2, AlertCircle } from "lucide-react";
 import api from "../config/api";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { AuthContext } from "../context/AuthContext";
 
 export default function FaqPage() {
   const [faqs, setFaqs] = useState([]);
@@ -21,9 +22,10 @@ export default function FaqPage() {
   
   const { message, showAlert, clearAlert } = useAlert();
 
-  // Get current user role
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = String(currentUser.role || "guest").toLowerCase().replace(/\s/g, '');
+  const { user } = useContext(AuthContext);
+
+  // Get current user role from AuthContext
+  const userRole = String(user?.role || "guest").toLowerCase().replace(/\s/g, '');
   const isManageable = ["admin", "pengurus", "timkesehatan"].includes(userRole);
 
   const fetchFaq = async () => {

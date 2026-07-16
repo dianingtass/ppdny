@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import api from "../../config/api";
 import {
   Search, Loader2, AlertTriangle, CheckCircle, X, Star, MessageSquare
@@ -9,6 +9,7 @@ import FilterDropdown from "../../components/FilterDropdown";
 import AlertToast from "../../components/AlertToast";
 import { useAlert } from "../../hooks/useAlert";
 import DetailFeedbackModal from "../../components/DetailFeedbackModal";
+import { AuthContext } from "../../context/AuthContext";
 import usePagination from "../../components/pagination/usePagination";
 import Pagination from "../../components/pagination/Pagination";
 import SortDropdown from "../../components/SortDropdown";
@@ -29,8 +30,8 @@ export default function Feedback() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = (currentUser.role || "pengurus").toLowerCase().replace(/\s/g, '');
+  const { user } = useContext(AuthContext);
+  const userRole = (user?.role || "pengurus").toLowerCase().replace(/\s/g, '');
 
   const fetchData = async () => {
     setLoading(true);

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Bell, MessageSquare, CreditCard, Calendar, Clock, AlertTriangle, CheckCircle, List } from 'lucide-react';
-import api from '../config/api'; // Menggunakan instance api global
+import api from '../config/api';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 export default function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,17 +10,10 @@ export default function NotificationDropdown() {
     const [hasUnread, setHasUnread] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
 
-    // 1. Ambil Role dari user yang login (misal dari string user di localStorage)
-    const rawUser = localStorage.getItem('user');
-    let userRole = 'santri'; // Default fallback
-    if (rawUser) {
-        try {
-            const parsed = JSON.parse(rawUser);
-            // Standarisasi role (misal dari "Orang Tua" jadi "orangtua")
-            userRole = parsed.role.toLowerCase().replace(/\s/g, ''); 
-        } catch (e) { console.error(e); }
-    }
+    // Ambil role dari AuthContext (sudah di-resolve dari /auth/me)
+    const userRole = user?.role?.toLowerCase().replace(/\s/g, '') || 'santri';
 
     const fetchNotifs = async () => {
         try {

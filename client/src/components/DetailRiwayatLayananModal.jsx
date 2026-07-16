@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import api from '../config/api';
 import { X, FileText, CheckCircle, Clock, Loader2, Download } from 'lucide-react';
 import { PdfRiwayatLayanan } from './PdfRiwayatLayanan';
 import AlertToast from './AlertToast';
 import { useAlert } from '../hooks/useAlert';
+import { AuthContext } from '../context/AuthContext';
 
 export default function DetailRiwayatLayananModal({ isOpen, onClose, idRiwayat }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
-
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (isOpen && idRiwayat) fetchDetail();
@@ -33,7 +33,7 @@ export default function DetailRiwayatLayananModal({ isOpen, onClose, idRiwayat }
     if (!detail) return;
     setGeneratingPdf(true);
     try {
-      await PdfRiwayatLayanan(detail, currentUser.nama || '-');
+      await PdfRiwayatLayanan(detail, user?.nama || '-');
     } catch (err) {
       showAlert('error', 'Gagal membuat PDF. Coba lagi.');
     } finally {

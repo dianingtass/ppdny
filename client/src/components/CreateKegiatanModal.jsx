@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { X, Loader2 } from "lucide-react";
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { AuthContext } from "../context/AuthContext";
 
 export default function CreateKegiatanModal({ isOpen, onClose, onSubmit, isSaving, initialData, myClasses = [], myRooms = [] }) {
     const [formData, setFormData] = useState({
@@ -12,8 +13,8 @@ export default function CreateKegiatanModal({ isOpen, onClose, onSubmit, isSavin
     const [targetValue, setTargetValue] = useState("");
     const { message, showAlert, clearAlert } = useAlert();
 
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const userRole = (currentUser.role || "").toLowerCase().replace(/\s/g, '');
+    const { user } = useContext(AuthContext);
+    const userRole = (user?.role || "").toLowerCase().replace(/\s/g, '');
     const isUstadz = userRole === 'ustadz';
 
     useEffect(() => {
