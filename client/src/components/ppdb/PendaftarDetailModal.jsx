@@ -69,6 +69,55 @@ export default function PendaftarDetailModal({ isOpen, data, onClose, onRefresh 
                 <div><p className="text-gray-400 text-xs font-bold mb-1">Hafalan</p><p className="text-gray-800 font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded inline-block">{detail.juz_hafalan || 0} Juz</p></div>
               </div>
             </section>
+            {detail.ppdb_orangtua?.length > 0 && (
+              <section className="border-t border-gray-100 pt-5">
+                <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 bg-gray-50 px-3 py-1.5 rounded-md inline-block">Data Wali / Orang Tua</p>
+                <div className="space-y-4">
+                  {detail.ppdb_orangtua.map((ortu, idx) => (
+                    <div key={idx} className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                      <p className="text-[10px] font-black text-green-700 bg-green-100 px-2.5 py-1 rounded-md uppercase tracking-wider inline-block mb-3">
+                        {ortu.hubungan?.replace(/_/g, " ") || "Wali"}
+                      </p>
+                      <div className="grid grid-cols-2 gap-y-3 text-sm">
+                        <div className="col-span-2">
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">Nama Lengkap</p>
+                          <p className="text-gray-800 font-bold">{ortu.nama || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">Tempat, Tgl Lahir</p>
+                          <p className="text-gray-700 font-medium">
+                            {ortu.tempat_lahir || "-"}
+                            {ortu.tanggal_lahir ? `, ${new Date(ortu.tanggal_lahir).toLocaleDateString("id-ID")}` : ""}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">No. HP / WA</p>
+                          <p className="text-gray-700 font-medium">{ortu.no_hp || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">Pendidikan</p>
+                          <p className="text-gray-700 font-medium">{ortu.pendidikan || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">Pekerjaan</p>
+                          <p className="text-gray-700 font-medium">{ortu.pekerjaan || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold mb-0.5">Penghasilan</p>
+                          <p className="text-gray-700 font-medium">{ortu.penghasilan || "-"}</p>
+                        </div>
+                        {ortu.alamat && (
+                          <div className="col-span-2">
+                            <p className="text-gray-400 text-xs font-bold mb-0.5">Alamat</p>
+                            <p className="text-gray-700 font-medium">{ortu.alamat}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {detail.ppdb_dokumen?.length > 0 && (
               <section className="border-t border-gray-100 pt-5">
@@ -103,6 +152,7 @@ export default function PendaftarDetailModal({ isOpen, data, onClose, onRefresh 
                 </div>
               </section>
             )}
+
           </div>
         ) : null}
       </div>

@@ -1,9 +1,17 @@
 import { useState, useRef } from "react";
-import { X, UploadCloud, Loader2, FileText } from "lucide-react";
+import { X, UploadCloud, Loader2, FileText, Copy, Check } from "lucide-react";
 
 export default function BayarModal({ isOpen, onClose, tagihan, onSubmit, saving, showAlert }) {
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   if (!isOpen || !tagihan) return null;
 
@@ -39,7 +47,17 @@ export default function BayarModal({ isOpen, onClose, tagihan, onSubmit, saving,
         <div className="p-6 space-y-6">
           <div className="space-y-4">
             <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-green-600/80 text-sm">Nominal</span><span className="font-semibold text-gray-800">{tagihan.nominal}</span></div>
-            <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-green-600/80 text-sm">No. Rekening</span><span className="font-semibold text-gray-800">{infoRekening.no_rek}</span></div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+              <span className="text-green-600/80 text-sm">No. Rekening</span>
+              <button
+                onClick={() => handleCopy(infoRekening.no_rek)}
+                className="flex items-center gap-1.5 font-semibold text-gray-800 hover:text-green-600 transition group"
+                title="Klik untuk menyalin"
+              >
+                <span className="font-mono tracking-widest">{infoRekening.no_rek}</span>
+                {copied ? <Check size={14} className="text-green-500" /> : <Copy size={13} className="text-gray-400 group-hover:text-green-500 transition" />}
+              </button>
+            </div>
             <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-green-600/80 text-sm">Bank / Penerima</span><span className="font-semibold text-gray-800 text-right w-1/2">{infoRekening.bank} / {infoRekening.atas_nama}</span></div>
           </div>
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition cursor-pointer flex flex-col items-center justify-center gap-3 group" onClick={() => fileInputRef.current.click()}>

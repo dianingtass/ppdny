@@ -208,7 +208,8 @@ exports.getAllPendaftar = async (req, res) => {
         ppdb_tahun: { select: { nama_gelombang: true, tahun_ajaran: true } },
         ppdb_dokumen: { select: { jenis_dokumen: true, status_verif: true } },
         ppdb_seleksi: { select: { nilai_total: true, status_seleksi: true, rekomendasi: true } },
-      }
+      },
+      orderBy: { id: "desc" },
     });
 
     return res.json({ success: true, data: pendaftar });

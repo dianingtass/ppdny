@@ -4,10 +4,12 @@ import { X, Save, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
 import { getImageUrl } from '../utils/imageUrl';
+import { formatRibuanDisplay } from '../utils/rupiahFormat';
 
 export default function DetailPembayaranModal({ isOpen, onClose, data, userRole }) {
   const [statusVerifikasi, setStatusVerifikasi] = useState("");
   const [nominalKonfirmasi, setNominalKonfirmasi] = useState("");
+  const [nominalDisplay, setNominalDisplay] = useState("");
   const [saving, setSaving] = useState(false);
   const { message, showAlert, clearAlert } = useAlert();
 
@@ -17,6 +19,7 @@ export default function DetailPembayaranModal({ isOpen, onClose, data, userRole 
     if (isOpen && data) {
       setStatusVerifikasi(data.status);
       setNominalKonfirmasi(data.nominal);
+      setNominalDisplay(formatRibuanDisplay(data.nominal));
     }
   }, [isOpen, data]);
 
@@ -95,7 +98,17 @@ export default function DetailPembayaranModal({ isOpen, onClose, data, userRole 
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Nominal Diterima (Rp)</label>
-                <input type="number" className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none font-bold text-gray-700" value={nominalKonfirmasi} onChange={(e) => setNominalKonfirmasi(e.target.value)} />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none font-bold text-gray-700"
+                  value={nominalDisplay}
+                  onChange={e => {
+                    const raw = e.target.value.replace(/\./g, "").replace(/\D/g, "");
+                    setNominalDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("id-ID"));
+                    setNominalKonfirmasi(raw);
+                  }}
+                />
               </div>
               <button onClick={handleSave} disabled={saving} className="w-full py-3 bg-green-600 text-white rounded-xl font-bold shadow-lg transition flex items-center justify-center disabled:opacity-70">
                 {saving ? <Loader2 className="animate-spin mr-2" size={18} /> : <Save className="mr-2" size={18} />} Simpan Verifikasi

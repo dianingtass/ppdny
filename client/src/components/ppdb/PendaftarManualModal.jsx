@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../config/api";
 import { X, Loader2 } from "lucide-react";
 
 export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuccess }) {
-  if (!isOpen) return null;
-
   const [step, setStep] = useState(0); 
-  const [idTahun, setIdTahun] = useState(tahunList[0]?.id || "");
+  const [idTahun, setIdTahun] = useState("");
   const [dataDiri, setDataDiri] = useState({
     nama_lengkap: "", nama_panggilan: "", jenis_kelamin: "Laki-laki",
     tempat_lahir: "", tanggal_lahir: "", anak_ke: "", jumlah_saudara: "",
@@ -16,6 +14,22 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
   });
   const [orangtua, setOrangtua] = useState([{ hubungan: "Ayah", nama: "", pekerjaan: "", penghasilan: "", no_hp: "", pendidikan: "", alamat: "" }]);
   const [loading, setLoading] = useState(false);
+
+  // Sync idTahun ke gelombang aktif/terbaru setiap kali modal dibuka atau list berubah
+  useEffect(() => {
+    if (isOpen && tahunList.length > 0) {
+      // Prioritaskan gelombang yang sedang aktif (dalam rentang buka-tutup), fallback ke tahunList[0]
+      const now = new Date();
+      const aktif = tahunList.find(t => {
+        const buka = t.tanggal_buka ? new Date(t.tanggal_buka) : null;
+        const tutup = t.tanggal_tutup ? new Date(t.tanggal_tutup) : null;
+        return buka && tutup && now >= buka && now <= tutup;
+      });
+      setIdTahun(aktif?.id || tahunList[0]?.id || "");
+    }
+  }, [isOpen, tahunList]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async () => {
     try {
@@ -89,17 +103,79 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
             <div className="space-y-4">
               {orangtua.map((ortu, idx) => (
                 <div key={idx} className="border border-gray-200 rounded-xl p-4 bg-gray-50/50">
-                  <select value={ortu.hubungan} onChange={(e) => { const u = [...orangtua]; u[idx].hubungan = e.target.value; setOrangtua(u); }} className="mb-4 font-bold text-sm bg-white border border-gray-200 px-3 py-1.5 rounded-lg outline-none">
-                    <option>Ayah</option><option>Ibu</option><option>Wali</option>
-                  </select>
+                  <div className="flex items-center justify-between mb-4">
+                    <select
+                      value={ortu.hubungan}
+                      onChange={(e) => { const u = [...orangtua]; u[idx].hubungan = e.target.value; setOrangtua(u); }}
+                      className="font-bold text-sm text-green-700 bg-green-100 border-none px-3 py-1.5 rounded-lg outline-none"
+                    >
+                      <option>Ayah</option><option>Ibu</option><option>Wali</option>
+                    </select>
+                    {orangtua.length > 1 && (
+                      <button
+                        onClick={() => setOrangtua(orangtua.filter((_, i) => i !== idx))}
+                        className="text-xs text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold transition"
+                      >
+                        Hapus
+                      </button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className={labelCls}>Nama</label><input value={ortu.nama} onChange={e => {const u=[...orangtua]; u[idx].nama=e.target.value; setOrangtua(u)}} className={inputCls} /></div>
-                    <div><label className={labelCls}>No. HP</label><input value={ortu.no_hp} onChange={e => {const u=[...orangtua]; u[idx].no_hp=e.target.value; setOrangtua(u)}} className={inputCls} /></div>
+                    <div className="col-span-2">
+                      <label className={labelCls}>Nama Lengkap *</label>
+                      <input value={ortu.nama} onChange={e => {const u=[...orangtua]; u[idx].nama=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Tempat Lahir</label>
+                      <input value={ortu.tempat_lahir || ""} onChange={e => {const u=[...orangtua]; u[idx].tempat_lahir=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Tanggal Lahir</label>
+                      <input type="date" value={ortu.tanggal_lahir || ""} onChange={e => {const u=[...orangtua]; u[idx].tanggal_lahir=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>No. HP / WA</label>
+                      <input value={ortu.no_hp} onChange={e => {const u=[...orangtua]; u[idx].no_hp=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Pendidikan</label>
+                      <input value={ortu.pendidikan || ""} onChange={e => {const u=[...orangtua]; u[idx].pendidikan=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Pekerjaan</label>
+                      <input value={ortu.pekerjaan || ""} onChange={e => {const u=[...orangtua]; u[idx].pekerjaan=e.target.value; setOrangtua(u)}} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Penghasilan</label>
+                      <input
+                        inputMode="numeric"
+                        value={ortu.penghasilan ? parseInt(String(ortu.penghasilan).replace(/\./g, ""), 10).toLocaleString("id-ID") : ""}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/\./g, "").replace(/\D/g, "");
+                          const u = [...orangtua]; u[idx].penghasilan = raw; setOrangtua(u);
+                        }}
+                        className={inputCls}
+                        placeholder="cth: 3.000.000"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className={labelCls}>Alamat</label>
+                      <textarea value={ortu.alamat || ""} onChange={e => {const u=[...orangtua]; u[idx].alamat=e.target.value; setOrangtua(u)}} rows={2} className={`${inputCls} resize-none`} />
+                    </div>
                   </div>
                 </div>
               ))}
+              {orangtua.length < 3 && (
+                <button
+                  onClick={() => setOrangtua([...orangtua, { hubungan: "Ibu", nama: "", tempat_lahir: "", tanggal_lahir: "", no_hp: "", pendidikan: "", pekerjaan: "", penghasilan: "", alamat: "" }])}
+                  className="w-full py-2.5 border-2 border-dashed border-green-200 text-green-600 font-bold text-sm rounded-xl hover:bg-green-50 transition"
+                >
+                  + Tambah Wali Lainnya
+                </button>
+              )}
             </div>
           )}
+
         </div>
 
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 sticky bottom-0">

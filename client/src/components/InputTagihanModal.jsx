@@ -3,11 +3,13 @@ import api from '../config/api';
 import { X, Save, Loader2, Users, Calendar, DollarSign, CheckSquare, Search } from 'lucide-react';
 import AlertToast from "../components/AlertToast";
 import { useAlert } from "../hooks/useAlert";
+import { formatRibuanDisplay, parseRibuan } from "../utils/rupiahFormat";
 
 export default function InputTagihanModal({ isOpen, onClose, isEditing, editData, onSubmit, rolePrefix = "pengurus" }) {
   const [formData, setFormData] = useState({
     nama_tagihan: "", id_jenis_tagihan: "", nominal: "", tanggal_tagihan: "", batas_pembayaran: ""
   });
+  const [nominalDisplay, setNominalDisplay] = useState("");
   const { message, showAlert, clearAlert } = useAlert();
   
   const [allSantri, setAllSantri] = useState([]);
@@ -37,6 +39,7 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
                 tanggal_tagihan: editData.tanggal_tagihan ? editData.tanggal_tagihan.split('T')[0] : "",
                 batas_pembayaran: editData.batas_pembayaran ? editData.batas_pembayaran.split('T')[0] : "",
             });
+            setNominalDisplay(formatRibuanDisplay(editData.nominal || ""));
             setSelectedSantri(editData.id_santri ? [editData.id_santri] : []); 
         } else {
             setFormData({ 
@@ -44,6 +47,7 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
                 tanggal_tagihan: new Date().toISOString().split('T')[0], 
                 batas_pembayaran: "" 
             });
+            setNominalDisplay("");
             setSelectedSantri([]);
             setIsSelectAll(false);
         }
@@ -134,7 +138,19 @@ export default function InputTagihanModal({ isOpen, onClose, isEditing, editData
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
                 <div className="relative">
-                    <input type="number" required min="1" className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="0" value={formData.nominal} onChange={e => setFormData({...formData, nominal: e.target.value})}/>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      required
+                      className="w-full pl-9 p-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+                      placeholder="0"
+                      value={nominalDisplay}
+                      onChange={e => {
+                        const raw = e.target.value.replace(/\./g, "").replace(/\D/g, "");
+                        setNominalDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("id-ID"));
+                        setFormData({...formData, nominal: raw});
+                      }}
+                    />
                     <span className="absolute left-3 top-3 text-gray-500 text-sm font-bold">Rp</span>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../config/api"; 
 import { Link } from "react-router-dom";
-import { CheckCircle, UploadCloud, ChevronRight, ChevronDown, Check, FileText, Loader2, ArrowLeft, Plus, X } from "lucide-react";
+import { CheckCircle, UploadCloud, ChevronRight, ChevronDown, Check, FileText, Loader2, ArrowLeft, Plus, X, Copy } from "lucide-react";
 
 // IMPORT FUNGSI CETAK PDF DARI FILE UTILS
 import { cetakBuktiPendaftaran } from "../../components/ppdb/CetakBuktiPpdb"; 
@@ -34,6 +34,14 @@ export default function FormPendaftaran() {
   const [noPendaftaran, setNoPendaftaran] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [copiedRek, setCopiedRek] = useState(false);
+
+  const handleCopyRek = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedRek(true);
+      setTimeout(() => setCopiedRek(false), 2000);
+    });
+  };
 
   useEffect(() => {
     api.get("/ppdb/public/gelombang")
@@ -302,7 +310,7 @@ export default function FormPendaftaran() {
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap *</label><input name="nama" value={ortu.nama} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">No HP / WA *</label><input name="no_hp" value={ortu.no_hp} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pekerjaan</label><input name="pekerjaan" value={ortu.pekerjaan} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
-                    <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Penghasilan</label><input name="penghasilan" value={ortu.penghasilan} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
+                    <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Penghasilan</label><input inputMode="numeric" value={ortu.penghasilan ? parseInt(String(ortu.penghasilan).replace(/\./g, ""), 10).toLocaleString("id-ID") : ""} onChange={(e) => { const raw = e.target.value.replace(/\./g, "").replace(/\D/g, ""); const updated = [...orangtua]; updated[idx]["penghasilan"] = raw; setOrangtua(updated); }} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500" placeholder="cth: 3.000.000"/></div>
                   </div>
                 </div>
               ))}
@@ -331,16 +339,42 @@ export default function FormPendaftaran() {
               <p className="text-2xl font-black font-mono text-green-700 tracking-widest mt-1">{noPendaftaran}</p>
             </div>
 
-            <h2 className="text-xl font-bold text-gray-800 mb-1">Pembayaran</h2>
-            <p className="text-sm text-gray-500 mb-4">Silakan upload bukti transfer biaya pendaftaran.</p>
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-xl font-bold text-gray-800">Pembayaran</h2>
+              <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-md uppercase tracking-wider">● Wajib</span>
+            </div>
+            <p className="text-sm text-gray-500 mb-3">Silakan transfer ke rekening berikut, lalu upload bukti transfernya.</p>
+            <div className="bg-white border border-green-200 rounded-xl p-4 mb-5 flex flex-col gap-2">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Rekening Tujuan Transfer</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-gray-500">Bank ABC</p>
+                  <button
+                    onClick={() => handleCopyRek("XXXXXXXXXXXX")}
+                    className="flex items-center gap-2 group mt-0.5"
+                    title="Klik untuk menyalin nomor rekening"
+                  >
+                    <p className="text-lg font-black text-gray-800 tracking-widest font-mono group-hover:text-green-600 transition">XXXX XXXX XXX</p>
+                    {copiedRek
+                      ? <Check size={15} className="text-green-500 shrink-0" />
+                      : <Copy size={14} className="text-gray-400 group-hover:text-green-500 transition shrink-0" />}
+                  </button>
+                  {copiedRek && <p className="text-[10px] text-green-500 font-bold mt-0.5">Tersalin!</p>}
+                  <p className="text-xs font-semibold text-gray-600 mt-0.5">a.n. Pondok Pesantren Darunna'im Yapia</p>
+                </div>
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600 fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M2 10h20v2H2zm0 4h20v2H2zM12 2L2 7h20L12 2zm0 18l-4-3H6l6 3 6-3h-2l-4 3z"/></svg>
+                </div>
+              </div>
+            </div>
             <div className="space-y-4 mb-8">
               {[{ key: "Bukti_Transfer_Pendaftaran", label: `Bukti Transfer (Rp ${selectedGelombang?.biaya_pendaftaran?.toLocaleString('id-ID') || 0})` }].map((doc) => (
-                <div key={doc.key} className="border border-green-200 bg-green-50/50 rounded-xl p-4 flex items-center justify-between">
+                <div key={doc.key} className="border border-green-200 bg-green-50/50 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <p className="font-bold text-sm text-gray-800">{doc.label}</p>
                   {uploadStatus[doc.key] === "success" ? (
-                      <span className="text-green-600 bg-green-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1"><Check size={14}/> Sukses</span>
+                      <span className="text-green-600 bg-green-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 sm:shrink-0"><Check size={14}/> Sukses</span>
                   ) : (
-                    <label className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-2 shadow-sm">
+                    <label className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold cursor-pointer transition shadow-sm sm:shrink-0">
                         <input type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
                         <UploadCloud size={14}/> Upload Bukti
                     </label>
@@ -353,12 +387,12 @@ export default function FormPendaftaran() {
             <p className="text-sm text-gray-500 mb-4">Maks. 2MB. Bisa dilewati dan dilengkapi nanti.</p>
             <div className="space-y-4">
               {[{ key: "Foto_3x4", label: "Foto 3×4" }, { key: "Akta_Kelahiran", label: "KK / Akta" }, { key: "Ijazah", label: "Ijazah / SKL" }].map((doc) => (
-                <div key={doc.key} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between">
+                <div key={doc.key} className="border border-gray-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <p className="font-bold text-sm text-gray-700">{doc.label}</p>
                   {uploadStatus[doc.key] === "success" ? (
-                      <span className="text-green-600 bg-green-50 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1"><Check size={14}/> Sukses</span>
+                      <span className="text-green-600 bg-green-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 sm:shrink-0"><Check size={14}/> Sukses</span>
                   ) : (
-                    <label className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-2">
+                    <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold cursor-pointer transition sm:shrink-0">
                         <input type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
                         <UploadCloud size={14}/> Upload
                     </label>
@@ -366,7 +400,12 @@ export default function FormPendaftaran() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex flex-col items-end gap-2">
+              {uploadStatus["Bukti_Transfer_Pendaftaran"] !== "success" && (
+                <p className="text-xs text-red-500 font-medium flex items-center gap-1">
+                  <span>⚠</span> Upload bukti transfer terlebih dahulu untuk melanjutkan
+                </p>
+              )}
               <button 
                 disabled={uploadStatus["Bukti_Transfer_Pendaftaran"] !== "success"} 
                 onClick={() => setStep(4)} 

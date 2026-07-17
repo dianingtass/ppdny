@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api";
 import { X, Loader2 } from "lucide-react";
+import { formatRibuanDisplay } from "../../utils/rupiahFormat";
 
 export default function TahunModal({ isOpen, editData, onClose, onSuccess }) {
   const isEdit = !!editData;
@@ -9,20 +10,24 @@ export default function TahunModal({ isOpen, editData, onClose, onSuccess }) {
     tanggal_buka: "", tanggal_tutup: "", tanggal_pengumuman: "",
     kuota: "", biaya_pendaftaran: "0", deskripsi: "",
   });
+  const [biayaDisplay, setBiayaDisplay] = useState("0");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
         if (editData) {
+            const biaya = String(editData.biaya_pendaftaran || 0);
             setForm({
                 nama_gelombang: editData.nama_gelombang || "", tahun_ajaran: editData.tahun_ajaran || "",
                 gelombang: String(editData.gelombang || 1), tanggal_buka: editData.tanggal_buka?.split("T")[0] || "",
                 tanggal_tutup: editData.tanggal_tutup?.split("T")[0] || "", tanggal_pengumuman: editData.tanggal_pengumuman?.split("T")[0] || "",
-                kuota: editData.kuota ? String(editData.kuota) : "", biaya_pendaftaran: String(editData.biaya_pendaftaran || 0),
+                kuota: editData.kuota ? String(editData.kuota) : "", biaya_pendaftaran: biaya,
                 deskripsi: editData.deskripsi || "",
             });
+            setBiayaDisplay(formatRibuanDisplay(biaya));
         } else {
             setForm({ nama_gelombang: "", tahun_ajaran: "", gelombang: "1", tanggal_buka: "", tanggal_tutup: "", tanggal_pengumuman: "", kuota: "", biaya_pendaftaran: "0", deskripsi: "" });
+            setBiayaDisplay("0");
         }
     }
   }, [isOpen, editData]);
@@ -81,7 +86,7 @@ export default function TahunModal({ isOpen, editData, onClose, onSuccess }) {
           <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tgl Pengumuman</label><input type="date" name="tanggal_pengumuman" value={form.tanggal_pengumuman} onChange={e => setForm({...form, tanggal_pengumuman: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Kuota</label><input type="number" name="kuota" value={form.kuota} onChange={e => setForm({...form, kuota: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Tak terbatas"/></div>
-            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Biaya (Rp)</label><input type="number" name="biaya_pendaftaran" value={form.biaya_pendaftaran} onChange={e => setForm({...form, biaya_pendaftaran: e.target.value})} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
+            <div><label className="block text-xs font-bold text-gray-600 uppercase mb-2">Biaya (Rp)</label><input type="text" inputMode="numeric" name="biaya_pendaftaran" value={biayaDisplay} onChange={e => { const raw = e.target.value.replace(/\./g, "").replace(/\D/g, ""); setBiayaDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("id-ID")); setForm({...form, biaya_pendaftaran: raw}); }} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" /></div>
           </div>
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 sticky bottom-0">
