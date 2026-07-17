@@ -197,17 +197,16 @@ export default function RiwayatLayananList() {
                                 </div>
                             </div>
 
-                            <p className="text-sm text-gray-600 line-clamp-2 mb-4 bg-gray-50 p-3 rounded-xl">{item.keperluan}</p>
 
-                            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-50">
+                            <div className="flex flex-wrap items-center justify-end gap-2.5 pt-3 border-t border-gray-50">
                                 <button 
                                     onClick={() => setSelectedDetailId(item.id)}
-                                    className="text-xs text-green-600 font-bold hover:underline"
+                                    className="px-3.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-semibold shadow-sm transition"
                                 >
-                                    Lihat Rincian Log
+                                    Lihat Rincian
                                 </button>
                                 
-                                {item.status.toLowerCase() === 'selesai' && !item.feedback_layanan && (
+                                {item.status.toLowerCase() === 'selesai' && !item.sudah_feedback && (
                                     <button 
                                         onClick={() => setFeedbackItem(item)}
                                         className="px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-semibold shadow-sm transition"

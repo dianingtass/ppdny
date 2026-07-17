@@ -79,7 +79,7 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
               <div><label className={labelCls}>Anak Ke</label><input type="number" value={dataDiri.anak_ke} onChange={e => setDataDiri({...dataDiri, anak_ke: e.target.value})} className={inputCls} /></div>
               <div><label className={labelCls}>Dari (Jumlah Saudara)</label><input type="number" value={dataDiri.jumlah_saudara} onChange={e => setDataDiri({...dataDiri, jumlah_saudara: e.target.value})} className={inputCls} /></div>
               <div className="col-span-2"><label className={labelCls}>Alamat</label><textarea value={dataDiri.alamat} onChange={e => setDataDiri({...dataDiri, alamat: e.target.value})} rows={2} className={`${inputCls} resize-none`} /></div>
-              <div><label className={labelCls}>No. HP / WA</label><input value={dataDiri.no_hp} onChange={e => setDataDiri({...dataDiri, no_hp: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>No. HP / WA</label><input value={dataDiri.no_hp} onChange={e => setDataDiri({...dataDiri, no_hp: e.target.value.replace(/\D/g, "")})} className={inputCls} /></div>
               <div><label className={labelCls}>Asal Sekolah</label><input value={dataDiri.asal_sekolah} onChange={e => setDataDiri({...dataDiri, asal_sekolah: e.target.value})} className={inputCls} /></div>
               <div><label className={labelCls}>Jurusan Asal</label><input value={dataDiri.jurusan_asal} onChange={e => setDataDiri({...dataDiri, jurusan_asal: e.target.value})} className={inputCls} /></div>
               <div><label className={labelCls}>Tahun Lulus</label><input value={dataDiri.tahun_lulus} onChange={e => setDataDiri({...dataDiri, tahun_lulus: e.target.value})} className={inputCls} /></div>
@@ -135,7 +135,7 @@ export default function PendaftarManualModal({ isOpen, tahunList, onClose, onSuc
                     </div>
                     <div>
                       <label className={labelCls}>No. HP / WA</label>
-                      <input value={ortu.no_hp} onChange={e => {const u=[...orangtua]; u[idx].no_hp=e.target.value; setOrangtua(u)}} className={inputCls} />
+                      <input value={ortu.no_hp} onChange={e => {const u=[...orangtua]; u[idx].no_hp=e.target.value.replace(/\D/g, ""); setOrangtua(u)}} className={inputCls} />
                     </div>
                     <div>
                       <label className={labelCls}>Pendidikan</label>

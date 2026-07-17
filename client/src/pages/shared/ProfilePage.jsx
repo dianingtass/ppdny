@@ -222,9 +222,10 @@ export default function ProfilePage({ role }) {
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nomor Handphone (WhatsApp)</label>
               <input 
                 type="text" 
+                inputMode="numeric"
                 required
                 value={dataDiri.no_hp || ""} 
-                onChange={(e) => setDataDiri({ ...dataDiri, no_hp: e.target.value })} 
+                onChange={(e) => setDataDiri({ ...dataDiri, no_hp: e.target.value.replace(/\D/g, "") })} 
                 className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition" 
               />
             </div>

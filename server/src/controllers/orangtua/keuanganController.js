@@ -92,8 +92,12 @@ exports.uploadPembayaran = async (req, res) => {
     await prisma.$transaction(async (tx) => {
         await tx.pembayaran.create({
           data: {
-            id_tagihan: parseInt(id_tagihan), tanggal_bayar: new Date(), nominal: tagihan.nominal,
-            bukti_bayar: req.file.secure_url || req.file.path, metode_bayar: "Transfer", status: "Pending", 
+            id_tagihan: parseInt(id_tagihan), 
+            tanggal_bayar: new Date(), 
+            nominal: parseFloat(tagihan.nominal),
+            bukti_bayar: req.file.secure_url || req.file.path, 
+            metode_bayar: "Transfer", 
+            status: "Pending", 
           },
         });
 

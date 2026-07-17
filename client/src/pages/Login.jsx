@@ -209,6 +209,10 @@ export default function Login() {
                   </label>
                   <input
                     type="text"
+                    autoCapitalize="none"
+                    autoComplete="username"
+                    autoCorrect="off"
+                    spellCheck="false"
                     placeholder="Masukkan NIS atau No. HP atau Email Anda"
                     className="w-full px-4 py-3 rounded-xl bg-white/20 lg:bg-white border border-white/30 lg:border-gray-300 text-white lg:text-gray-900 placeholder-green-200 lg:placeholder-gray-400 focus:ring-2 focus:ring-white/50 lg:focus:ring-green-500 outline-none transition-all"
                     value={identifier}

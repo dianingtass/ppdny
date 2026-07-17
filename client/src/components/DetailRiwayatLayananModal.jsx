@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../config/api';
-import { X, FileText, CheckCircle, Clock, Loader2, Download } from 'lucide-react';
+import { X, FileText, CheckCircle, Clock, Loader2, Download, Star } from 'lucide-react';
 import { PdfRiwayatLayanan } from './PdfRiwayatLayanan';
 import AlertToast from './AlertToast';
 import { useAlert } from '../hooks/useAlert';
@@ -79,9 +79,21 @@ export default function DetailRiwayatLayananModal({ isOpen, onClose, idRiwayat }
               </div>
 
               {detail.catatan && (
-                <div className="p-4 bg-green-50 border border-green-100 rounded-xl">
+                <div className="p-4 bg-green-50/50 border border-green-100 rounded-xl">
                   <p className="text-xs text-green-600 font-bold mb-1 flex items-center gap-1"><CheckCircle size={14} /> Catatan Petugas:</p>
                   <p className="text-sm text-green-800 italic">{detail.catatan}</p>
+                </div>
+              )}
+
+              {detail.feedback?.length > 0 && (
+                <div className="p-4 bg-yellow-50/40 border border-yellow-200 rounded-xl">
+                  <p className="text-xs text-yellow-600 font-bold mb-2 flex items-center gap-1"><Star size={14} className="fill-yellow-500 text-yellow-500" /> Ulasan Anda:</p>
+                  <div className="flex gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={16} className={i < detail.feedback[0].rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} />
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-700 italic">"{detail.feedback[0].isi_text}"</p>
                 </div>
               )}
             </>

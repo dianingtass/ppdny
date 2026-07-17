@@ -49,7 +49,10 @@ exports.getDetailRiwayat = async (req, res) => {
             where: { id: parseInt(id) },
             include: {
                 jenis_layanan: true,
-                riwayat_layanan_detail: true // Ambil isi form (Pertanyaan & Jawaban)
+                riwayat_layanan_detail: true,
+                feedback: {
+                    where: { is_active: true }
+                }
             }
         });
 

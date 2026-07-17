@@ -95,6 +95,21 @@ export default function FormPendaftaran() {
 
   const handleUploadDokumen = async (jenis, file) => {
     if (!noPendaftaran) return;
+    setErrorMsg("");
+
+    // 1. Validasi ukuran file (maks 2MB di frontend)
+    if (file.size > 2 * 1024 * 1024) {
+      setErrorMsg(`Gagal upload: Ukuran file "${file.name}" melebihi 2MB.`);
+      return;
+    }
+
+    // 2. Validasi ekstensi file
+    const allowedExtensions = /(\.jpg|\.jpeg|\.webp|\.png|\.pdf)$/i;
+    if (!allowedExtensions.exec(file.name)) {
+      setErrorMsg(`Gagal upload: Format file tidak didukung. Hanya file JPG, JPEG, WEBP, PNG, dan PDF yang diizinkan.`);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("jenis_dokumen", jenis);
@@ -106,6 +121,7 @@ export default function FormPendaftaran() {
       setUploadStatus((prev) => ({ ...prev, [jenis]: "success" }));
     } catch (err) {
       setUploadStatus((prev) => ({ ...prev, [jenis]: "error" }));
+      setErrorMsg(err.response?.data?.message || `Gagal mengupload dokumen ${jenis.replace(/_/g, " ")}.`);
     }
   };
 
@@ -264,7 +280,7 @@ export default function FormPendaftaran() {
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Anak Ke</label><input type="number" name="anak_ke" value={dataDiri.anak_ke} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Dari (Jumlah Saudara)</label><input type="number" name="jumlah_saudara" value={dataDiri.jumlah_saudara} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Alamat Lengkap *</label><textarea name="alamat" value={dataDiri.alamat} onChange={handleDataDiriChange} rows={2} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"/></div>
-              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">No. HP / WA</label><input name="no_hp" value={dataDiri.no_hp} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
+              <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">No. HP / WA</label><input name="no_hp" value={dataDiri.no_hp} onChange={(e) => setDataDiri((prev) => ({ ...prev, no_hp: e.target.value.replace(/\D/g, "") }))} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
               
               <div className="sm:col-span-2 border-t border-gray-100 pt-5 mt-2"><p className="text-sm font-bold text-green-700 bg-green-50 inline-block px-4 py-2 rounded-lg">Riwayat Pendidikan</p></div>
               <div><label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Asal Sekolah</label><input name="asal_sekolah" value={dataDiri.asal_sekolah} onChange={handleDataDiriChange} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500"/></div>
@@ -308,7 +324,7 @@ export default function FormPendaftaran() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nama Lengkap *</label><input name="nama" value={ortu.nama} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
-                    <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">No HP / WA *</label><input name="no_hp" value={ortu.no_hp} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
+                    <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">No HP / WA *</label><input name="no_hp" value={ortu.no_hp} onChange={(e) => { const updated = [...orangtua]; updated[idx]["no_hp"] = e.target.value.replace(/\D/g, ""); setOrangtua(updated); }} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pekerjaan</label><input name="pekerjaan" value={ortu.pekerjaan} onChange={(e) => handleOrangtuaChange(idx, e)} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/></div>
                     <div><label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Penghasilan</label><input inputMode="numeric" value={ortu.penghasilan ? parseInt(String(ortu.penghasilan).replace(/\./g, ""), 10).toLocaleString("id-ID") : ""} onChange={(e) => { const raw = e.target.value.replace(/\./g, "").replace(/\D/g, ""); const updated = [...orangtua]; updated[idx]["penghasilan"] = raw; setOrangtua(updated); }} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500" placeholder="cth: 3.000.000"/></div>
                   </div>
@@ -375,7 +391,7 @@ export default function FormPendaftaran() {
                       <span className="text-green-600 bg-green-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 sm:shrink-0"><Check size={14}/> Sukses</span>
                   ) : (
                     <label className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold cursor-pointer transition shadow-sm sm:shrink-0">
-                        <input type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
+                        <input type="file" accept=".jpg,.jpeg,.webp,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
                         <UploadCloud size={14}/> Upload Bukti
                     </label>
                   )}
@@ -393,7 +409,7 @@ export default function FormPendaftaran() {
                       <span className="text-green-600 bg-green-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 sm:shrink-0"><Check size={14}/> Sukses</span>
                   ) : (
                     <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold cursor-pointer transition sm:shrink-0">
-                        <input type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
+                        <input type="file" accept=".jpg,.jpeg,.webp,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && handleUploadDokumen(doc.key, e.target.files[0])} />
                         <UploadCloud size={14}/> Upload
                     </label>
                   )}

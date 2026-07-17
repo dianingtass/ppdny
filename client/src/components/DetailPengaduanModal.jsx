@@ -50,7 +50,8 @@ export default function DetailPengaduanModal({
   // Deteksi User Data
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const currentUserId = currentUser.id;
-  const currentRole = (currentUser.role || "").toLowerCase().replace(/\s/g, "");
+  const pathRole = window.location.pathname.split("/")[1] || ""; // fallback dari path URL: santri, orangtua, ustadz, dll
+  const currentRole = (currentUser.role || pathRole).toLowerCase().replace(/\s/g, "");
 
   const canReply = ["admin", "pengurus", "ustadz", "orangtua"].includes(currentRole);
   const isAdminOrPengurus = ["admin", "pengurus"].includes(currentRole);
@@ -317,7 +318,9 @@ export default function DetailPengaduanModal({
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mb-1">
                 <Lock size={14} className="text-gray-500" />
               </div>
-              <p className="text-xs font-semibold text-gray-600">Laporan Telah Ditutup</p>
+              <p className="text-xs font-semibold text-gray-600">
+                {detail?.status === "Selesai" ? "Laporan Telah Ditutup" : "Hanya Ustadz & Wali yang dapat berdiskusi"}
+              </p>
             </div>
           )}
         </div>

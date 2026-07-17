@@ -111,8 +111,21 @@ export default function CekStatus() {
   };
 
   const handleUploadSusulan = async (jenis, file) => {
-    // ... (sama seperti kode Anda sebelumnya)
     if (!data?.no_pendaftaran) return;
+
+    // 1. Validasi ukuran file (maks 2MB di frontend)
+    if (file.size > 2 * 1024 * 1024) {
+      showAlert("error", `Gagal upload: Ukuran file "${file.name}" melebihi 2MB.`);
+      return;
+    }
+
+    // 2. Validasi ekstensi file
+    const allowedExtensions = /(\.jpg|\.jpeg|\.webp|\.png|\.pdf)$/i;
+    if (!allowedExtensions.exec(file.name)) {
+      showAlert("error", `Gagal upload: Format file tidak didukung. Hanya file JPG, JPEG, WEBP, PNG, dan PDF yang diizinkan.`);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("jenis_dokumen", jenis);
@@ -126,7 +139,7 @@ export default function CekStatus() {
       handleCek();
     } catch (err) {
       setUploadStatus((prev) => ({ ...prev, [jenis]: "error" }));
-      showAlert("error", "Gagal mengunggah dokumen. Pastikan ukuran max 2MB.");
+      showAlert("error", err.response?.data?.message || `Gagal mengupload dokumen ${jenis.replace(/_/g, " ")}.`);
     }
   };
 
@@ -178,7 +191,7 @@ export default function CekStatus() {
           </div>
           
           <div className="flex justify-between items-center mt-3">
-            {error ? <p className="text-sm font-medium text-red-500">⚠️ {error}</p> : <div/>}
+            {error ? <p className="text-sm font-medium text-red-500">{error}</p> : <div/>}
             <button onClick={() => setShowForgotModal(true)} className="text-sm font-bold text-green-600 hover:text-green-700 flex items-center gap-1 transition ml-auto">
                <HelpCircle size={14}/> Lupa Nomor Pendaftaran?
             </button>
@@ -270,7 +283,7 @@ export default function CekStatus() {
                             <label className="px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 rounded-lg text-xs font-bold cursor-pointer transition flex items-center gap-2 shadow-sm">
                               <input 
                                 type="file" 
-                                accept=".jpg,.jpeg,.png,.pdf" 
+                                accept=".jpg,.jpeg,.webp,.png,.pdf" 
                                 className="hidden" 
                                 onChange={(e) => e.target.files[0] && handleUploadSusulan(doc.key, e.target.files[0])} 
                               />

@@ -63,6 +63,11 @@ exports.getDetailPengaduan = async (req, res) => {
             user_role: { include: { role: true }, take: 1 }
           }
         },
+        users_pengaduan_id_santriTousers: {
+          select: {
+            nama: true
+          }
+        },
         tanggapan_aduan: {
           orderBy: { waktu_tanggapan: 'asc' },
           include: {
@@ -71,13 +76,7 @@ exports.getDetailPengaduan = async (req, res) => {
                 id: true,
                 nama: true,
                 foto_profil: true,
-                user_role: { include: { role: true }, take: 1 },
-                // UPDATE: Ambil data hubungan dari tabel orangtua
-                // Relasi ini dibuat otomatis oleh Prisma berdasarkan schema Anda
-                orangtua_orangtua_id_orangtuaTousers: {
-                    select: { hubungan: true },
-                    take: 1
-                }
+                user_role: { include: { role: true }, take: 1 }
               }
             }
           }
@@ -113,12 +112,7 @@ exports.kirimTanggapan = async (req, res) => {
             select: {
                 id: true,
                 nama: true,
-                user_role: { include: {role: true} },
-                // Include ini agar saat return response, data hubungan langsung terbawa
-                orangtua_orangtua_id_orangtuaTousers: {
-                    select: { hubungan: true },
-                    take: 1
-                }
+                user_role: { include: {role: true} }
             }
         }
       }

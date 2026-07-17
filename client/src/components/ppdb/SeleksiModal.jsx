@@ -37,6 +37,52 @@ export default function SeleksiModal({ isOpen, data, onClose, onSuccess }) {
   })();
 
   const handleSubmit = async () => {
+    // Validasi input
+    if (form.nilai_quran === "" || form.nilai_quran === undefined || form.nilai_quran === null) {
+      alert("Nilai Tes Al-Quran wajib diisi!");
+      return;
+    }
+    const nq = parseFloat(form.nilai_quran);
+    if (isNaN(nq) || nq < 0 || nq > 100) {
+      alert("Nilai Tes Al-Quran harus berkisar antara 0 - 100!");
+      return;
+    }
+
+    if (form.juz_diuji === "" || form.juz_diuji === undefined || form.juz_diuji === null) {
+      alert("Juz Diuji wajib diisi!");
+      return;
+    }
+    const jd = parseInt(form.juz_diuji, 10);
+    if (isNaN(jd) || jd < 0 || jd > 30) {
+      alert("Juz Diuji harus berupa angka berkisar antara 0 - 30!");
+      return;
+    }
+
+    if (form.nilai_tulis === "" || form.nilai_tulis === undefined || form.nilai_tulis === null) {
+      alert("Nilai Tes Tulis Akademik wajib diisi!");
+      return;
+    }
+    const nt = parseFloat(form.nilai_tulis);
+    if (isNaN(nt) || nt < 0 || nt > 100) {
+      alert("Nilai Tes Tulis Akademik harus berkisar antara 0 - 100!");
+      return;
+    }
+
+    if (form.nilai_wawancara === "" || form.nilai_wawancara === undefined || form.nilai_wawancara === null) {
+      alert("Nilai Tes Wawancara wajib diisi!");
+      return;
+    }
+    const nw = parseFloat(form.nilai_wawancara);
+    if (isNaN(nw) || nw < 0 || nw > 100) {
+      alert("Nilai Tes Wawancara harus berkisar antara 0 - 100!");
+      return;
+    }
+
+    if (!form.rekomendasi) {
+      alert("Keputusan Panitia (Rekomendasi) wajib dipilih!");
+      return;
+    }
+
     try {
       setLoading(true);
       await api.post(`/ppdb/panitia/seleksi/${data.id}`, form);
