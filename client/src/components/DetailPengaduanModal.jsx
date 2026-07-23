@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import api from "../config/api"; // MENGGUNAKAN API GLOBAL
+import { AuthContext } from "../context/AuthContext";
+import { getStoredAuthUser } from "../utils/authStorage";
 import {
   X,
   Send,
@@ -38,6 +40,7 @@ export default function DetailPengaduanModal({
   const [tanggapan, setTanggapan] = useState("");
   const [sending, setSending] = useState(false);
   const [finishing, setFinishing] = useState(false);
+
   const { message, showAlert, clearAlert } = useAlert();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, name: "" });
   const [isDeleting, setIsDeleting] = useState(false);
@@ -48,7 +51,16 @@ export default function DetailPengaduanModal({
   const textareaRef = useRef(null);
 
   // Deteksi User Data
-  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user: contextUser } = useContext(AuthContext);
+  const storedUser = getStoredAuthUser();
+  const legacyUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+  const currentUser = contextUser || storedUser || legacyUser;
   const currentUserId = currentUser.id;
   const pathRole = window.location.pathname.split("/")[1] || ""; // fallback dari path URL: santri, orangtua, ustadz, dll
   const currentRole = (currentUser.role || pathRole).toLowerCase().replace(/\s/g, "");

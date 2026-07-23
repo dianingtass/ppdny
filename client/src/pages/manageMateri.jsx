@@ -3,9 +3,11 @@
 // - Tab "Daftar Materi": materi yang sudah publish, dipisah Teori vs Pengalaman
 // - Tab "Pengajuan Masuk": daftar pengajuan user dengan aksi Setujui / Tolak / Edit
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../config/api";
+import { AuthContext } from "../context/AuthContext";
+import { getStoredAuthUser } from "../utils/authStorage";
 import {
   Search, Plus, CheckCircle, XCircle, Edit2, Trash2,
   ClipboardList, BookOpen, Clock, Loader2, ChevronDown, ChevronUp
@@ -43,9 +45,19 @@ export default function MateriManage() {
   const { pathname } = useLocation();
   const detailBasePath = pathname;
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const role = user?.role?.trim().toLowerCase();
-  const isAdmin = role === "admin";
+  const { user: contextUser } = useContext(AuthContext);
+  const storedUser = getStoredAuthUser();
+  const legacyUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+  const user = contextUser || storedUser || legacyUser;
+  let role = user?.role?.trim().toLowerCase();
+  if (!role && pathname.startsWith("/admin")) role = "admin";
+  const isAdmin = role === "admin" || pathname.startsWith("/admin");
 
   // ── State: Daftar Materi ──────────────────────────────────
   const [materi, setMateri]               = useState([]);

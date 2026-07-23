@@ -1,11 +1,13 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Microscope } from "lucide-react";
 import DOMPurify from "dompurify";
 import LinkMateri from "../../components/LinkMateri";
 import api from "../../config/api";
 import CommentSection from "../../components/CommentSection";
 import { getImageUrl } from '../../utils/imageUrl';
+import { AuthContext } from "../../context/AuthContext";
+import { getStoredAuthUser } from "../../utils/authStorage";
 
 // PATCH: sanitasi HTML dari rich-text editor sebelum dirender (Stored XSS fix)
 const sanitize = (html) => DOMPurify.sanitize(html || "", {
@@ -25,8 +27,17 @@ function DetailMateri() {
   const [materiLain, setMateriLain] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const role = user?.role?.trim().toLowerCase();
+  const { user: contextUser } = useContext(AuthContext);
+  const storedUser = getStoredAuthUser();
+  const legacyUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+  const user = contextUser || storedUser || legacyUser;
+  const role = user?.role?.trim().toLowerCase() || "pimpinan";
 
   const detailBasePath = "/pimpinan/scabies/materi";
 

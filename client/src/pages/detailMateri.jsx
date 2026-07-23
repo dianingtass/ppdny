@@ -1,11 +1,13 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ArrowLeft, Microscope } from "lucide-react";
 import DOMPurify from "dompurify";
 import LinkMateri from "../components/LinkMateri";
 import CommentSection from "../components/CommentSection";
 import api from "../config/api";
 import { getImageUrl } from '../utils/imageUrl';
+import { AuthContext } from "../context/AuthContext";
+import { getStoredAuthUser } from "../utils/authStorage";
 
 // ── PATCH: sanitasi HTML dari rich-text editor sebelum dirender.
 // Tanpa ini, konten materi yang mengandung <script> akan dieksekusi
@@ -30,12 +32,31 @@ function DetailMateri() {
   const [materi, setMateri] = useState(null);
   const [materiLain, setMateriLain] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const location = useLocation();
   const isPublicMateriPage = location.pathname.startsWith("/materi");
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const role = user?.role?.trim().toLowerCase();
+  const { user: contextUser } = useContext(AuthContext);
+  const storedUser = getStoredAuthUser();
+  const legacyUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+
+  const currentUser = contextUser || storedUser || legacyUser;
+  let role = currentUser?.role?.trim().toLowerCase();
+
+  if (!role || typeof role !== "string") {
+    if (location.pathname.startsWith("/admin")) role = "admin";
+    else if (location.pathname.startsWith("/timkesehatan")) role = "timkesehatan";
+    else if (location.pathname.startsWith("/pimpinan")) role = "pimpinan";
+    else if (location.pathname.startsWith("/santri")) role = "santri";
+    else if (location.pathname.startsWith("/orangtua")) role = "orangtua";
+    else if (location.pathname.startsWith("/ustadz")) role = "ustadz";
+  }
 
   const rolePathMap = {
     timkesehatan: "/timkesehatan/manageMateri",
@@ -123,9 +144,9 @@ function DetailMateri() {
   // HTML yang sudah disanitasi — aman untuk dirender
   const safeHtml = sanitize(materi.detail_materi?.[0]?.isi_materi);
 
-  const shouldShowComments = !isPublicMateriPage && role !== "pimpinan";
+  const isAdminPanel = role === "timkesehatan" || role === "admin" || role === "pimpinan" || location.pathname.startsWith("/admin") || location.pathname.startsWith("/timkesehatan") || location.pathname.startsWith("/pimpinan");
 
-  if (role === "timkesehatan" || role === "admin" || role === "pimpinan") {
+  if (isAdminPanel) {
     return (
       <div className="space-y-6">
         <div className="flex items-center mb-6">

@@ -92,7 +92,7 @@ export default function MateriView() {
                             <CardMateri 
                                 key={item.id} 
                                 materi={item} 
-                                detailBasePath="/materi/detail" 
+                                detailBasePath="/admin/manageMateri" 
                             />
                         ))
                     ) : (
