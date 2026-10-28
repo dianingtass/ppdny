@@ -251,19 +251,15 @@ function groupSections(blocks) {
   let pendingH1      = null; // h1 that appears before a section_start anchor
 
   for (const block of blocks) {
-    if (block.type === 'section_start') {
+    if (block.type === 'h1') {
+      pendingH1 = block.text;
+    } else if (block.type === 'section_start') {
       current = block.id;
       sectionOrder.push(current);
-      // Assign any pending h1 that came before this anchor
       sections[current] = { h1: pendingH1, blocks: [] };
       pendingH1 = null;
-    } else if (block.type === 'h1' && !current) {
-      // h1 before any section_start — save it for the upcoming section
-      pendingH1 = block.text;
     } else if (!current) {
       // Ignore other blocks before first section
-    } else if (block.type === 'h1' && !sections[current].h1) {
-      sections[current].h1 = block.text;
     } else {
       sections[current].blocks.push(block);
     }

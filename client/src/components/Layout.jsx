@@ -279,10 +279,10 @@ export default function GlobalLayout() {
     },
     {
       name: "Buku Panduan",
-      path: "/docs/panduan",
+      path: "/guidebook",
       icon: BookOpen,
       roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
-      isExternal: true,
+      isGuidebook: true,
     }
   ];
 
@@ -298,6 +298,7 @@ export default function GlobalLayout() {
     if (path.includes("daftarSantriScreening")) return "Screening";
     if (path.includes("daftarAbsensiKamar")) return "Absensi Kesehatan";
     if (path.includes("konsultasi")) return "Konsultasi";
+    if (path.includes("guidebook")) return "Buku Panduan";
 
     const menuMatch = filteredMenu.find((m) => {
 
@@ -393,7 +394,9 @@ export default function GlobalLayout() {
 
                 <button
                   onClick={() => {
-                    if (item.isExternal) {
+                    if (item.isGuidebook) {
+                      navigate(`/${userRole}/guidebook`);
+                    } else if (item.isExternal) {
                       const roleNameMap = {
                         admin: "Admin",
                         pimpinan: "Pimpinan",
@@ -470,6 +473,19 @@ export default function GlobalLayout() {
               {getHeaderTitle()}
             </h2>
 
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                navigate(`/${userRole}/guidebook`);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition"
+              title="Buku Panduan Pengguna"
+            >
+              <BookOpen size={16} />
+              <span className="hidden sm:inline">Panduan</span>
+            </button>
           </div>
 
         </header>

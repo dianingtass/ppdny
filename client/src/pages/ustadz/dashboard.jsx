@@ -122,7 +122,15 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold">SIM-Tren</h1>
               <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => navigate("/ustadz/guidebook")}
+                className="p-2 hover:bg-white/10 rounded-xl transition text-white flex items-center gap-1.5 focus:outline-none"
+                title="Buku Panduan Ustadz"
+              >
+                <BookOpen size={20} className="text-green-100" />
+                <span className="hidden sm:inline text-xs font-semibold text-green-100">Panduan</span>
+              </button>
               <NotificationDropdown />
               <div className="hidden md:flex items-center space-x-2">
                 <div className="relative">
@@ -142,6 +150,9 @@ export default function Dashboard() {
                     <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-md py-2 z-50 border border-gray-100 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
                       <button onClick={() => { setIsProfileOpen(false); navigate("/ustadz/profil"); }} className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition">
                         <Settings size={16} className="mr-3" /> Profil & Pengaturan
+                      </button>
+                      <button onClick={() => { setIsProfileOpen(false); navigate("/ustadz/guidebook"); }} className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition">
+                        <BookOpen size={16} className="mr-3 text-green-600" /> Buku Panduan
                       </button>
                       <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-md text-red-600 hover:bg-red-50 flex items-center transition">
                         <LogOut size={16} className="mr-3" /> Keluar
@@ -329,6 +340,10 @@ export default function Dashboard() {
           <button onClick={() => navigate("/ustadz/profil")} className="flex flex-col items-center p-2 text-gray-400 hover:text-green-500 transition">
             <User size={22} />
             <span className="text-[10px] mt-1 font-medium">Profil</span>
+          </button>
+          <button onClick={() => navigate("/ustadz/guidebook")} className="flex flex-col items-center p-2 text-gray-400 hover:text-green-500 transition">
+            <BookOpen size={22} />
+            <span className="text-[10px] mt-1 font-medium">Panduan</span>
           </button>
         </div>
       </div>

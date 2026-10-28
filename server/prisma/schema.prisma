@@ -129,13 +129,13 @@ model item_kebersihan {
 }
 
 model jenis_layanan {
-  id              Int                @id @default(autoincrement())
-  nama_layanan    String             @db.VarChar(100)
-  deskripsi       String?            @db.Text
-  estimasi        String?            @db.VarChar(50)
-  is_active       Boolean?           @default(true)
-  riwayat_layanan riwayat_layanan[]
+  id               Int                @id @default(autoincrement())
+  nama_layanan     String             @db.VarChar(100)
+  deskripsi        String?            @db.Text
+  estimasi         String?            @db.VarChar(50)
+  is_active        Boolean?           @default(true)
   formulir_layanan formulir_layanan[]
+  riwayat_layanan  riwayat_layanan[]
 }
 
 model formulir_layanan {
@@ -152,12 +152,11 @@ model formulir_layanan {
   @@index([id_layanan])
 }
 
-
 model jenis_tagihan {
   id            Int       @id @default(autoincrement())
   jenis_tagihan String?   @db.VarChar(100)
-  deskripsi     String?   @db.Text
   is_active     Boolean?
+  deskripsi     String?   @db.Text
   tagihan       tagihan[]
 }
 
@@ -623,19 +622,14 @@ model users {
   user_role                                        user_role[]
 }
 
-enum faq_kategori {
-  Umum
-  Kesehatan
-}
-
 model faq {
   id_faq     Int          @id @default(autoincrement())
   pertanyaan String       @db.Text
   jawaban    String       @db.Text
-  kategori   faq_kategori @default(Umum)
   urutan     Int
   is_active  Boolean      @default(true)
   created_at DateTime?    @db.DateTime(0)
+  kategori   faq_kategori @default(Umum)
 }
 
 model materi_comment {
@@ -754,6 +748,24 @@ model pengajuan_materi {
 
   @@index([id_materi_hasil], map: "pengajuan_materi_materi_FK")
   @@index([id_pengaju], map: "pengajuan_materi_users_FK")
+}
+
+model guidebook_screenshot {
+  id        Int      @id @default(autoincrement())
+  role      String
+  modul     String
+  bagian    String
+  device    String
+  url       String   @db.VarChar(2048)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([role, modul, bagian, device])
+}
+
+enum faq_kategori {
+  Umum
+  Kesehatan
 }
 
 enum item_kebersihan_waktu_pengerjaan {
@@ -956,17 +968,4 @@ enum pengajuan_materi_status {
 enum materi_sumber {
   teori
   pengalaman
-}
-
-model guidebook_screenshot {
-  id        Int      @id @default(autoincrement())
-  role      String
-  modul     String
-  bagian    String
-  device    String
-  url       String   @db.VarChar(2048)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([role, modul, bagian, device])
 }

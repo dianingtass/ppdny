@@ -157,10 +157,14 @@ export default function FormPendaftaran() {
                <p className="text-[10px] font-bold text-green-600 uppercase tracking-wider">PPDB SIM-TREN</p>
              </div>
           </div>
-          {/* Di header kanan cukup Cek Status saja */}
-          <Link to="/ppdb/cek-status" className="text-sm text-green-600 hover:text-green-700 font-bold bg-green-100 hover:bg-green-200 px-4 py-2 rounded-lg transition">
-            Cek Status
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/ppdb/guidebook" className="text-sm text-gray-700 hover:text-green-700 font-bold bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg transition hidden sm:inline-flex">
+              Buku Panduan
+            </Link>
+            <Link to="/ppdb/cek-status" className="text-sm text-green-600 hover:text-green-700 font-bold bg-green-100 hover:bg-green-200 px-4 py-2 rounded-lg transition">
+              Cek Status
+            </Link>
+          </div>
         </div>
       </div>
 

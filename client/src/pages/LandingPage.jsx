@@ -97,6 +97,12 @@ export default function LandingPage() {
               </Link>
             )}
             <Link
+              to="/ppdb/guidebook"
+              className="text-gray-600 hover:text-green-600 font-semibold px-4 py-2 transition hidden sm:inline-flex"
+            >
+              Panduan PPDB
+            </Link>
+            <Link
               to="/login"
               className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition active:scale-95 shadow-md shadow-green-100"
             >

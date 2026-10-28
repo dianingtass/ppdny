@@ -13,6 +13,7 @@ const MateriView = lazy(() => import("./pages/viewMateri"));
 const DetailMateri = lazy(() => import("./pages/detailMateri"));
 const FormPendaftaran = lazy(() => import("./pages/ppdb/formPendaftaran"));
 const CekStatus = lazy(() => import("./pages/ppdb/cekStatus"));
+const PpdbGuidebook = lazy(() => import("./pages/ppdb/guidebook"));
 
 // Santri Pages
 const SantriDashboard = lazy(() => import("./pages/santri/dashboard"));
@@ -44,6 +45,7 @@ const PengurusJenisTagihan = lazy(() => import("./pages/pengurus/jenisTagihan"))
 const PengurusRiwayatLayanan = lazy(() => import("./pages/pengurus/riwayatLayanan"));
 const PengurusKeuangan = lazy(() => import("./pages/pengurus/keuangan"));
 const PengurusKegiatan = lazy(() => import("./pages/pengurus/kegiatan"));
+const PengurusGuidebook = lazy(() => import("./pages/pengurus/guidebook"));
 
 // Tim Kesehatan Pages
 const TimkesDashboard = lazy(() => import("./pages/timkesehatan/dashboard"));
@@ -61,6 +63,7 @@ const TimkesCreateObservasi = lazy(() => import("./pages/timkesehatan/observasi/
 const TimkesViewObservasi = lazy(() => import("./pages/timkesehatan/observasi/viewObservasi"));
 const TimkesKonsultasiPage = lazy(() => import("./pages/timkesehatan/konsultasi"));
 const TimkesKonsultasiRiwayatPage = lazy(() => import("./pages/timkesehatan/konsultasiRiwayat"));
+const TimkesGuidebook = lazy(() => import("./pages/timkesehatan/guidebook"));
 
 // Orang Tua Pages
 const OrangtuaDashboard = lazy(() => import("./pages/orangtua/dashboard"));
@@ -73,6 +76,7 @@ const OrangtuaProfile = lazy(() => import("./pages/orangtua/pendataan"));
 const OrangtuaKegiatan = lazy(() => import("./pages/orangtua/kegiatan"));
 const OrangtuaKeuangan = lazy(() => import("./pages/orangtua/keuangan"));
 const OrangtuaPengaduan = lazy(() => import("./pages/orangtua/pengaduan"));
+const OrangtuaGuidebook = lazy(() => import("./pages/orangtua/guidebook"));
 
 // Ustadz Pages
 const UstadzDashboard = lazy(() => import("./pages/ustadz/dashboard"));
@@ -80,6 +84,7 @@ const UstadzProfile = lazy(() => import("./pages/ustadz/pendataan"));
 const UstadzKegiatan = lazy(() => import("./pages/ustadz/kegiatan"));
 const UstadzSantri = lazy(() => import("./pages/ustadz/daftarSantri"));
 const UstadzPengaduan = lazy(() => import("./pages/ustadz/pengaduan"));
+const UstadzGuidebook = lazy(() => import("./pages/ustadz/guidebook"));
 
 // Pimpinan Pages
 const PimpinanDashboard = lazy(() => import("./pages/pimpinan/dashboard"));
@@ -103,6 +108,7 @@ const PimpinanRiwayatLayanan = lazy(() => import("./pages/pimpinan/riwayatLayana
 const PimpinanAbsensiKebersihan = lazy(() => import("./pages/pimpinan/absensi/daftarKamarAbsensi"));
 const PimpinanDetailAbsensi = lazy(() => import("./pages/pimpinan/absensi/portalAbsensi"));
 const PimpinanLaporanAbsensi = lazy(() => import("./pages/pimpinan/absensi/viewAbsensi"));
+const PimpinanGuidebook = lazy(() => import("./pages/pimpinan/guidebook"));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import("./pages/admin/dashboard"));
@@ -132,6 +138,7 @@ const AdminAbsensiKebersihan = lazy(() => import("./pages/admin/absensi/daftarKa
 const AdminDetailAbsensi = lazy(() => import("./pages/admin/absensi/portalAbsensi"));
 const AdminCreateAbsensi = lazy(() => import("./pages/admin/absensi/formAbsensi"));
 const AdminLaporanAbsensi = lazy(() => import("./pages/admin/absensi/viewAbsensi"));
+const AdminGuidebook = lazy(() => import("./pages/admin/guidebook"));
 
 // PPDB Pages
 const PpdbDashboard = lazy(() => import("./pages/ppdb/adminDashboard"));
@@ -157,6 +164,7 @@ function App() {
           <Route path="/materi/:id" element={<DetailMateri />} />
           <Route path="/ppdb/daftar" element={<FormPendaftaran />} />
           <Route path="/ppdb/cek-status" element={<CekStatus />} />
+          <Route path="/ppdb/guidebook" element={<PpdbGuidebook />} />
           <Route path="/login" element={<Login />} />
 
           <Route element={<ProtectedRoute allowedRoles={['santri']} />}>
@@ -199,6 +207,7 @@ function App() {
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="pengurus" />} />
+              <Route path="guidebook" element={<PengurusGuidebook />} />
             </Route>
           </Route>
 
@@ -252,6 +261,7 @@ function App() {
               {/* FAQ */}
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="timkesehatan" />} />
+              <Route path="guidebook" element={<TimkesGuidebook />} />
             </Route>
           </Route>
 
@@ -267,6 +277,7 @@ function App() {
               <Route path="kegiatan" element={<OrangtuaKegiatan />} />
               <Route path="keuangan" element={<OrangtuaKeuangan />} />
               <Route path="pengaduan" element={<OrangtuaPengaduan />} />
+              <Route path="guidebook" element={<OrangtuaGuidebook />} />
             </Route>
           </Route>
 
@@ -277,6 +288,7 @@ function App() {
               <Route path="kegiatan" element={<UstadzKegiatan />} />
               <Route path="daftar-santri" element={<UstadzSantri />} />
               <Route path="pengaduan" element={<UstadzPengaduan />} />
+              <Route path="guidebook" element={<UstadzGuidebook />} />
             </Route>
           </Route>
 
@@ -313,6 +325,7 @@ function App() {
               <Route path="daftarSantriObservasi/:id/view/:observasiId" element={<PimpinanViewObservasi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="pimpinan" />} />
+              <Route path="guidebook" element={<PimpinanGuidebook />} />
             </Route>
           </Route>
 
@@ -360,6 +373,7 @@ function App() {
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="admin" />} />
+              <Route path="guidebook" element={<AdminGuidebook />} />
             </Route>
           </Route>
 

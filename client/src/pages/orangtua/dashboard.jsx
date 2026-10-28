@@ -98,7 +98,15 @@ export default function OrangTuaDashboard() {
             <h1 className="text-2xl font-bold">SIM-Tren</h1>
             <p className="text-green-100">Sistem Informasi Manajemen Pesantren</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => navigate("/orangtua/guidebook")}
+              className="hidden md:flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-xs font-semibold backdrop-blur-sm transition"
+              title="Buku Panduan Pengguna"
+            >
+              <BookOpen size={16} />
+              <span>Panduan</span>
+            </button>
             <NotificationDropdown />
             <div className="relative hidden md:block">
               <button
@@ -119,6 +127,9 @@ export default function OrangTuaDashboard() {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border py-2 z-50">
                   <button onClick={() => { setIsProfileOpen(false); navigate("/orangtua/profil"); }} className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition">
                     <Settings size={16} className="mr-2" /> <span className="text-sm font-semibold">Edit Profil</span>
+                  </button>
+                  <button onClick={() => { setIsProfileOpen(false); navigate("/orangtua/guidebook"); }} className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition">
+                    <BookOpen size={16} className="mr-2" /> <span className="text-sm font-semibold">Buku Panduan</span>
                   </button>
                   <button onClick={handleLogout} className="w-full flex items-center py-3 px-5 text-red-600 hover:bg-red-50 transition">
                     <LogOut size={16} className="mr-2" /> <span className="text-sm font-semibold">Keluar</span>
@@ -182,7 +193,7 @@ export default function OrangTuaDashboard() {
                 <MenuButton icon={<Calendar />} label="Kegiatan" onClick={() => navigate("/orangtua/kegiatan")} color="bg-purple-500" />
                 <MenuButton icon={<AlertCircle />} label="Aduan" onClick={() => navigate("/orangtua/pengaduan")} color="bg-orange-500" />
                 <MenuButton icon={<Cross />} label="Scabies" onClick={() => navigate("/orangtua/kesehatan")} color="bg-teal-500" />
-                <MenuButton icon={<BookOpen />} label="Panduan" onClick={() => window.open("/docs/Panduan_SIM-Tren_Orang_Tua.pdf", "_blank")} color="bg-blue-500" />
+                <MenuButton icon={<BookOpen />} label="Panduan" onClick={() => navigate("/orangtua/guidebook")} color="bg-blue-500" />
               </div>
             </div>
 
@@ -266,6 +277,10 @@ export default function OrangTuaDashboard() {
           <button onClick={() => navigate('/orangtua')} className='flex flex-col items-center p-2 text-green-600'>
             <Home size={24} />
             <span className="text-xs mt-1">Beranda</span>
+          </button>
+          <button onClick={() => navigate("/orangtua/guidebook")} className="flex flex-col items-center p-2 text-gray-600 hover:text-green-600">
+            <BookOpen size={24} />
+            <span className="text-xs mt-1">Panduan</span>
           </button>
           <button onClick={() => navigate("/orangtua/profil")} className="flex flex-col items-center p-2 text-gray-600 hover:text-green-600">
             <User size={24} />

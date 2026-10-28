@@ -253,14 +253,7 @@ const mapSantriListItem = (item, { kategoriSkor, waktu }) => {
 };
 
 const getTindakLanjutOptions = async () => {
-  try {
-    const rows = await prisma.$queryRawUnsafe(
-      "SELECT * FROM tindak_lanjut_observasi WHERE is_active = true ORDER BY 1 ASC"
-    );
-    return normalizeTindakLanjutOptions(rows);
-  } catch {
-    return DEFAULT_TINDAK_LANJUT;
-  }
+  return DEFAULT_TINDAK_LANJUT;
 };
 
 const createObservasiController = ({ writableRoles = [] }) => {
