@@ -18,6 +18,53 @@ Bagi **Tim Kesehatan / Poskestren**, sistem ini menyediakan alat kerja klinis ko
 
 ---
 
+# Instalasi & Login
+
+{section:instalasi}
+
+## 2.1 Instalasi PWA (Progressive Web App)
+
+Agar aplikasi dapat diakses instan layaknya aplikasi Android/iOS tanpa perlu mengunduh dari toko aplikasi:
+
+1. Buka peramban (*browser*) di smartphone Anda (disarankan **Google Chrome** di Android atau **Safari** di iOS).
+2. Kunjungi alamat resmi SIM-Tren: **`https://ppdny.vercel.app`** (atau alamat lokal server saat terhubung ke jaringan internal pondok).
+3. Ketuk menu opsi browser (ikon titik tiga di pojok kanan atas Chrome, atau ikon *Share/Bagikan* di Safari).
+4. Pilih opsi **"Tambahkan ke Layar Utama"** (*Add to Home Screen*) atau **"Instal Aplikasi"**.
+5. Konfirmasikan instalasi. Ikon SIM-Tren akan muncul di beranda smartphone Anda dan dapat dibuka satu ketukan dalam mode layar penuh (*standalone*).
+
+## 2.2 Cara Masuk (Login)
+
+1. Buka aplikasi SIM-Tren di smartphone atau laptop Anda.
+2. Pada formulir login, masukkan salah satu pengenal terdaftar: **NIP**, **Email**, atau **Nomor HP aktif**.
+3. Masukkan **Kata Sandi** Anda (ketuk ikon mata untuk memastikan ketikan sandi tidak keliru).
+4. Ketuk tombol **"Masuk"**. Sistem akan memvalidasi kredensial dan langsung mengarahkan Anda ke Dashboard Tim Kesehatan.
+
+![Halaman Login](auth_login_desktop.png|auth_login_mobile.png)
+
+> [!note]
+> Bila Anda memiliki lebih dari satu hak akses (multi-role), sistem akan menampilkan pilihan peran sebelum masuk ke dashboard. Pilih peran **"Tim Kesehatan"**.
+
+## 2.3 Lupa Kata Sandi
+
+Apabila Anda tidak dapat mengingat kata sandi akun:
+
+1. Di bawah tombol Masuk, ketuk tautan **"Lupa kata sandi?"**.
+2. Pada formulir pemulihan kata sandi yang muncul:
+   * Pilih tipe akun: **Tim Medis / Kesehatan**.
+   * Masukkan NIP/Email serta Nomor WhatsApp Anda.
+3. Ketuk tombol **"Kirim ke WhatsApp"**.
+4. Sistem akan otomatis menyiapkan pesan verifikasi untuk pemulihan kredensial Anda ke Administrator.
+
+![Lupa Kata Sandi](auth_lupa_password_desktop.png|auth_lupa_password_mobile.png)
+
+## 2.4 Cara Keluar (Logout)
+
+Untuk mengamankan sesi akun medis setelah selesai bertugas di poskestren:
+* **Pada Tampilan Desktop/Laptop**: Ketuk foto avatar di pojok kanan atas header, lalu pilih opsi berwarna merah **"Keluar"**.
+* **Pada Tampilan Smartphone**: Buka menu Profil dari navigasi bawah, gulir ke bagian paling bawah, lalu ketuk tombol **"Keluar dari Akun"**.
+
+---
+
 # Dashboard & Analitik Kesehatan
 
 {section:dashboard}

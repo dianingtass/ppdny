@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Download, Info, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
+import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Download, Info, AlertTriangle, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
 
@@ -27,6 +27,8 @@ function parseFilename(filename) {
   const core   = filename.replace(/_(desktop|mobile)\.(png|webp)$/, '');
 
   const map = [
+    ['auth_lupa_password', 'auth',       'lupa_password'],
+    ['auth_login',         'auth',       'login'],
     ['dashboard_utama',   'dashboard',  'utama'],
     ['santri_daftar',     'santri',     'daftar'],
     ['ustadz_daftar',     'ustadz',     'daftar'],
@@ -110,17 +112,17 @@ function Callout({ type, children }) {
     important: { extra: ' border-red-500 bg-red-50 text-red-950',      title: 'PENTING',    icon: <AlertTriangle size={16} className="text-red-600 shrink-0" /> },
     warning:   { extra: ' border-amber-500 bg-amber-50 text-amber-950', title: 'PERINGATAN', icon: <AlertTriangle size={16} className="text-amber-600 shrink-0" /> },
     note:      { extra: ' border-blue-500 bg-blue-50 text-blue-950',    title: 'CATATAN',    icon: <Info size={16} className="text-blue-600 shrink-0" /> },
-    tip:       { extra: ' border-green-500 bg-green-50 text-green-950',  title: 'TIPS',       icon: <Lightbulb size={16} className="text-green-600 shrink-0" /> },
+    tip:       { extra: ' border-teal-500 bg-teal-50 text-teal-950',    title: 'TIPS',       icon: <Lightbulb size={16} className="text-teal-600 shrink-0" /> },
   };
   const { extra, title, icon } = configs[type] || configs.tip;
 
   return (
-    <div className={`border-l-4 rounded-r-xl p-4 my-4 ${extra} print:my-2 print:p-3`}>
-      <div className="flex items-center gap-1.5 font-bold text-xs tracking-wider uppercase mb-1">
+    <div className={`border-l-4 p-4 my-5 rounded-r-xl text-sm leading-relaxed print:my-3${extra}`}>
+      <div className="flex items-center gap-2 font-bold mb-1.5 text-xs tracking-wider">
         {icon}
         <span>{title}</span>
       </div>
-      <div className="text-sm leading-relaxed">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
@@ -149,124 +151,133 @@ function formatInline(text) {
   if (lastIndex < text.length) {
     parts.push(text.slice(lastIndex));
   }
-  return parts.length > 0 ? parts : text;
+  return parts;
 }
 
-// ─── Block Parser ──────────────────────────────────────────────────────────
+// ─── Parser ────────────────────────────────────────────────────────────────
 
 function parseBlocks(markdown) {
-  const lines = markdown.split('\n');
+  const lines = markdown.split(/\r?\n/);
   const blocks = [];
-  let i = 0;
+  let inTable = false;
+  let tableRows = [];
 
-  while (i < lines.length) {
-    const line = lines[i];
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
 
-    if (!line.trim()) { i++; continue; }
+    if (inTable) {
+      if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+        tableRows.push(trimmed);
+        continue;
+      } else {
+        blocks.push({ type: 'table', raw: tableRows });
+        inTable = false;
+        tableRows = [];
+      }
+    }
 
-    const secMatch = line.match(/^\{section:([a-zA-Z0-9_-]+)\}/);
-    if (secMatch) {
-      blocks.push({ type: 'section-anchor', id: secMatch[1] });
-      i++;
+    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+      inTable = true;
+      tableRows = [trimmed];
       continue;
     }
 
-    if (line.startsWith('# ')) {
-      blocks.push({ type: 'h1', text: line.replace('# ', '').trim() });
-      i++;
-      continue;
-    }
-    if (line.startsWith('## ')) {
-      blocks.push({ type: 'h2', text: line.replace('## ', '').trim() });
-      i++;
-      continue;
-    }
-    if (line.startsWith('### ')) {
-      blocks.push({ type: 'h3', text: line.replace('### ', '').trim() });
-      i++;
+    if (trimmed.startsWith('{section:') && trimmed.endsWith('}')) {
+      const id = trimmed.slice(9, -1);
+      blocks.push({ type: 'section-anchor', id });
       continue;
     }
 
-    if (line.startsWith('> [!')) {
-      const type = line.match(/> \[!(.*?)\]/)?.[1]?.toLowerCase() || 'tip';
+    if (trimmed.startsWith('# ')) {
+      blocks.push({ type: 'h1', text: trimmed.slice(2).trim() });
+      continue;
+    }
+    if (trimmed.startsWith('## ')) {
+      blocks.push({ type: 'h2', text: trimmed.slice(3).trim() });
+      continue;
+    }
+    if (trimmed.startsWith('### ')) {
+      blocks.push({ type: 'h3', text: trimmed.slice(4).trim() });
+      continue;
+    }
+
+    if (trimmed.startsWith('> [!')) {
+      const match = trimmed.match(/^>\s*\[!(important|warning|note|tip)\]/i);
+      const calloutType = match ? match[1].toLowerCase() : 'tip';
       const calloutLines = [];
-      i++;
-      while (i < lines.length && lines[i].startsWith('>')) {
-        calloutLines.push(lines[i].replace(/^>\s?/, ''));
-        i++;
+      let j = i + 1;
+      while (j < lines.length && lines[j].trim().startsWith('>')) {
+        calloutLines.push(lines[j].trim().replace(/^>\s*/, ''));
+        j++;
       }
-      blocks.push({ type: 'callout', calloutType: type, text: calloutLines.join('\n') });
+      i = j - 1;
+      blocks.push({ type: 'callout', calloutType, text: calloutLines.join(' ') });
       continue;
     }
 
-    if (line.trim().startsWith('|')) {
-      const tableLines = [];
-      while (i < lines.length && lines[i].trim().startsWith('|')) {
-        tableLines.push(lines[i]);
-        i++;
+    const dualImgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\|(.*?)\)$/);
+    if (dualImgMatch) {
+      const alt = dualImgMatch[1];
+      const desktop = dualImgMatch[2].trim();
+      const mobile = dualImgMatch[3].trim();
+      blocks.push({
+        type: 'dual-image',
+        alt,
+        desktop: desktop.startsWith('/') ? desktop : `/assets/guidebook/pimpinan/${desktop}`,
+        mobile: mobile.startsWith('/') ? mobile : `/assets/guidebook/pimpinan/${mobile}`,
+      });
+      continue;
+    }
+
+    const singleImgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+    if (singleImgMatch) {
+      const alt = singleImgMatch[1];
+      const src = singleImgMatch[2].trim();
+      blocks.push({
+        type: 'image',
+        alt,
+        src: src.startsWith('/') ? src : `/assets/guidebook/pimpinan/${src}`,
+      });
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(trimmed)) {
+      const items = [trimmed.replace(/^[-*]\s+/, '')];
+      let j = i + 1;
+      while (j < lines.length && /^[-*]\s+/.test(lines[j].trim())) {
+        items.push(lines[j].trim().replace(/^[-*]\s+/, ''));
+        j++;
       }
-      blocks.push({ type: 'table', raw: tableLines });
-      continue;
-    }
-
-    const dualImg = line.match(/^!\[(.*?)\]\((.*?)\|(.*?)\)/);
-    if (dualImg) {
-      blocks.push({ type: 'dual-image', alt: dualImg[1], desktop: dualImg[2].trim(), mobile: dualImg[3].trim() });
-      i++;
-      continue;
-    }
-
-    const singleImg = line.match(/^!\[(.*?)\]\((.*?)\)/);
-    if (singleImg) {
-      blocks.push({ type: 'image', alt: singleImg[1], src: singleImg[2].trim() });
-      i++;
-      continue;
-    }
-
-    if (line.match(/^(\*|-)\s+/)) {
-      const items = [];
-      while (i < lines.length && lines[i].match(/^(\*|-)\s+/)) {
-        items.push(lines[i].replace(/^(\*|-)\s+/, ''));
-        i++;
-      }
+      i = j - 1;
       blocks.push({ type: 'ul', items });
       continue;
     }
 
-    if (line.match(/^\d+\.\s+/)) {
-      const items = [];
-      while (i < lines.length && lines[i].match(/^\d+\.\s+/)) {
-        items.push(lines[i].replace(/^\d+\.\s+/, ''));
-        i++;
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const items = [trimmed.replace(/^\d+\.\s+/, '')];
+      let j = i + 1;
+      while (j < lines.length && /^\d+\.\s+/.test(lines[j].trim())) {
+        items.push(lines[j].trim().replace(/^\d+\.\s+/, ''));
+        j++;
       }
+      i = j - 1;
       blocks.push({ type: 'ol', items });
       continue;
     }
 
-    if (line.startsWith('---')) {
+    if (/^---+$/.test(trimmed)) {
       blocks.push({ type: 'hr' });
-      i++;
       continue;
     }
 
-    const pLines = [];
-    while (
-      i < lines.length &&
-      lines[i].trim() &&
-      !lines[i].startsWith('#') &&
-      !lines[i].startsWith('>') &&
-      !lines[i].startsWith('---') &&
-      !lines[i].match(/^\{section:/) &&
-      !lines[i].match(/^!\[/) &&
-      !lines[i].match(/^(\*|-|\d+\.)\s+/) &&
-      !lines[i].trim().startsWith('|')
-    ) {
-      pLines.push(lines[i]);
-      i++;
+    if (trimmed.length > 0) {
+      blocks.push({ type: 'p', text: trimmed });
     }
-    if (pLines.length) {
-      blocks.push({ type: 'p', text: pLines.join(' ') });
-    }
+  }
+
+  if (inTable && tableRows.length > 0) {
+    blocks.push({ type: 'table', raw: tableRows });
   }
 
   return blocks;
@@ -322,25 +333,25 @@ function renderBlock(block, idx) {
   switch (block.type) {
     case 'h1':
       return (
-        <h1 key={idx} className="text-2xl md:text-3xl font-extrabold text-green-900 mt-8 mb-4 pb-2 border-b border-green-100 flex items-center gap-2 print:text-xl print:mt-4">
-          {block.text}
+        <h1 key={idx} className="text-3xl font-extrabold text-emerald-950 border-b-2 border-green-100 pb-3 mb-6 flex items-center gap-3">
+          <span>{block.text}</span>
         </h1>
       );
     case 'h2':
       return (
-        <h2 key={idx} className="text-xl md:text-2xl font-bold text-gray-800 mt-6 mb-3 print:text-lg print:mt-3">
+        <h2 key={idx} className="text-xl font-bold text-green-700 mt-8 mb-3">
           {block.text}
         </h2>
       );
     case 'h3':
       return (
-        <h3 key={idx} className="text-base md:text-lg font-semibold text-gray-700 mt-4 mb-2">
+        <h3 key={idx} className="text-base md:text-lg font-semibold text-gray-800 mt-4 mb-2">
           {block.text}
         </h3>
       );
     case 'p':
       return (
-        <p key={idx} className="text-gray-700 leading-relaxed mb-4 text-sm md:text-base print:text-xs">
+        <p key={idx} className="text-gray-700 leading-relaxed mb-4 text-justify">
           {formatInline(block.text)}
         </p>
       );
@@ -361,7 +372,7 @@ function renderBlock(block, idx) {
       );
     case 'ul':
       return (
-        <ul key={idx} className="space-y-1.5 my-3 ml-5 list-disc text-gray-700 text-sm md:text-base print:text-xs">
+        <ul key={idx} className="list-disc pl-6 space-y-2 mb-6 text-gray-700 text-justify">
           {block.items.map((it, i) => (
             <li key={i}>{formatInline(it)}</li>
           ))}
@@ -369,7 +380,7 @@ function renderBlock(block, idx) {
       );
     case 'ol':
       return (
-        <ol key={idx} className="space-y-1.5 my-3 ml-5 list-decimal text-gray-700 text-sm md:text-base print:text-xs">
+        <ol key={idx} className="list-decimal pl-6 space-y-2 mb-6 text-gray-700 text-justify">
           {block.items.map((it, i) => (
             <li key={i}>{formatInline(it)}</li>
           ))}
@@ -449,11 +460,11 @@ export default function PimpinanGuidebook() {
     };
 
     observerRef.current = new IntersectionObserver(callback, {
-      rootMargin: '-100px 0px -60% 0px',
+      rootMargin: '-20% 0px -70% 0px',
       threshold: 0,
     });
 
-    sections.forEach(sec => {
+    sections.forEach((sec) => {
       const el = document.getElementById(sec.id);
       if (el) observerRef.current.observe(el);
     });
@@ -466,11 +477,10 @@ export default function PimpinanGuidebook() {
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) {
-      const yOffset = -90;
-      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveId(id);
+      setMobileDrawerOpen(false);
     }
-    setMobileDrawerOpen(false);
   };
 
   const handlePrint = () => {
@@ -478,22 +488,45 @@ export default function PimpinanGuidebook() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-green-50/40 to-white flex flex-col">
-      {/* ─── Top Header (Screen only) ─────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-green-100 px-4 py-3 flex items-center justify-between shadow-xs print:hidden">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-800 antialiased print:bg-white print:text-black">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          .no-print, header, nav, button, footer { display: none !important; }
+          @page { size: A4; margin: 20mm 15mm 20mm 15mm; }
+          body { font-size: 12pt !important; line-height: 1.5 !important; background: white !important; color: black !important; }
+          .print-container { display: block !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
+          .print-section-break { page-break-before: always !important; }
+          h1, h2, h3, h4, h5, h6 { color: #047857 !important; page-break-inside: avoid !important; page-break-after: avoid !important; }
+          h1 { font-size: 24pt !important; margin-top: 30pt !important; margin-bottom: 15pt !important; border-bottom: 2px solid #e5e7eb !important; padding-bottom: 6pt !important; }
+          h2 { font-size: 18pt !important; margin-top: 24pt !important; margin-bottom: 12pt !important; }
+          h3 { font-size: 14pt !important; margin-top: 18pt !important; margin-bottom: 10pt !important; }
+          h4 { font-size: 12pt !important; font-weight: bold !important; margin-top: 14pt !important; }
+          p, li, blockquote { font-size: 11pt !important; text-align: left !important; }
+          ul, ol { padding-left: 28pt !important; margin-bottom: 12pt !important; }
+          li { margin-bottom: 4pt !important; }
+          blockquote { background-color: #f9fafb !important; border-left: 4px solid #10b981 !important; padding: 10pt 15pt !important; margin: 12pt 0 !important; font-size: 10.5pt !important; }
+          table { width: 100% !important; border-collapse: collapse !important; margin: 15pt 0 !important; font-size: 10pt !important; }
+          th, td { padding: 8pt 10pt !important; border-bottom: 1px solid #e5e7eb !important; }
+          th { background-color: #f3f4f6 !important; }
+          .print-image-row { display: flex !important; flex-direction: row !important; gap: 15pt !important; page-break-inside: avoid !important; margin: 15pt 0 !important; }
+        }
+      `}} />
+
+      {/* Header */}
+      <header className="no-print sticky top-0 z-40 bg-[url('/header.png')] bg-cover bg-center text-white shadow-md px-4 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/pimpinan')}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-green-700 hover:bg-green-50 transition"
-            title="Kembali ke Dashboard Pimpinan"
+            className="flex-shrink-0 p-2 hover:bg-white/20 rounded-full transition-colors"
+            title="Kembali ke Dashboard"
           >
             <ArrowLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <ShieldCheck size={22} className="text-green-700" />
+            <BookOpen size={24} className="text-green-100" />
             <div>
-              <h1 className="text-base font-bold text-gray-900 leading-tight">Buku Panduan Eksekutif Pimpinan</h1>
-              <p className="text-xs text-gray-500">Tata Kelola & Pengawasan Terpadu SIM-Tren PPDNY</p>
+              <h1 className="text-base font-bold tracking-wide leading-tight">Buku Panduan SIM-Tren</h1>
+              <p className="text-xs text-green-100">Panduan penggunaan untuk Pengasuh / Dewan Pimpinan</p>
             </div>
           </div>
         </div>
@@ -504,100 +537,88 @@ export default function PimpinanGuidebook() {
             download="Panduan_SIM-Tren_Pimpinan.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-700 hover:bg-green-800 rounded-lg shadow-xs transition"
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 px-3 py-2 md:px-4 md:py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-sm text-white"
           >
             <Download size={15} />
             <span className="hidden sm:inline">Unduh PDF</span>
           </a>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-green-800 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition"
+            className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-2 md:px-4 md:py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-sm backdrop-blur-sm"
           >
             <Printer size={15} />
             <span className="hidden sm:inline">Cetak</span>
           </button>
           <button
-            onClick={() => setMobileDrawerOpen(true)}
-            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 md:hidden"
+            onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
+            className="md:hidden p-2 hover:bg-white/20 rounded-lg transition-colors"
             aria-label="Daftar Isi"
           >
-            <Menu size={20} />
+            {mobileDrawerOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </header>
 
-      {/* ─── Main Content Container ───────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto w-full px-4 py-6 flex-1 flex gap-8">
-        {/* Desktop Sticky Table of Contents */}
-        <aside className="hidden md:block w-72 shrink-0 print:hidden">
-          <div className="sticky top-24 bg-white rounded-2xl border border-green-100 p-4 shadow-xs">
-            <div className="flex items-center gap-2 pb-3 mb-3 border-b border-gray-100 text-green-900 font-bold text-sm">
-              <BookOpen size={17} className="text-green-700" />
-              <span>Daftar Isi Panduan</span>
-            </div>
-            <nav className="space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto pr-1">
-              {sections.map((sec, idx) => {
-                const isActive = activeId === sec.id;
-                return (
-                  <button
-                    key={sec.id}
-                    onClick={() => scrollToSection(sec.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition flex items-center justify-between group ${
-                      isActive
-                        ? 'bg-green-700 text-white shadow-xs font-semibold'
-                        : 'text-gray-600 hover:bg-green-50 hover:text-green-900'
-                    }`}
-                  >
-                    <span className="truncate">{idx + 1}. {sec.title}</span>
-                    <ChevronRight size={14} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-green-700'} />
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </aside>
-
-        {/* Markdown Content Area */}
-        <main className="flex-1 min-w-0 bg-white rounded-2xl border border-green-100 p-6 md:p-10 shadow-xs print:border-none print:shadow-none print:p-0">
-          {loading ? (
-            <div className="py-20 text-center text-gray-400 text-sm">Memuat buku panduan eksekutif pimpinan...</div>
-          ) : (
-            sections.map((sec) => (
-              <section key={sec.id} id={sec.id} className="scroll-mt-24 mb-14 print:mb-8 print:break-inside-avoid">
-                {sec.blocks.map((blk, idx) => renderBlock(blk, idx))}
-              </section>
-            ))
-          )}
-        </main>
-      </div>
-
-      {/* ─── Mobile Drawer Table of Contents ──────────────────────────── */}
-      {mobileDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setMobileDrawerOpen(false)} />
-          <div className="relative ml-auto w-4/5 max-w-xs bg-white h-full shadow-2xl flex flex-col p-5">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
-              <span className="font-bold text-gray-900 text-sm">Daftar Isi</span>
-              <button onClick={() => setMobileDrawerOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 text-gray-500">
-                <X size={18} />
-              </button>
-            </div>
-            <nav className="space-y-1 overflow-y-auto flex-1">
+      {/* Main Content Layout */}
+      <div className="flex-1 flex flex-row relative">
+        {/* Desktop Sticky Sidebar */}
+        <aside className={`no-print fixed top-26 bottom-0 left-0 z-30 w-72 bg-white border-r border-gray-200 p-5 overflow-y-auto transition-transform duration-300 md:sticky md:top-22 md:h-[calc(100vh-88px)] md:translate-x-0 ${mobileDrawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+          <div className="mb-2">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Daftar Isi Panduan</h3>
+            <nav className="space-y-1">
               {sections.map((sec, idx) => (
                 <button
                   key={sec.id}
                   onClick={() => scrollToSection(sec.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition ${
-                    activeId === sec.id ? 'bg-green-700 text-white' : 'text-gray-600 hover:bg-green-50'
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all text-left ${
+                    activeId === sec.id
+                      ? 'bg-emerald-50 text-green-700 border-l-4 border-green-600 shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  {idx + 1}. {sec.title}
+                  <span className="truncate">{idx + 1}. {sec.title}</span>
+                  <ChevronRight size={14} className={activeId === sec.id ? 'text-green-600' : 'text-gray-400'} />
                 </button>
               ))}
             </nav>
           </div>
-        </div>
-      )}
+          <div className="pt-5 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-400">SIM-Tren Darunna'im Yapia</p>
+          </div>
+        </aside>
+
+        {/* Mobile Backdrop */}
+        {mobileDrawerOpen && (
+          <div onClick={() => setMobileDrawerOpen(false)} className="no-print fixed inset-0 z-20 bg-black/30 backdrop-blur-sm md:hidden" />
+        )}
+
+        {/* Main Content Area */}
+        <main className="flex-1 print-container p-6 md:p-10 max-w-4xl mx-auto bg-white shadow-sm md:my-6 md:rounded-2xl border border-gray-100 print:border-none print:shadow-none print:my-0 print:rounded-none">
+          {/* Cover for Print */}
+          <div className="hidden print:flex flex-col items-center justify-center text-center border-b-4 border-green-600 pb-6 mb-8">
+            <img src="/pwa-192x192.png" alt="Logo" className="w-16 h-16 rounded-2xl mb-3 border" />
+            <h1 className="text-3xl font-extrabold text-green-600 tracking-wide m-0">BUKU PANDUAN PENGGUNAAN SIM-TREN</h1>
+            <p className="text-base text-gray-600 uppercase tracking-widest mt-1">Role: Pengasuh / Dewan Pimpinan Pesantren Darun-Na'im Yapia</p>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-green-200 border-t-green-600" />
+            </div>
+          ) : (
+            sections.map((sec, sIdx) => (
+              <section key={sec.id} id={sec.id} className={`mb-14 print:mb-8${sIdx > 0 ? ' print-section-break' : ''}`}>
+                {sec.blocks.map((blk, idx) => renderBlock(blk, idx))}
+              </section>
+            ))
+          )}
+
+          {/* Footer for Print */}
+          <div className="hidden print:block text-center border-t border-gray-200 pt-6 mt-12 text-xs text-gray-400">
+            <p>Buku Panduan SIM-Tren Pesantren Darun-Na'im Yapia © {new Date().getFullYear()}</p>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

@@ -190,6 +190,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['pengurus']} />}>
+            <Route path="/pengurus/guidebook" element={<PengurusGuidebook />} />
             <Route path="/pengurus" element={<Layout />}>
               <Route index element={<PengurusDashboard />} />
               <Route path="data-santri" element={<PengurusSantri />} />
@@ -207,11 +208,11 @@ function App() {
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="pengurus" />} />
-              <Route path="guidebook" element={<PengurusGuidebook />} />
             </Route>
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['timkesehatan']} />}>
+            <Route path="/timkesehatan/guidebook" element={<TimkesGuidebook />} />
             <Route path="/timkesehatan" element={<Layout />}>
               <Route index element={<TimkesDashboard />} />
 
@@ -261,7 +262,6 @@ function App() {
               {/* FAQ */}
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="timkesehatan" />} />
-              <Route path="guidebook" element={<TimkesGuidebook />} />
             </Route>
           </Route>
 
@@ -293,6 +293,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['pimpinan']} />}>
+            <Route path="/pimpinan/guidebook" element={<PimpinanGuidebook />} />
             <Route path="/pimpinan" element={<Layout />}>
               <Route index element={<PimpinanDashboard />} />
               <Route path="data-santri" element={<PimpinanSantri />} />
@@ -325,11 +326,11 @@ function App() {
               <Route path="daftarSantriObservasi/:id/view/:observasiId" element={<PimpinanViewObservasi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="pimpinan" />} />
-              <Route path="guidebook" element={<PimpinanGuidebook />} />
             </Route>
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/guidebook" element={<AdminGuidebook />} />
             <Route path="/admin" element={<Layout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="data-staf" element={<AdminStaf />} />
@@ -373,7 +374,6 @@ function App() {
               <Route path="ppdb/seleksi" element={<Seleksi />} />
               <Route path="faq" element={<FaqPage />} />
               <Route path="profil" element={<ProfilePage role="admin" />} />
-              <Route path="guidebook" element={<AdminGuidebook />} />
             </Route>
           </Route>
 
