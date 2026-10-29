@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
-import { User, Users, BookOpen, Calendar, AlertCircle, Clock, Bell, CheckCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
+import { User, Users, BookOpen, Calendar, AlertCircle, Clock, Bell, CheckCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, MessageSquare, ClipboardList, Download } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileAvatar from '../../components/ProfileAvatar';
 
@@ -154,6 +154,16 @@ export default function Dashboard() {
                       <button onClick={() => { setIsProfileOpen(false); navigate("/ustadz/guidebook"); }} className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition">
                         <BookOpen size={16} className="mr-3 text-green-600" /> Buku Panduan
                       </button>
+                      <a
+                        href="/docs/Panduan_SIM-Tren_Ustadz.pdf"
+                        download="Panduan_SIM-Tren_Ustadz.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition"
+                      >
+                        <Download size={16} className="mr-3 text-green-600" /> Unduh PDF Panduan
+                      </a>
                       <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-md text-red-600 hover:bg-red-50 flex items-center transition">
                         <LogOut size={16} className="mr-3" /> Keluar
                       </button>

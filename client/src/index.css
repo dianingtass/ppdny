@@ -1,2 +1,27 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@media print {
+  html, body, #root, div, main {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+  header, aside, .print\:hidden, button[aria-label="Daftar Isi"] {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 24px !important;
+  }
+}

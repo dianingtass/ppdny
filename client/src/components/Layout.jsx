@@ -27,6 +27,7 @@ import {
   UserPlus,
   ClipboardCheck,
   MessageCircle,
+  Download,
   User
 } from "lucide-react";
 
@@ -283,6 +284,13 @@ export default function GlobalLayout() {
       icon: BookOpen,
       roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
       isGuidebook: true,
+    },
+    {
+      name: "Unduh PDF Panduan",
+      path: "/unduh-pdf",
+      icon: Download,
+      roles: ["pengurus", "timkesehatan", "pimpinan", "admin"],
+      isExternal: true,
     }
   ];
 
@@ -401,7 +409,11 @@ export default function GlobalLayout() {
                         admin: "Admin",
                         pimpinan: "Pimpinan",
                         pengurus: "Pengurus",
-                        timkesehatan: "Tim_Kesehatan"
+                        timkesehatan: "Tim_Kesehatan",
+                        santri: "Santri",
+                        orangtua: "Orang_Tua",
+                        ustadz: "Ustadz",
+                        ppdb: "PPDB"
                       };
                       const mappedRole = roleNameMap[userRole] || "Admin";
                       window.open(`/docs/Panduan_SIM-Tren_${mappedRole}.pdf`, "_blank");

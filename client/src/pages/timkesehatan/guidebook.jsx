@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Info, AlertTriangle, Lightbulb, HeartPulse } from 'lucide-react';
+import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Download, Info, AlertTriangle, Lightbulb, HeartPulse } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
 
@@ -483,7 +483,7 @@ export default function TimkesGuidebook() {
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-teal-100 px-4 py-3 flex items-center justify-between shadow-xs print:hidden">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate('/timkesehatan/dashboard')}
+            onClick={() => navigate('/timkesehatan')}
             className="p-1.5 rounded-lg text-gray-500 hover:text-teal-700 hover:bg-teal-50 transition"
             title="Kembali ke Dashboard"
           >
@@ -499,12 +499,22 @@ export default function TimkesGuidebook() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="/docs/Panduan_SIM-Tren_Tim_Kesehatan.pdf"
+            download="Panduan_SIM-Tren_Tim_Kesehatan.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-xs transition"
+          >
+            <Download size={15} />
+            <span className="hidden sm:inline">Unduh PDF</span>
+          </a>
           <button
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 rounded-lg border border-teal-200 transition"
           >
             <Printer size={15} />
-            <span className="hidden sm:inline">Cetak / Simpan PDF</span>
+            <span className="hidden sm:inline">Cetak</span>
           </button>
           <button
             onClick={() => setMobileDrawerOpen(true)}

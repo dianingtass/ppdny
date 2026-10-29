@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Info, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
+import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Download, Info, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
 
@@ -499,12 +499,22 @@ export default function PimpinanGuidebook() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="/docs/Panduan_SIM-Tren_Pimpinan.pdf"
+            download="Panduan_SIM-Tren_Pimpinan.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-700 hover:bg-green-800 rounded-lg shadow-xs transition"
+          >
+            <Download size={15} />
+            <span className="hidden sm:inline">Unduh PDF</span>
+          </a>
           <button
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-green-800 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition"
           >
             <Printer size={15} />
-            <span className="hidden sm:inline">Cetak / Simpan PDF</span>
+            <span className="hidden sm:inline">Cetak</span>
           </button>
           <button
             onClick={() => setMobileDrawerOpen(true)}

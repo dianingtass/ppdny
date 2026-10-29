@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Wallet,
   BookOpen,
+  Download,
 } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileAvatar from '../../components/ProfileAvatar';
@@ -131,6 +132,16 @@ export default function OrangTuaDashboard() {
                   <button onClick={() => { setIsProfileOpen(false); navigate("/orangtua/guidebook"); }} className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition">
                     <BookOpen size={16} className="mr-2" /> <span className="text-sm font-semibold">Buku Panduan</span>
                   </button>
+                  <a
+                    href="/docs/Panduan_SIM-Tren_Orang_Tua.pdf"
+                    download="Panduan_SIM-Tren_Orang_Tua.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="w-full flex items-center py-3 px-5 text-gray-500 hover:bg-green-50 hover:text-green-700 transition"
+                  >
+                    <Download size={16} className="mr-2" /> <span className="text-sm font-semibold">Unduh PDF Panduan</span>
+                  </a>
                   <button onClick={handleLogout} className="w-full flex items-center py-3 px-5 text-red-600 hover:bg-red-50 transition">
                     <LogOut size={16} className="mr-2" /> <span className="text-sm font-semibold">Keluar</span>
                   </button>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
-import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, Cross, BookOpen } from "lucide-react";
+import { User, FileText, CreditCard, Calendar, AlertCircle, History, Clock, Bell, ChevronRight, CheckCircle, XCircle, AlertTriangle, Home, Settings, LogOut, Loader2, ChevronDown, Cross, BookOpen, Download } from "lucide-react";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import ProfileAvatar from '../../components/ProfileAvatar';
 
@@ -279,6 +279,19 @@ export default function SantriDashboard() {
                         <BookOpen size={16} className="mr-3" />
                         Buku Panduan
                       </button>
+
+                      {/* Item 3: Unduh PDF Panduan */}
+                      <a 
+                        href="/docs/Panduan_SIM-Tren_Santri.pdf"
+                        download="Panduan_SIM-Tren_Santri.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="w-full text-left px-4 py-2.5 text-md text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center transition"
+                      >
+                        <Download size={16} className="mr-3" />
+                        Unduh PDF Panduan
+                      </a>
 
                       {/* Item 2: Keluar */}
                       <button 

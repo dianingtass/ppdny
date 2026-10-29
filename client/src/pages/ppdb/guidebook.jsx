@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Info, AlertTriangle, Lightbulb } from 'lucide-react';
+import { BookOpen, ChevronRight, Menu, X, ArrowLeft, Printer, Download, Info, AlertTriangle, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api';
 
@@ -429,9 +429,19 @@ export default function PpdbGuidebook() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handlePrint} className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-4 py-3 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-sm backdrop-blur-sm">
+          <a
+            href="/docs/Panduan_SIM-Tren_PPDB.pdf"
+            download="Panduan_SIM-Tren_PPDB.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 px-3 py-2 md:px-4 md:py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-sm text-white"
+          >
+            <Download size={15} />
+            <span className="hidden sm:inline">Unduh PDF</span>
+          </a>
+          <button onClick={handlePrint} className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-2 md:px-4 md:py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-sm backdrop-blur-sm">
             <Printer size={15} />
-            <span className='hidden md:flex'>Cetak PDF</span>
+            <span className='hidden sm:inline'>Cetak</span>
           </button>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="md:hidden p-2 hover:bg-white/20 rounded-lg transition-colors">
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
